@@ -102,4 +102,18 @@ void main() {
     await tester.pump(const Duration(seconds: 3));
     // Zamanlayıcı durmasaydı test "A Timer is still pending" hatasıyla düşerdi.
   });
+
+  testWidgets('durdur: saat durur; baslat kaldığı yerden sürdürür', (tester) async {
+    final d = EtkinlikDeposu();
+    d.baslat();
+    await tester.pump(const Duration(seconds: 2));
+    expect(d.tick, 2);
+    d.durdur();
+    await tester.pump(const Duration(seconds: 5));
+    expect(d.tick, 2);
+    d.baslat();
+    await tester.pump(const Duration(seconds: 1));
+    expect(d.tick, 3);
+    d.dispose();
+  });
 }

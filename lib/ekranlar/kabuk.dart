@@ -26,7 +26,7 @@ class Kabuk extends StatefulWidget {
   State<Kabuk> createState() => _KabukState();
 }
 
-class _KabukState extends State<Kabuk> {
+class _KabukState extends State<Kabuk> with WidgetsBindingObserver {
   static const int _sekmeKartVer = 1;
   static const int _sekmeKurulum = 2;
 
@@ -41,10 +41,29 @@ class _KabukState extends State<Kabuk> {
     _depo = widget.depo ?? (EtkinlikDeposu()..baslat());
     _panoDurumu = PanoDurumu();
     _kartVerDurumu = KartVerDurumu(_depo);
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  /// Şartname §10: arka planda saat durur, dönünce kaldığı yerden sürer
+  /// (telafi yok). Dışarıdan verilen deponun saatini sahibi yönetir.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState durum) {
+    if (widget.depo != null) return;
+    switch (durum) {
+      case AppLifecycleState.resumed:
+        _depo.baslat();
+      case AppLifecycleState.hidden:
+      case AppLifecycleState.paused:
+        _depo.durdur();
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.detached:
+        break;
+    }
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _kartVerDurumu.dispose();
     _panoDurumu.dispose();
     if (widget.depo == null) _depo.dispose();
@@ -82,18 +101,23 @@ class _KabukState extends State<Kabuk> {
               if (!_depo.aliciBagli) const KopukBandi(),
               Expanded(
                 // Sekme değişince ekran durumu ve kaydırma konumu korunur.
+                // Gizli sekmedeki animasyonlar (Kart Ver nabzı) TickerMode ile
+                // durur; yoksa görünmeden saniyede 60 kare çizilir (pil).
                 child: IndexedStack(
                   index: _sekme,
                   children: [
-                    PanoEkrani(
-                      depo: _depo,
-                      durum: _panoDurumu,
-                      onKisi: _kisiDetayiAc,
-                      onKurulumaGit: () => _sekmeSec(_sekmeKurulum),
-                    ),
-                    KartVerEkrani(depo: _depo, durum: _kartVerDurumu),
-                    KurulumEkrani(depo: _depo),
-                    RaporEkrani(depo: _depo),
+                    for (final (i, ekran) in [
+                      PanoEkrani(
+                        depo: _depo,
+                        durum: _panoDurumu,
+                        onKisi: _kisiDetayiAc,
+                        onKurulumaGit: () => _sekmeSec(_sekmeKurulum),
+                      ),
+                      KartVerEkrani(depo: _depo, durum: _kartVerDurumu),
+                      KurulumEkrani(depo: _depo),
+                      RaporEkrani(depo: _depo),
+                    ].indexed)
+                      TickerMode(enabled: i == _sekme, child: ekran),
                   ],
                 ),
               ),

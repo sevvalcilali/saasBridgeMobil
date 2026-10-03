@@ -238,4 +238,24 @@ void main() {
     d.iadeOnayla();
     expect(d.bilgi, '✓ Kart 14 iade alındı. Kart 14 panodan düştü; süreleri raporda kalır.');
   });
+
+  testWidgets('demo beklerken kart seçim modu değişirse eski kart sonradan belirmez', (tester) async {
+    d.kisiSec('24');
+    d.demoYaklastir();
+    await tester.pump(const Duration(milliseconds: 500));
+    d.kartModuSec(KartSecimModu.numara);
+    await tester.pump(const Duration(seconds: 2));
+    d.kartModuSec(KartSecimModu.yaklastir);
+    expect(d.bulundu, isNull);
+  });
+
+  testWidgets('demo beklerken Kart iadesi moduna geçilirse eski kart sonradan belirmez', (tester) async {
+    d.kisiSec('24');
+    d.demoYaklastir();
+    await tester.pump(const Duration(milliseconds: 500));
+    d.modIade();
+    await tester.pump(const Duration(seconds: 2));
+    d.modVer();
+    expect(d.bulundu, isNull);
+  });
 }

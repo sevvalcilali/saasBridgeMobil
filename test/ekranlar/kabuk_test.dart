@@ -179,4 +179,39 @@ void main() {
     expect(Localizations.localeOf(baglam).languageCode, 'tr');
     expect(MaterialLocalizations.of(baglam).pasteButtonLabel, 'Yapıştır');
   });
+
+  testWidgets('gizli sekmedeki nabız animasyonu kare istemez (pil)', (tester) async {
+    await _baslat(tester);
+    await tester.tap(_sekme('Kart Ver'));
+    await tester.pump();
+    await tester.tap(find.text(_cem));
+    await tester.pump();
+    expect(find.text('Kartı alıcıya yaklaştırın…'), findsOneWidget);
+    await tester.tap(_sekme('Pano'));
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
+    expect(tester.binding.hasScheduledFrame, isFalse);
+    // Sekmeye dönünce nabız yeniden atar.
+    await tester.tap(_sekme('Kart Ver'));
+    await tester.pump(const Duration(seconds: 1));
+    expect(tester.binding.hasScheduledFrame, isTrue);
+  });
+
+  testWidgets('arka plana geçince saat durur, dönünce kaldığı yerden sürer (şartname §10)', (tester) async {
+    telefonBoyutu(tester);
+    await tester.pumpWidget(const YakinlikUygulamasi());
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('15:10:10'), findsOneWidget);
+    for (final durum in [AppLifecycleState.inactive, AppLifecycleState.hidden, AppLifecycleState.paused]) {
+      tester.binding.handleAppLifecycleStateChanged(durum);
+    }
+    await tester.pump(const Duration(seconds: 5));
+    for (final durum in [AppLifecycleState.hidden, AppLifecycleState.inactive, AppLifecycleState.resumed]) {
+      tester.binding.handleAppLifecycleStateChanged(durum);
+    }
+    await tester.pump();
+    expect(find.text('15:10:10'), findsOneWidget, reason: 'arka planda geçen süre telafi edilmez');
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('15:10:11'), findsOneWidget);
+  });
 }

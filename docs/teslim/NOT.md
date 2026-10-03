@@ -39,7 +39,7 @@ Ekran görüntüleri: `docs/teslim/ekran/ios/` ve `docs/teslim/ekran/android/` (
 
 | Denetim | Sonuç |
 |---|---|
-| `flutter test` | 204 test, tamamı geçti (`All tests passed!`) |
+| `flutter test` | 209 test, tamamı geçti (`All tests passed!`) |
 | `flutter analyze` | `No issues found!` |
 | iOS (iPhone 17 Pro simülatörü, iOS 26) ekran görüntüleri | 16 / 16 |
 | Android (Pixel_8 emülatörü, Android 17 / API 37) ekran görüntüleri | 16 / 16 |
@@ -54,6 +54,15 @@ Bulunan ve düzeltilen farklar:
 - **Ekran görüntüsü zamanlaması (uygulama hatası değil):** İlk çekimde alt çubuk seçimi bir kare geç
   görünüyordu ve iade onayı aşağı kaymıştı. Görüntü testi birkaç kare ilerleyip sayfayı başa kaydırarak
   çekiyor.
+
+Bağımsız kod incelemesinden sonra düzeltilenler (her biri önce düşen bir testle):
+
+- **Gizli sekmede nabız animasyonu:** Kart Ver 2. adımda bırakılıp başka sekmeye geçilince nabız görünmeden
+  saniyede 60 kare çizmeye devam ediyordu (pil). Gizli sekmelerin animasyonları artık durur.
+- **Mod değişince bekleyen demo:** "Demo"ya basıp "Numarayı yaz"a ya da "Kart iadesi"ne geçince, geri
+  dönüldüğünde yaklaştırılmamış "Kart 88 bulundu" görünebiliyordu. Bekleyen demo artık iptal edilir.
+- **Arka planda saat:** Şartname §10'daki "arka plana geçince saat durur, dönünce kaldığı yerden sürer"
+  kuralı eksikti; eklendi.
 
 Bilinçli farklar (hata değil):
 

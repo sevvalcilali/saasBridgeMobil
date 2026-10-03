@@ -54,6 +54,13 @@ class EtkinlikDeposu extends ChangeNotifier {
     _zamanlayici ??= Timer.periodic(const Duration(seconds: 1), (_) => ilerlet());
   }
 
+  /// Saati durdurur (uygulama arka plana geçince). `baslat` kaldığı yerden
+  /// sürdürür; aradaki süre telafi edilmez (şartname §10).
+  void durdur() {
+    _zamanlayici?.cancel();
+    _zamanlayici = null;
+  }
+
   /// Bir saniye ilerletir. Zamanlayıcı bunu çağırır; testler doğrudan çağırır.
   void ilerlet() {
     _tick++;

@@ -76,7 +76,7 @@ ekranlar tasarlanmadığı için bu aşamada eklenmez.
 | S13 | Sihirbazın altındaki `Bu kartı seç` | numara geçerliyse iki kart modunda da görünür | "Numara" başlığı altında | Yalnız `Numarayı yaz` modunda |
 | S14 | Adı olmayan kişi (Kart 14) seçilince | boş ad / `null` yazısı | — | `Kart 14` yazılır (`gorunenAd`) |
 | S15 | Grafikte eşik çizgisi eksen dışına çıkınca (−35…−39, −91…−95) | grafik dışına taşar | web: "kenara yapışır" | Grafik kenarına yapışır |
-| S16 | Demo yaklaştırma bekleyen zamanlayıcısı | adım değişince iptal edilmez | — | Adım/kişi değişince iptal edilir |
+| S16 | Demo yaklaştırma bekleyen zamanlayıcısı | adım değişince iptal edilmez | — | Adım, kişi ya da mod (kart seçim modu, Kart iadesi) değişince iptal edilir |
 | S17 | 44 px altı düğmeler (etiket 28, çip 36, Geri al 36, Düzenle 36, kapat 40) | görsel ölçü kadar | "tüm dokunma hedefleri ≥ 44" | Görsel ölçü aynı kalır, dokunma alanı görünmez biçimde 44 px'e genişler. İstisna: Pano bölüm anahtarı (README: 40 px) ve Ağ satırları (30 px aralık) |
 
 ---

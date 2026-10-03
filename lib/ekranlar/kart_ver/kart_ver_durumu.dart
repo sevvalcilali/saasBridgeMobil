@@ -96,6 +96,7 @@ class KartVerDurumu extends ChangeNotifier {
 
   void kartModuSec(KartSecimModu mod) {
     if (_kartModu == mod) return;
+    _demoIptal();
     _kartModu = mod;
     notifyListeners();
   }
@@ -176,6 +177,7 @@ class KartVerDurumu extends ChangeNotifier {
   }
 
   void modIade() {
+    _demoIptal();
     _mod = KartVerModu.iade;
     notifyListeners();
   }
