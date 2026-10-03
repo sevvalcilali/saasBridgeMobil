@@ -1,6 +1,6 @@
 # Yakınlık Panosu Mobil (Flutter) — Tasarım Şartnamesi
 
-> Tarih: 03.10.2026 · Proje sahibi: Şevval · Durum: **yazılı şartname, onay bekliyor**
+> Tarih: 03.10.2026 · Proje sahibi: Şevval · Durum: **onaylandı (03.10.2026)**
 > Tasarım kaynağı: `docs/tasarim/` (teslim paketi: `README.md`, `Yakinlik Mobil.dc.html`)
 > Web uygulaması: `sevvalcilali/SaasBridge`, dal `faz-0-altyapi` (yerelde `~/Desktop/Projects/saasBridge`)
 
@@ -77,7 +77,7 @@ ekranlar tasarlanmadığı için bu aşamada eklenmez.
 | S14 | Adı olmayan kişi (Kart 14) seçilince | boş ad / `null` yazısı | — | `Kart 14` yazılır (`gorunenAd`) |
 | S15 | Grafikte eşik çizgisi eksen dışına çıkınca (−35…−39, −91…−95) | grafik dışına taşar | web: "kenara yapışır" | Grafik kenarına yapışır |
 | S16 | Demo yaklaştırma bekleyen zamanlayıcısı | adım değişince iptal edilmez | — | Adım/kişi değişince iptal edilir |
-| S17 | 44 px altı düğmeler (etiket 28, çip 36, Geri al 36, Düzenle 36, kapat 40) | görsel ölçü kadar | "tüm dokunma hedefleri ≥ 44" | Görsel ölçü aynı kalır, dokunma alanı görünmez biçimde 44 px'e genişler |
+| S17 | 44 px altı düğmeler (etiket 28, çip 36, Geri al 36, Düzenle 36, kapat 40) | görsel ölçü kadar | "tüm dokunma hedefleri ≥ 44" | Görsel ölçü aynı kalır, dokunma alanı görünmez biçimde 44 px'e genişler. İstisna: Pano bölüm anahtarı (README: 40 px) ve Ağ satırları (30 px aralık) |
 
 ---
 
@@ -111,6 +111,7 @@ lib/
   bilesenler/                  ekranlar arası ortak, tek işli parçalar
     rol_sekli.dart  hap_dugme.dart  etiket.dart  cip.dart  bolmeli_anahtar.dart
     arama_alani.dart  kicker.dart  basili_opaklik.dart  dokunma_hedefi.dart
+    etiketli_deger.dart  kesik_cizgi.dart
   ekranlar/
     kabuk.dart
     pano/        pano_durumu.dart  pano_ekrani.dart  pano_ust.dart  kisiler_bolumu.dart
@@ -189,11 +190,11 @@ Paket yok; `ChangeNotifier` + `ListenableBuilder`. Nesneler kurucu parametresiyl
 ### `EtkinlikDeposu` (`veri/etkinlik_deposu.dart`)
 | Alan / işlev | Anlamı |
 |---|---|
-| `kisiler`, `bildirimler`, `ciftler`, `acikKartlar` | sahte veri (değişmez) |
+| `kisiler`, `bildirimler`, `ciftler`, `seriRenkleri`, `acikKartlar`, `etkinlikAdi`, `tarihMekan`, `raporTarihi`, `cizelgeBaslangici`, `duyulanKartSayisi`, `kayitliKatilimci` | sahte veri (değişmez). Testlerde `bildirimler` kurucudan verilebilir (boş durum) |
 | `tick` | Sıfırla'dan bu yana geçen saniye |
 | `saatSn` | günün saniyesi; `saat` → `15:10:09`, `saatKisa` → `15:10` |
 | `esik` | −95…−35 arası tam sayı |
-| `aliciBagli` | `bool.fromEnvironment('ALICI_BAGLI', defaultValue: true)` ile kurulur |
+| `aliciBagli` | `bool.fromEnvironment('ALICI_BAGLI', defaultValue: true)` ile kurulur; testlerde kurucudan verilebilir |
 | `baslat()` / `dispose()` | 1 sn'lik `Timer.periodic` |
 | `ilerlet()` | bir saniye: `tick++`, `saatSn++` (zamanlayıcı bunu çağırır; testler doğrudan çağırır) |
 | `sifirla()` | `tick = 0` |
@@ -213,7 +214,8 @@ Alanlar: `mod` (ver / iade) · `adim` (1–3) · `seciliKisi` · `seciliKart` ·
 | `kisiSec(id)` | `seciliKisi = id`, `adim = 2`, `bulundu = null`, `numara = ''` |
 | `demoYaklastir()` | 1,4 sn sonra `bulundu = '88'`; önceki bekleyen iptal edilir |
 | `bulunanSec()` | `seciliKart = bulundu`, `adim = 3` |
-| `numaraDegis(metin)` | yalnız rakamlar tutulur |
+| `kartModuSec(mod)` | "Yaklaştır ve tanı" / "Numarayı yaz" arasında geçer |
+| `numara` (okunur) | numara alanının metni; rakam dışı her şey atılır (girdi biçimleyicisi + `yalnizRakam`) |
 | `numaraSec()` | geçerliyse `seciliKart = temiz numara`, `adim = 3` |
 | `acikKartSec(no)` | `seciliKart = no`, `adim = 3` |
 | `kisiAdiminaDon()` | `adim = 1`, `bulundu = null` |
@@ -261,18 +263,18 @@ içindedir: sekme değişince ekran durumu ve kaydırma konumu korunur.
 | `cizelgeOrani(k, tick)` | birlikteyse `min(1, (20 + gecenSn / 3) / 100)`, değilse `0` |
 | `filtreleKisiler(kisiler, filtre, arama)` | filtre: Tümü / Yatırımcı / Girişimci / Birlikte (`ile` var) / Boşta (`ile` yok ve görünür) / Görünmüyor / Hiç görüşmemiş (`hic`). Arama: `'{kurum} {gorunenAd} {id}'` içinde, `trKucuk` ile |
 | `listeBasligi(filtre)` | Tümü → `Kişiler` · Yatırımcı → `Yatırımcılar` · Girişimci → `Girişimciler` · diğerleri filtre adı |
-| `bildirimleriSuz(liste, onem)` / `onemSayilari(liste)` | önem süzme; Tümü 4 · Ciddi 1 · Uyarı 2 · Olumlu 1 |
+| `bildirimleriSuz(liste, onem)` / `onemSayisi(liste, onem)` | önem süzme; Tümü 4 · Ciddi 1 · Uyarı 2 · Olumlu 1 |
 | `masaAra(kisiler, arama)` | adı olanlar; `'{kurum} {ad} {id}'` içinde arama |
-| `numaraTemizle(s)` / `numaraGecerli(s)` | baştaki sıfırlar atılır; yalnız rakam ve 1–99 geçerli |
+| `numaraTemizle(s)` / `numaraGecerli(s)` / `yalnizRakam(s)` | baştaki sıfırlar atılır; yalnız rakam ve 1–99 geçerli; rakam dışı atılır |
 | `acikKartOner(kartlar, numara)` | boş girdi → hepsi; aksi numara ön ekiyle başlayanlar |
 | `agYerlesimi(kisiler, genislik)` | sol: yatırımcılar + birlikte olan misafirler · sağ: girişimciler · satır aralığı 30, `y(i) = 16 + 30i`, yükseklik `max(sol, sağ) × 30 + 10` · kenar: girişimcinin eşi soldaysa `(22, y(j)) → (genislik − 22, y(i))` |
 | `esikSinirla(v)` | −95…−35, tam sayı |
 | `esikUstuCiftSayisi(ciftler, esik)` | `rssi > esik` olanlar (−72'de 8) |
 | `grafikY(dbm, yukseklik)` | `(dbm + 40) / −50 × yukseklik`, `[0, yukseklik]` içine sınırlanır |
 | `sozdeRastgele(i, j)` | `frac(sin(i × 374.1 + j × 91.7) × 43758.5453)` |
-| `grafikSerileri(ciftler, tick, genislik, yukseklik)` | ilk 6 çift; her seride 31 nokta, `x = 28 + j × ((genislik − 28) / 30)`, `dBm = rssi + (sozdeRastgele(i, j + tick) − 0.5) × 8`, `y = grafikY(dBm, yukseklik)` |
+| `grafikSerileri(ciftler, renkler, tick, genislik, yukseklik)` | ilk 6 çift; her seride 31 nokta, `x = 28 + j × ((genislik − 28) / 30)`, `dBm = rssi + (sozdeRastgele(i, j + tick) − 0.5) × 8`, `y = grafikY(dBm, yukseklik)` |
 | `kartSagligi(kisiler)` | pile göre artan **kararlı** sıralama, ilk 8; `pil < 20` → sorunlu (`⚠ pil düşük`), aksi `✓ iyi` |
-| `raporKpileri(kisiler, tick)` | Görüşme = birlikte olan girişimci sayısı (not: `{n} tanesi sürüyor`) · Yatırımcı–girişimci toplam = girişimcilerin `gecenSn` toplamı (not: `bugün`) · Yatırımcıya ulaşan girişimci `{n}/{girişimci sayısı}` · Potansiyel anlaşma `0` (not: `işaretlenmedi`) · Katılımcı `25` (not: `kayıtlı`) |
+| `raporKpileri(kisiler, tick, kayitli:)` | Görüşme = birlikte olan girişimci sayısı (not: `{n} tanesi sürüyor`) · Yatırımcı–girişimci toplam = girişimcilerin `gecenSn` toplamı (not: `bugün`) · Yatırımcıya ulaşan girişimci `{n}/{girişimci sayısı}` · Potansiyel anlaşma `0` (not: `işaretlenmedi`) · Katılımcı `25` (not: `kayıtlı`) |
 | `raporSatirlari(kisiler, tick, bul)` | girişimciler, `gecenSn`'ye göre azalan **kararlı** sıra; toplam (birlikte değilse `—`); detay `{eş} ({süre})` ya da `⚠ Hiç yatırımcıyla görüşmedi` |
 
 Dart'ın `List.sort`'u kararlı olmadığı için sıralamalarda özgün sıra ikinci anahtar olarak kullanılır.
@@ -380,7 +382,7 @@ Sayfa açıkken sekmelere dokunulamaz; kısayollar sayfayı kapatıp sekmeyi de�
   Dokununca listenin üstünde onay kutusu: `Kart {id} iade alınsın mı?`,
   `{tamAd} panodan düşer; bugünkü süreleri raporda kalır.`, `Vazgeç` + `İade al`.
 - **Nabız:** 56 px alan, 2 px vurgu halka `scale .8 → 1.8`, `opacity .7 → 0`, 1,6 sn, ease-out, sonsuz;
-  ortada 24 px dolu daire.
+  ortada 24 px dolu daire. Sistemde "hareketi azalt" açıksa halka sabit durur.
 
 ### 9.5 Kurulum
 - Başlık + açıklama.
@@ -398,7 +400,7 @@ Sayfa açıkken sekmelere dokunulamaz; kısayollar sayfayı kapatıp sekmeyi de�
 - Kicker `ETKİNLİK RAPORU`, başlık, `28.09.2026 · Demo Salonu · Hazırlanma: 02.10.2026 {saatKisa}`.
 - Düğmeler (sarmalı, işlevsiz): `Yazdır / PDF` (birincil) · `⤓ Katılımcılar` · `⤓ Görüşmeler` (ikincil) ·
   `Yenile` (hayalet).
-- 5 KPI, 2 sütunlu yüzey kartları.
+- 5 KPI, 2 sütunlu yüzey kartları. Değer kartına sığmazsa (uzun süre) küçülür, alt satıra kırılmaz.
 - `Girişimciler ve ulaştıkları yatırımcılar`: 12 satır (renk karesi, kurum, `· ad`, toplam; altında detay).
 
 ---
