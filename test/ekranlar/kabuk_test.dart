@@ -12,7 +12,8 @@ import '../yardimci.dart';
 // pumpAndSettle KULLANILMAZ.
 
 const _cem = 'Nova Robotik · Cem Erdem';
-const _bantMetni = '⚠ Sunucuya bağlanılamıyor, yeniden deneniyor… son veri gösteriliyor';
+// "⚠" ekranda ikon olarak çizilir; metin ikonun ardından gelir.
+const _bantMetni = 'Sunucuya bağlanılamıyor, yeniden deneniyor… son veri gösteriliyor';
 
 Future<EtkinlikDeposu> _baslat(WidgetTester tester, {bool aliciBagli = true}) async {
   telefonBoyutu(tester);
@@ -155,12 +156,12 @@ void main() {
 
   testWidgets('alıcı kopukken bant her sekmede görünür; son veri gösterilmeye devam eder', (tester) async {
     await _baslat(tester, aliciBagli: false);
-    expect(find.text(_bantMetni), findsOneWidget);
+    expect(find.textContaining(_bantMetni), findsOneWidget);
     expect(find.text('● Alıcı yok'), findsOneWidget);
     expect(find.byType(BasiliOpaklik), findsNWidgets(12));
     await tester.tap(_sekme('Rapor'));
     await tester.pump();
-    expect(find.text(_bantMetni), findsOneWidget);
+    expect(find.textContaining(_bantMetni), findsOneWidget);
     expect(find.text('8 dk 42 sn'), findsOneWidget);
   });
 

@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../../bilesenler/kicker.dart';
+import '../../bilesenler/uyari_metni.dart';
 import '../../mantik/kurulum.dart';
 import '../../tema/renkler.dart';
 import '../../tema/yazi.dart';
@@ -30,8 +31,8 @@ class KartSagligiBolumu extends StatelessWidget {
               ),
               const TextSpan(text: ' kart duyuluyor · '),
               TextSpan(
-                text: '⚠ $sorunlu sorunlu',
                 style: const TextStyle(color: Renkler.ciddi),
+                children: uyariParcalari('⚠ $sorunlu sorunlu', boyut: 14, renk: Renkler.ciddi),
               ),
             ],
           ),
@@ -76,7 +77,7 @@ class _SaglikSatiriGorunumu extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-            Text(satir.durum, style: Yazi.olcu(13, renk: durumRengi)),
+            UyariMetni(satir.durum, stil: Yazi.olcu(13, renk: durumRengi)),
             const SizedBox(width: 10),
             SizedBox(
               width: 48,

@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../bilesenler/hap_dugme.dart';
 import '../../bilesenler/kicker.dart';
+import '../../bilesenler/uyari_metni.dart';
 import '../../mantik/kisi_gorunum.dart';
 import '../../mantik/rapor.dart';
 import '../../tema/olculer.dart';
@@ -185,9 +186,9 @@ class _RaporSatiriGorunumu extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 4),
-            Text(
+            UyariMetni(
               satir.detay,
-              style: Yazi.olcu(14, renk: satir.gorusmedi ? Renkler.ciddi : Renkler.metinKoyu2),
+              stil: Yazi.olcu(14, renk: satir.gorusmedi ? Renkler.ciddi : Renkler.metinKoyu2),
             ),
           ],
         ),

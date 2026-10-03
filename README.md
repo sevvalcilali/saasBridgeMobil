@@ -1,17 +1,56 @@
-# yakinlik_mobil
+# Yakınlık Panosu — Mobil
 
-Yakınlık Panosu — saha görevlileri için mobil uygulama.
+SaasBridge "Yakınlık Panosu"nun saha görevlileri için telefon uygulaması (Flutter, iOS + Android).
+Dört sekme: **Pano** (Kişiler · Ağ · Bildirimler), **Kart Ver / İade**, **Kurulum**, **Rapor**; artı **Kişi Detayı**.
 
-## Getting Started
+Bu sürüm sunucuya bağlanmaz: tasarım prototipindeki gömülü sahte veriyle çalışır. Onayla, Geri al ve
+İade al yalnız bant gösterir; veriyi değiştirmez.
 
-This project is a starting point for a Flutter application.
+## Çalıştırma
 
-A few resources to get you started if this is your first Flutter project:
+Gerekenler: Flutter 3.44.6 (Dart 3.12.2), iOS için Xcode, Android için Android SDK.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+```bash
+flutter pub get
+flutter run                                    # açık simülatör/emülatörde
+flutter run --dart-define=ALICI_BAGLI=false    # "alıcı kopuk" durumunu görmek için
+flutter test                                   # birim + widget testleri
+flutter analyze
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Ekran görüntülerini yeniden almak için:
+
+```bash
+flutter drive --driver=test_driver/integration_test.dart \
+  --target=integration_test/ekran_goruntuleri_test.dart -d "iPhone 17 Pro"
+```
+
+## Yapı
+
+```
+lib/
+  tema/        renk token'ları, ölçüler, yazı stilleri, ThemeData
+  veri/        modeller, sahte veri, EtkinlikDeposu (veriye tek erişim noktası)
+  mantik/      saf Dart: biçimleme, süzme, yerleşim, rapor hesapları
+  bilesenler/  ortak parçalar: hap düğme, çip, bölmeli anahtar, rol şekli…
+  ekranlar/    kabuk, pano/, kisi_detayi/, kart_ver/, kurulum/, rapor/
+test/          mantik/ ve veri/ (birim), bilesenler/ ve ekranlar/ (widget), mimari_test
+```
+
+Kurallar (`test/mimari_test.dart` denetler):
+- Renk sabiti yalnız `lib/tema/` altında yazılır.
+- `lib/mantik/` Flutter içe aktarmaz.
+- Sahte veriye yalnız `EtkinlikDeposu` erişir. Gerçek sunucuya geçiş yalnız `lib/veri/` katmanını değiştirir.
+- Yeşil yalnız "şu an birlikte" demektir.
+
+## Belgeler
+
+- Tasarım kaynağı: `docs/tasarim/` (README + HTML prototip)
+- Şartname: `docs/superpowers/specs/2026-10-03-yakinlik-mobil-design.md`
+- Uygulama planı: `docs/superpowers/plans/2026-10-03-yakinlik-mobil.md`
+- Teslim notu ve ekran görüntüleri: `docs/teslim/`
+
+## Bu sürümde olmayanlar
+
+Sunucu bağlantısı · kişi düzenleme, kalibrasyon, PDF/CSV dışa aktarma (düğmeleri görünür ama işlevsiz) ·
+koyu tema · 1b (Sade) varyantı · uygulama ikonu.

@@ -51,13 +51,13 @@ void main() {
     expect(find.text('1 dk 14 sn'), findsOneWidget);
     expect(find.text('Emre Kaya (1 dk 14 sn)'), findsOneWidget);
     expect(find.text('Veri Köprüsü · Can Yıldız'), findsOneWidget);
-    expect(find.text('⚠ Hiç yatırımcıyla görüşmedi'), findsNWidgets(2));
+    expect(find.textContaining('Hiç yatırımcıyla görüşmedi'), findsNWidgets(2));
     expect(find.text('—'), findsNWidgets(2));
   });
 
   testWidgets('görüşmemiş girişimcinin detayı ciddi renktedir', (tester) async {
     await _kur(tester);
-    final gorusmedi = tester.widget<Text>(find.text('⚠ Hiç yatırımcıyla görüşmedi').first);
+    final gorusmedi = tester.widget<Text>(find.textContaining('Hiç yatırımcıyla görüşmedi').first);
     expect(gorusmedi.style!.color, Renkler.ciddi);
     final gorustu = tester.widget<Text>(find.text('Emre Kaya (1 dk 14 sn)'));
     expect(gorustu.style!.color, Renkler.metinKoyu2);

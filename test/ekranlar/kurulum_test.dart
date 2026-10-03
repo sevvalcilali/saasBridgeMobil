@@ -50,9 +50,10 @@ void main() {
     expect(find.text('— çift seçin —'), findsOneWidget);
     expect(find.text('⌄'), findsOneWidget);
     expect(find.text('KART SAĞLIĞI'), findsOneWidget);
-    expect(find.text('32 kart duyuluyor · ⚠ 1 sorunlu'), findsOneWidget);
+    expect(find.textContaining('32 kart duyuluyor · '), findsOneWidget);
+    expect(find.textContaining('1 sorunlu'), findsOneWidget);
     expect(find.text('Mehmet Kılıç'), findsOneWidget);
-    expect(find.text('⚠ pil düşük'), findsOneWidget);
+    expect(find.textContaining('pil düşük'), findsOneWidget);
     expect(find.text('%16'), findsOneWidget);
     expect(find.text('✓ iyi'), findsNWidgets(7));
     expect(find.text('%72'), findsNWidgets(2));
@@ -133,7 +134,7 @@ void main() {
       find.ancestor(of: find.text('Mehmet Kılıç'), matching: find.byType(DecoratedBox)).first,
     );
     expect((kutu.decoration as BoxDecoration).color, Renkler.ciddiZemin);
-    expect(tester.widget<Text>(find.text('⚠ pil düşük')).style!.color, Renkler.ciddi);
+    expect(tester.widget<Text>(find.textContaining('pil düşük')).style!.color, Renkler.ciddi);
     expect(tester.widget<Text>(find.text('%16')).style!.color, Renkler.ciddi);
     // Adsız kart ikincil renkte yazılır.
     expect(tester.widget<Text>(find.text('Kart 14')).style!.color, Renkler.metin2);

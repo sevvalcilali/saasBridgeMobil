@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../bilesenler/uyari_metni.dart';
 import '../tema/olculer.dart';
 import '../tema/renkler.dart';
 import '../tema/yazi.dart';
@@ -130,8 +131,12 @@ class KopukBandi extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Text.rich(
               TextSpan(
-                text: '⚠ Sunucuya bağlanılamıyor, yeniden deneniyor… ',
                 children: [
+                  ...uyariParcalari(
+                    '⚠ Sunucuya bağlanılamıyor, yeniden deneniyor… ',
+                    boyut: 13,
+                    renk: Renkler.ciddiKoyu,
+                  ),
                   TextSpan(
                     text: 'son veri gösteriliyor',
                     style: TextStyle(color: Renkler.ciddiKoyu.withValues(alpha: 0.75)),
