@@ -10,7 +10,7 @@ import 'package:yakinlik_mobil/veri/sunucu_istemcisi.dart';
 
 import '../yardimci.dart';
 
-// Not: Kart Ver adım 2'de Nabız sonsuz animasyondur; o adım açıkken
+// Not: Kart Ver'de sonsuz animasyon yok (nabız kalktı, 07.10.2026); eskiden o adım açıkken
 // pumpAndSettle KULLANILMAZ.
 
 const _cem = 'Nova Robotik · Cem Erdem';
@@ -102,7 +102,7 @@ void main() {
     expect(find.byType(KisiDetaySayfasi), findsNothing);
     expect(_seciliSekme(tester), 1);
     expect(find.text('Kişi: $_cem'), findsOneWidget);
-    expect(find.text('Kartı alıcıya yaklaştırın…'), findsOneWidget);
+    expect(find.textContaining('Kart numarası'), findsOneWidget);
   });
 
   testWidgets('detay → Kartı iade al: Kart İadesi, kişi seçili', (tester) async {
@@ -192,23 +192,6 @@ void main() {
     final baglam = tester.element(find.byType(Kabuk));
     expect(Localizations.localeOf(baglam).languageCode, 'tr');
     expect(MaterialLocalizations.of(baglam).pasteButtonLabel, 'Yapıştır');
-  });
-
-  testWidgets('gizli sekmedeki nabız animasyonu kare istemez (pil)', (tester) async {
-    await _baslat(tester);
-    await tester.tap(_sekme('Kart Ver'));
-    await tester.pump();
-    await tester.tap(find.text(_cem));
-    await tester.pump();
-    expect(find.text('Kartı alıcıya yaklaştırın…'), findsOneWidget);
-    await tester.tap(_sekme('Pano'));
-    await tester.pump(const Duration(seconds: 1));
-    await tester.pump(const Duration(seconds: 1));
-    expect(tester.binding.hasScheduledFrame, isFalse);
-    // Sekmeye dönünce nabız yeniden atar.
-    await tester.tap(_sekme('Kart Ver'));
-    await tester.pump(const Duration(seconds: 1));
-    expect(tester.binding.hasScheduledFrame, isTrue);
   });
 
   testWidgets('arka plana geçince saat durur, dönünce kaldığı yerden sürer (şartname §10)', (tester) async {

@@ -52,7 +52,7 @@ class SunucuDurumu {
   /// Kart no 100 ve üstü dinleyici cihazdır, kişi değildir.
   static bool kisiKartiMi(String id) => (int.tryParse(id) ?? 1000) < 100;
 
-  static SunucuDurumu ayristir(Map<String, dynamic> ham, {Map<String, int> piller = const {}}) {
+  static SunucuDurumu ayristir(Map<String, dynamic> ham) {
     final canli = (ham['live'] as List? ?? const []).cast<Map<String, dynamic>>();
     final es = <String, String>{};
     for (final c in canli) {
@@ -63,7 +63,7 @@ class SunucuDurumu {
     }
     final kisiler = <Kisi>[
       for (final k in (ham['people'] as List? ?? const []).cast<Map<String, dynamic>>())
-        if (kisiKartiMi(k['id'] as String)) _kisi(k, es, piller),
+        if (kisiKartiMi(k['id'] as String)) _kisi(k, es),
     ];
     final bildirimler = <Bildirim>[
       for (final b in (ham['alerts'] as List? ?? const []).cast<Map<String, dynamic>>()) _bildirim(b),
@@ -105,7 +105,7 @@ class SunucuDurumu {
     );
   }
 
-  static Kisi _kisi(Map<String, dynamic> k, Map<String, String> es, Map<String, int> piller) {
+  static Kisi _kisi(Map<String, dynamic> k, Map<String, String> es) {
     final id = k['id'] as String;
     final ad = k['name'] as String? ?? '';
     final kurum = k['org'] as String? ?? '';
@@ -120,7 +120,6 @@ class SunucuDurumu {
       kurum: kurum.isEmpty ? null : kurum,
       rol: _rol(k['role'] as String?),
       renk: sunucuRengi(k['color'] as String?),
-      pil: piller[id],
       ile: goruyor ? es[id] : null,
       sn: ((goruyor ? canliDk : toplamDk) * 60).round(),
       yildiz: (k['tier'] as num?)?.toInt() ?? 0,

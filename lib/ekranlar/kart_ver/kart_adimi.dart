@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 
 import '../../bilesenler/arama_alani.dart';
-import '../../bilesenler/bolmeli_anahtar.dart';
 import '../../bilesenler/hap_dugme.dart';
 import '../../bilesenler/kicker.dart';
 import '../../mantik/kart_no.dart';
@@ -11,9 +10,9 @@ import '../../tema/yazi.dart';
 import '../../veri/etkinlik_deposu.dart';
 import '../../veri/modeller.dart';
 import 'kart_ver_durumu.dart';
-import 'nabiz.dart';
 
-/// Adım 2 — Kart: "Yaklaştır ve tanı" ya da "Numarayı yaz".
+/// Adım 2 — Kart: kartın üstündeki numara yazılır; şu an açık kartlar önerilir (yalnız numara; "yaklaştır ve tanı"
+/// yok, Şevval kararı 07.10.2026).
 class KartAdimi extends StatelessWidget {
   const KartAdimi({super.key, required this.depo, required this.durum});
 
@@ -23,7 +22,6 @@ class KartAdimi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final kisi = durum.kisi;
-    final numaraModu = durum.kartModu == KartSecimModu.numara;
     return Padding(
       padding: const EdgeInsets.fromLTRB(Olculer.sayfaKenari, 16, Olculer.sayfaKenari, 0),
       child: Column(
@@ -42,102 +40,17 @@ class KartAdimi extends StatelessWidget {
             style: Yazi.olcu(14, renk: Renkler.metin2),
           ),
           const SizedBox(height: 14),
-          BolmeliAnahtar<KartSecimModu>(
-            ekPunto: 11,
-            araCizgi: true,
-            secenekler: const [
-              BolmeSecenegi(deger: KartSecimModu.yaklastir, etiket: 'Yaklaştır ve tanı', ek: 'önerilen'),
-              BolmeSecenegi(deger: KartSecimModu.numara, etiket: 'Numarayı yaz'),
-            ],
-            secili: durum.kartModu,
-            onSecildi: durum.kartModuSec,
-          ),
-          const SizedBox(height: 14),
-          if (numaraModu)
-            _NumaraGirisi(depo: depo, durum: durum)
-          else if (durum.bulundu case final kart?)
-            _Bulundu(kart: kart, onSec: durum.bulunanSec)
-          else
-            _Bekleme(onDemo: depo.demo ? durum.demoYaklastir : null, uyari: durum.yaklastirmaUyarisi),
+          _NumaraGirisi(depo: depo, durum: durum),
           // 14 px bölüm aralığı + 6 px üst boşluk.
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               HapDugme(etiket: '← Kişi', onTap: durum.kisiAdiminaDon),
-              // Yalnız "Numarayı yaz" modunda ve numara geçerliyken (S13).
-              if (numaraModu && durum.numaraSecilebilir)
+              // Yalnız numara geçerliyken (1–99).
+              if (durum.numaraSecilebilir)
                 HapDugme(etiket: 'Bu kartı seç', tur: HapTuru.birincil, onTap: durum.numaraSec),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Kart bekleniyor: nabız; sahte veride demo düğmesi, gerçek sunucuda alıcı bekleniyor (uyarı: iki kart yakın).
-class _Bekleme extends StatelessWidget {
-  const _Bekleme({required this.onDemo, this.uyari});
-
-  final VoidCallback? onDemo;
-  final String? uyari;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      // Demo düğmesinin görseli 40 px, dokunma alanı 44 px: üstündeki 18 px ve
-      // altındaki 16 px boşluğun 2'şer pikseli dokunma alanının içindedir.
-      padding: const EdgeInsets.only(top: 28, bottom: 14),
-      child: Column(
-        children: [
-          const Nabiz(),
-          const SizedBox(height: 18),
-          Text('Kartı alıcıya yaklaştırın…', textAlign: TextAlign.center, style: Yazi.olcu(16)),
-          if (uyari case final u?) ...[
-            const SizedBox(height: 8),
-            Text(u, textAlign: TextAlign.center, style: Yazi.olcu(14, renk: Renkler.uyari)),
-          ],
-          const SizedBox(height: 16),
-          if (onDemo case final demo?) HapDugme(etiket: 'Demo: boş bir kartı yaklaştır', yukseklik: 40, onTap: demo),
-        ],
-      ),
-    );
-  }
-}
-
-/// Kart bulundu: numara + seç düğmesi.
-class _Bulundu extends StatelessWidget {
-  const _Bulundu({required this.kart, required this.onSec});
-
-  final String kart;
-  final VoidCallback onSec;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 24, bottom: 8),
-      child: Column(
-        children: [
-          Text(
-            'Kart $kart bulundu ✓',
-            textAlign: TextAlign.center,
-            style: Yazi.olcu(28, agirlik: FontWeight.w600, satir: 1),
-          ),
-          const SizedBox(height: 14),
-          Text(
-            'Açık · az önce duyuldu · boşta',
-            textAlign: TextAlign.center,
-            style: Yazi.olcu(14, renk: Renkler.metin2),
-          ),
-          const SizedBox(height: 14),
-          HapDugme(
-            etiket: 'Bu kartı seç',
-            tur: HapTuru.birincil,
-            yukseklik: 48,
-            punto: 16,
-            yatayBosluk: 28,
-            onTap: onSec,
           ),
         ],
       ),
@@ -162,6 +75,7 @@ class _NumaraGirisi extends StatelessWidget {
         AramaAlani(
           ipucu: 'Örn. 14',
           denetleyici: durum.numaraDenetleyici,
+          onGonder: (_) => durum.numaraSec(), // klavyede "Bitti": geçerliyse 3. adım
           yukseklik: 52,
           punto: 24,
           agirlik: FontWeight.w600,

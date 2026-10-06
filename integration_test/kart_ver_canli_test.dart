@@ -8,7 +8,7 @@ import 'package:yakinlik_mobil/bilesenler/rol_sekli.dart';
 import 'package:yakinlik_mobil/ekranlar/kart_ver/kart_ver_ekrani.dart';
 import 'package:yakinlik_mobil/uygulama.dart';
 
-/// Gerçek sunucuda kart verme (M1b): ilk kayıtlı kişiye boş bir kart verilir ("Numarayı yaz"), bant görünür,
+/// Gerçek sunucuda kart verme (M1b): ilk kayıtlı kişiye boş bir kart verilir (numara yazılarak), bant görünür,
 /// "Geri al" ile kaldırılır; sonda kişinin eski kartı sunucuya geri yazılır (deneme verisi bozulmasın).
 ///   flutter drive --driver=test_driver/integration_test.dart --target=integration_test/kart_ver_canli_test.dart \
 ///     -d "iPhone 17 Pro" --dart-define=SUNUCU=http://127.0.0.1:8002
@@ -51,9 +51,7 @@ void main() {
     await bekle(() => find.text('Düzenle').evaluate().isNotEmpty);
     // İlk kişi kartına dokun (rol şekli dokunma alanının içinde).
     await tester.tap(find.descendant(of: find.byType(KartVerEkrani), matching: find.byType(RolSekli)).first);
-    await bekle(() => find.text('Numarayı yaz').evaluate().isNotEmpty);
-    await tester.tap(find.text('Numarayı yaz'));
-    await bekle(() => find.text('Bu kartı seç').evaluate().isNotEmpty || find.byType(TextField).evaluate().isNotEmpty);
+    await bekle(() => find.byType(TextField).evaluate().isNotEmpty);
     await tester.enterText(find.byType(TextField).last, bosKart);
     await bekle(() => find.text('Bu kartı seç').evaluate().isNotEmpty);
     await tester.tap(find.text('Bu kartı seç'));

@@ -14,6 +14,7 @@ class AramaAlani extends StatelessWidget {
     required this.ipucu,
     this.denetleyici,
     this.onDegisti,
+    this.onGonder,
     this.yukseklik = 44,
     this.punto = 15,
     this.agirlik = FontWeight.w400,
@@ -25,6 +26,9 @@ class AramaAlani extends StatelessWidget {
   final String ipucu;
   final TextEditingController? denetleyici;
   final ValueChanged<String>? onDegisti;
+
+  /// Klavyede "Bitti / Ara" (Enter) basılınca.
+  final ValueChanged<String>? onGonder;
 
   /// En az yükseklik.
   final double yukseklik;
@@ -49,6 +53,7 @@ class AramaAlani extends StatelessWidget {
     return TextField(
       controller: denetleyici,
       onChanged: onDegisti,
+      onSubmitted: onGonder,
       onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       keyboardType: rakam ? TextInputType.number : (klavye ?? TextInputType.text),
       textInputAction: rakam ? TextInputAction.done : TextInputAction.search,

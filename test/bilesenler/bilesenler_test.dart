@@ -302,9 +302,9 @@ void main() {
 
   group('EtiketliDeger', () {
     testWidgets('etiket ve değer', (tester) async {
-      await tester.pumpWidget(temali(const Center(child: EtiketliDeger(etiket: 'Pil', deger: '%94'))));
-      expect(find.text('Pil'), findsOneWidget);
-      expect(find.text('%94'), findsOneWidget);
+      await tester.pumpWidget(temali(const Center(child: EtiketliDeger(etiket: 'Durum', deger: 'Açık'))));
+      expect(find.text('Durum'), findsOneWidget);
+      expect(find.text('Açık'), findsOneWidget);
     });
   });
 

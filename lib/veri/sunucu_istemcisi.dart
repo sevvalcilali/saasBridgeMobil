@@ -84,7 +84,7 @@ class SunucuIstemcisi {
   Future<List<Map<String, dynamic>>> kisiler() async =>
       ((await _json(await _istek('GET', '/api/people'))) as List).cast<Map<String, dynamic>>();
 
-  /// Alıcının duyduğu kartlar (`/api/cards`): pil, boştaki kartlar.
+  /// Alıcının duyduğu kartlar (`/api/cards`): son duyulma, boştaki kartlar.
   Future<List<Map<String, dynamic>>> kartlar() async =>
       ((await _json(await _istek('GET', '/api/cards'))) as List).cast<Map<String, dynamic>>();
 

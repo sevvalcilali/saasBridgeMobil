@@ -7,7 +7,8 @@ import '../../tema/renkler.dart';
 import '../../tema/yazi.dart';
 import '../../veri/etkinlik_deposu.dart';
 
-/// KART SAĞLIĞI: en düşük pilli 8 kart; pili düşük olan satır vurgulanır.
+/// KART SAĞLIĞI: alıcının bildiği kartlar, son duyulmaya göre; duyulmayan / görünmeyen kart üstte ve vurgulu.
+/// Pil gösterilmez (Şevval kararı 07.10.2026).
 class KartSagligiBolumu extends StatelessWidget {
   const KartSagligiBolumu({super.key, required this.depo});
 
@@ -17,8 +18,8 @@ class KartSagligiBolumu extends StatelessWidget {
   Widget build(BuildContext context) {
     // Gerçek sunucuda alıcının bildiği tüm kartlar (/api/cards, sessiz ve kayıplar dahil); sahte veride kişiler.
     final kartKisi = {for (final k in depo.katilimcilar) if (k.atananKart != null) k.atananKart!: k.kurum ?? k.ad};
-    final satirlar = depo.demo ? kartSagligi(depo.kisiler) : kartSagligiKartlardan(depo.tumKartlar, kartKisi);
-    final sorunlu = depo.demo ? sorunluKartSayisi(depo.kisiler) : sorunluKartSayisiKartlardan(depo.tumKartlar);
+    final satirlar = kartSagligi(depo.tumKartlar, kartKisi);
+    final sorunlu = sorunluKartSayisi(depo.tumKartlar);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -47,7 +48,7 @@ class KartSagligiBolumu extends StatelessWidget {
   }
 }
 
-/// Sütunlar: kart no (40) · kişi/kurum (esnek) · durum · pil (48, sağa yaslı).
+/// Sütunlar: kart no (40) · kişi/kurum (esnek) · durum · son duyulma (sağa yaslı).
 class _SaglikSatiriGorunumu extends StatelessWidget {
   const _SaglikSatiriGorunumu({required this.satir});
 
@@ -82,11 +83,11 @@ class _SaglikSatiriGorunumu extends StatelessWidget {
             UyariMetni(satir.durum, stil: Yazi.olcu(13, renk: durumRengi)),
             const SizedBox(width: 10),
             SizedBox(
-              width: 48,
+              width: 76,
               child: Text(
-                satir.pilYazisi,
+                satir.duyulma,
                 textAlign: TextAlign.right,
-                style: Yazi.olcu(14, renk: durumRengi, rakam: true),
+                style: Yazi.olcu(13, renk: durumRengi, rakam: true),
               ),
             ),
           ],

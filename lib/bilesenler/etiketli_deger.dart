@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import '../tema/renkler.dart';
 import '../tema/yazi.dart';
 
-/// Küçük etiket ve altında değeri (tanım listesi öğesi): "Pil" / "%94".
+/// Küçük etiket ve altında değeri (tanım listesi öğesi): "Durum" / "Açık".
 class EtiketliDeger extends StatelessWidget {
   const EtiketliDeger({super.key, required this.etiket, required this.deger, this.stil});
 
