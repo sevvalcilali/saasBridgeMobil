@@ -48,9 +48,13 @@ Kurallar (`test/mimari_test.dart` denetler):
 - Tasarım kaynağı: `docs/tasarim/` (README + HTML prototip)
 - Şartname: `docs/superpowers/specs/2026-10-03-yakinlik-mobil-design.md`
 - Uygulama planı: `docs/superpowers/plans/2026-10-03-yakinlik-mobil.md`
+- Sunucuya bağlanma ve web ile eşitleme planı (06.10.2026): `docs/superpowers/plans/2026-10-06-web-esitleme-plani.md`
 - Teslim notu ve ekran görüntüleri: `docs/teslim/`
 
 ## Bu sürümde olmayanlar
+
+Web 3 Ekim'den sonra değişti; mobilde henüz yok: salon görünümü (figürler), uyarı kuralları ve açılır uyarı,
+kişi profili ve kişiye özel rapor, "boşta · N dk", Pil kaldırılması. Sırası ve kapsamı eşitleme planında.
 
 Sunucu bağlantısı · kişi düzenleme, kalibrasyon, PDF/CSV dışa aktarma (düğmeleri görünür ama işlevsiz) ·
 koyu tema · 1b (Sade) varyantı · uygulama ikonu.
