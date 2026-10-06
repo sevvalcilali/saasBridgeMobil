@@ -4,8 +4,8 @@ enum Rol { yatirimci, girisimci, misafir }
 /// Kişi paleti adları. Renk değerleri tema/renkler.dart'tadır.
 enum KisiRengi { mavi, turuncu, hardal, pembe, mor, mercan, petrol, gri }
 
-/// Bildirim önemi.
-enum Onem { ciddi, uyari, olumlu }
+/// Bildirim önemi. `kural`: organizatörün uyarı kuralı tetiklendi (Pano'da açılır uyarı).
+enum Onem { ciddi, uyari, olumlu, kural }
 
 /// Durum yazısının anlamsal tonu; rengini tema eşler (mantık renk bilmez).
 enum DurumTonu { birlikte, uyari, ikincil, ciddi }
@@ -60,6 +60,7 @@ class Bildirim {
     required this.saat,
     required this.onem,
     required this.kisiler,
+    this.t = 0,
   });
 
   final String baslik;
@@ -69,6 +70,18 @@ class Bildirim {
 
   /// İlgili kişilerin kart numaraları; satıra dokununca ilki açılır.
   final List<String> kisiler;
+
+  /// Sunucu zamanı (saniye); açılır uyarının kimliği ve "son 2 dakika" için.
+  final double t;
+}
+
+/// Bir çiftin bugünkü toplam görüşme süresi (sunucunun `edges`'i).
+class GunBoyuCift {
+  const GunBoyuCift(this.a, this.b, this.sn);
+
+  final String a;
+  final String b;
+  final int sn;
 }
 
 /// Sinyali ölçülen kart çifti (dBm).

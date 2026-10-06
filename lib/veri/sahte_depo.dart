@@ -65,6 +65,14 @@ class SahteDepo extends EtkinlikDeposu {
   @override
   Kisi bul(String id) => kisiler.firstWhere((k) => k.id == id);
 
+  /// Sahte veride yalnız şu anki eş bilinir.
+  @override
+  List<({Kisi kisi, int sn})> gunBoyu(String id) {
+    final k = bul(id);
+    final ile = k.ile;
+    return ile == null ? const [] : [(kisi: bul(ile), sn: k.sn + _tick)];
+  }
+
   @override
   void baslat() {
     _zamanlayici ??= Timer.periodic(const Duration(seconds: 1), (_) => ilerlet());

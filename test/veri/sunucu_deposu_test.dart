@@ -12,7 +12,7 @@ const _durum =
     '"live":[{"a":"2","b":"3"}],"alerts":[{"t":1,"clock":"09:59","kind":"deal","severity":"deal","title":"Anlaşma","detail":"x","people":["2","3"]}],'
     '"people":[{"id":"2","role":"investor","name":"Ayşe","org":"","color":"#3987e5","tier":4,"status":"talking","live":1.5,"min":9},'
     '{"id":"3","role":"founder","name":"Ali","org":"Nova","color":"#d95926","tier":0,"status":"talking","live":1.5,"min":9}],'
-    '"signals":[{"a":"2","b":"3","value":-60.2}]}';
+    '"signals":[{"a":"2","b":"3","value":-60.2}],"edges":[{"a":"2","b":"3","min":9},{"a":"2","b":"7","min":2}]}';
 
 void main() {
   HttpOverrides.global = null;
@@ -113,5 +113,15 @@ void main() {
     final d = depo();
     expect(d.bul('77').id, '77');
     expect(d.bul('77').ad, isNull);
+  });
+
+  test('gunBoyu: kişinin bugün görüştükleri, en uzun önce; tanımadığı kart adsız kişi', () async {
+    final d = depo();
+    d.baslat();
+    await bekle(() => d.sunucuBagli && d.kisiler.isNotEmpty);
+    final liste = d.gunBoyu('2');
+    expect(liste.map((x) => (x.kisi.id, x.sn)).toList(), [('3', 540), ('7', 120)]);
+    expect(liste.last.kisi.ad, isNull);
+    expect(d.gunBoyu('9'), isEmpty);
   });
 }

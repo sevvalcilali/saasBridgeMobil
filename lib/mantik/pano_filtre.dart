@@ -53,13 +53,14 @@ String listeBasligi(PanoFiltre f) => switch (f) {
 };
 
 /// Önem çiplerinin sırası; `null` = Tümü.
-const List<Onem?> onemSirasi = [null, Onem.ciddi, Onem.uyari, Onem.olumlu];
+const List<Onem?> onemSirasi = [null, Onem.ciddi, Onem.uyari, Onem.olumlu, Onem.kural];
 
 String onemEtiketi(Onem? onem) => switch (onem) {
   null => 'Tümü',
   Onem.ciddi => 'Ciddi',
   Onem.uyari => 'Uyarı',
   Onem.olumlu => 'Olumlu',
+  Onem.kural => 'Kural',
 };
 
 List<Bildirim> bildirimleriSuz(List<Bildirim> liste, Onem? onem) {

@@ -98,6 +98,15 @@ class SunucuDeposu extends EtkinlikDeposu {
   );
 
   @override
+  List<({Kisi kisi, int sn})> gunBoyu(String id) {
+    final liste = [
+      for (final c in _durum?.gunBoyu ?? const <GunBoyuCift>[])
+        if (c.a == id) (kisi: bul(c.b), sn: c.sn) else if (c.b == id) (kisi: bul(c.a), sn: c.sn),
+    ]..sort((x, y) => y.sn.compareTo(x.sn));
+    return liste;
+  }
+
+  @override
   void baslat() {
     if (_abonelik != null) return;
     _istemci.durumAl().then(_durumAyarla, onError: (_) {});
