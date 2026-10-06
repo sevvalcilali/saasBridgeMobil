@@ -71,7 +71,7 @@ class SunucuDurumu {
     final ciftler = <Cift>[
       for (final s in (ham['signals'] as List? ?? const []).cast<Map<String, dynamic>>())
         if (kisiKartiMi(s['a'] as String) && kisiKartiMi(s['b'] as String))
-          Cift(s['a'] as String, s['b'] as String, (s['value'] as num).round()),
+          Cift(s['a'] as String, s['b'] as String, (s['value'] as num).round(), ham: (s['value'] as num).toDouble()),
     ];
     final etkinlik = (ham['event'] as Map?)?.cast<String, dynamic>() ?? const {};
     final alici = ham['receiverAge'] as num?;

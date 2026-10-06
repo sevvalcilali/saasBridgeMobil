@@ -18,9 +18,9 @@ typedef MetinPaylasici = Future<void> Function(String metin);
 
 Future<void> sistemMetinPaylasimi(String metin) => SharePlus.instance.share(ShareParams(text: metin));
 
-Future<void> kisiRaporuGoster(BuildContext context, {required EtkinlikDeposu depo, required String kisiId, required List<Oturum> oturumlar}) {
+Future<void> kisiRaporuGoster(BuildContext context, {required EtkinlikDeposu depo, required String kisiId, required List<Oturum> oturumlar, required double simdi}) {
   return Navigator.of(context).push<void>(
-    MaterialPageRoute(builder: (_) => KisiRaporuSayfasi(depo: depo, kisiId: kisiId, oturumlar: oturumlar)),
+    MaterialPageRoute(builder: (_) => KisiRaporuSayfasi(depo: depo, kisiId: kisiId, oturumlar: oturumlar, simdi: simdi)),
   );
 }
 
@@ -28,11 +28,14 @@ Future<void> kisiRaporuGoster(BuildContext context, {required EtkinlikDeposu dep
 /// görüşmeleri; karşı tarafın iletişim bilgisi yalnız paylaşım izni varsa. Dil dürüst: kartlar konuşmayı değil
 /// yakınlığı ölçer → "birlikte geçen süre". "Paylaş" metin özetini sistem paylaşım sayfasına verir.
 class KisiRaporuSayfasi extends StatelessWidget {
-  const KisiRaporuSayfasi({super.key, required this.depo, required this.kisiId, required this.oturumlar, this.paylas = sistemMetinPaylasimi});
+  const KisiRaporuSayfasi({super.key, required this.depo, required this.kisiId, required this.oturumlar, required this.simdi, this.paylas = sistemMetinPaylasimi});
 
   final EtkinlikDeposu depo;
   final String kisiId;
   final List<Oturum> oturumlar;
+
+  /// Kayıtların alındığı an (rapor anlık görüntüsü).
+  final double simdi;
   final MetinPaylasici paylas;
 
   static const _karsi = {
@@ -42,7 +45,7 @@ class KisiRaporuSayfasi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final r = kisiRaporu(kisiId, depo.katilimcilar, oturumlar, depo.gecenSn);
+    final r = kisiRaporu(kisiId, depo.katilimcilar, oturumlar, simdi);
     final k = r.kisi;
     final m = _karsi[k.rol];
     return Scaffold(
@@ -150,7 +153,7 @@ class _EsSatiri extends StatelessWidget {
     final iletisim = k.paylasim ? [k.web, k.eposta].where((x) => x.isNotEmpty).join(' · ') : '';
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Renkler.ayrac))),
+      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Renkler.ayrac))),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

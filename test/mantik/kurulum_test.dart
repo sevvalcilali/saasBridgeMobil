@@ -102,4 +102,20 @@ void main() {
     expect(ilk.last.y, closeTo(grafikY(-58, 150), 1e-9));
     expect(seriler.last.noktalar, hasLength(1)); // geçmiş yok: yalnız şimdiki değer
   });
+
+  test('kart sağlığı (kartlardan): kayıp > sessiz > pil düşük önce, gerisi kart no; web ölçütleri', () {
+    const kartlar = [
+      AcikKart('5', seenAgo: 1, pil: 80),
+      AcikKart('3', seenAgo: 40, pil: 90), // görünmüyor (> 30 sn)
+      AcikKart('9', seenAgo: 2, pil: 12), // pil düşük
+      AcikKart('7', seenAgo: 75, pil: 60), // duyulmuyor (≥ 60 sn)
+      AcikKart('1', seenAgo: 0, pil: null),
+    ];
+    final satirlar = kartSagligiKartlardan(kartlar, {'5': 'Nova'});
+    expect(satirlar.map((s) => (s.kart, s.durum)).toList(), [
+      ('7', '⚠ duyulmuyor'), ('3', '◌ görünmüyor'), ('9', '⚠ pil düşük'), ('1', '✓ iyi'), ('5', '✓ iyi'),
+    ]);
+    expect(sorunluKartSayisiKartlardan(kartlar), 3);
+    expect(satirlar.last.kisi, 'Nova');
+  });
 }

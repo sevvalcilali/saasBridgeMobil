@@ -91,9 +91,17 @@ void main() {
       expect(dolgu(), Renkler.vurgu);
     });
 
+    testWidgets('birincil düğmeye zemin verilirse o renkle dolar (ör. kırmızı Sil)', (tester) async {
+      await tester.pumpWidget(
+        temali(Center(child: HapDugme(etiket: 'Sil', tur: HapTuru.birincil, zemin: Renkler.ciddi, onTap: islevsiz))),
+      );
+      final susleme = tester.widget<DecoratedBox>(dolguKutusu()).decoration as BoxDecoration;
+      expect(susleme.color, Renkler.ciddi);
+    });
+
     testWidgets('ikincil düğme kenarlıklıdır; zemin verilebilir', (tester) async {
       await tester.pumpWidget(
-        temali(const Center(child: HapDugme(etiket: '↶ Geri al', zemin: Renkler.zemin, onTap: islevsiz))),
+        temali(Center(child: HapDugme(etiket: '↶ Geri al', zemin: Renkler.zemin, onTap: islevsiz))),
       );
       final susleme = tester.widget<DecoratedBox>(dolguKutusu()).decoration as BoxDecoration;
       expect(susleme.color, Renkler.zemin);
@@ -152,7 +160,7 @@ void main() {
     testWidgets('sayı etiketin yanında; seçili renk değiştirilebilir', (tester) async {
       await tester.pumpWidget(
         temali(
-          const Center(
+          Center(
             child: Cip(etiket: 'Ciddi', sayi: '1', secili: true, seciliRenk: Renkler.metin, onTap: islevsiz),
           ),
         ),

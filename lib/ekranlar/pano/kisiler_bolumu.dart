@@ -106,7 +106,7 @@ class _KisiSatiri extends StatelessWidget {
                         if (alt.isNotEmpty)
                           TextSpan(
                             text: ' $alt',
-                            style: const TextStyle(fontWeight: FontWeight.w400, color: Renkler.metin2),
+                            style: TextStyle(fontWeight: FontWeight.w400, color: Renkler.metin2),
                           ),
                       ],
                     ),

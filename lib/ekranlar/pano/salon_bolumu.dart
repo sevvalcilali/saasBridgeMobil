@@ -44,7 +44,7 @@ class _SalonBolumuState extends State<SalonBolumu> {
         children: [
           // Zemin sade: figürlerin arkası koyulaşmaz (Şevval 06.10.2026).
           DecoratedBox(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               borderRadius: Olculer.koseYaricap,
               color: Renkler.yuzey,
               border: Border.fromBorderSide(BorderSide(color: Renkler.ayrac)),
@@ -74,7 +74,7 @@ class _SalonBolumuState extends State<SalonBolumu> {
                       ],
                     ),
                   const SizedBox(height: 10),
-                  const Divider(height: 1, color: Renkler.ayrac),
+                  Divider(height: 1, color: Renkler.ayrac),
                   const SizedBox(height: 8),
                   Row(
                     children: [

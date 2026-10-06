@@ -21,7 +21,7 @@ void main() {
     s = await SahteSunucu.ac(durum: _durum);
     s.akisMesajlari = null; // akış açık kalır; mesajlar yayinla ile gelir
     s.kartlarYaniti = '[{"kart":"2","rssiAlici":-60,"seenAgo":0.5,"atanan":"k1","pil":35},{"kart":"9","rssiAlici":-70,"seenAgo":1,"atanan":null,"pil":80},'
-        '{"kart":"101","rssiAlici":-40,"seenAgo":0.2,"atanan":null,"pil":90}]';
+        '{"kart":"101","rssiAlici":-40,"seenAgo":0.2,"atanan":null,"pil":90},{"kart":"12","rssiAlici":-90,"seenAgo":75,"atanan":"k2","pil":50}]';
     s.kisilerYaniti = '[{"kisiId":"k1","ad":"Ayşe Demir","rol":"investor","kurum":"Atlas","yildiz":4,"renk":"#3987e5","atananKart":"2","ayrildi":false},'
         '{"kisiId":"k2","ad":"Ali Kaya","rol":"founder","kurum":"","yildiz":0,"renk":"#d95926","atananKart":null,"ayrildi":false},'
         '{"kisiId":"k3","ad":"Gitti","rol":"guest","kurum":"","yildiz":0,"renk":"#898781","atananKart":null,"ayrildi":true}]';
@@ -233,5 +233,40 @@ void main() {
     final o = await d.oturumlar();
     expect(o.map((x) => (x.a, x.b, x.start, x.end)).toList(), [('k1', 'k2', 10.5, 70.0), ('k1', 'kart:14', 80.0, null)]);
     expect(d.gecenSn, 65);
+  });
+
+  test('tumKartlar: sessiz ve kayıp kartlar da (kart sağlığı); duyulan sayısı yalnız 30 sn içinde duyulanlar', () async {
+    final d = depo();
+    d.baslat();
+    await bekle(() => d.sunucuBagli && d.tumKartlar.isNotEmpty);
+    expect(d.tumKartlar.map((k) => k.no).toList(), ['2', '9', '12']); // 101 dinleyici atılır
+    expect(d.acikKartlar.map((k) => k.no).toList(), ['2', '9']); // ≤ 8 sn
+    expect(d.duyulanKartSayisi, 2);
+  });
+
+  test('arka plandan dönünce (durdur → baslat) grafik isteği sürer', () async {
+    s.durum = _durum.replaceFirst('"signals"', '"history":{"2-3":[[90,-60.0],[0,-58.0]]},"chartSeconds":90,"signals"');
+    final d = SunucuDeposu(SunucuIstemcisi(s.adres, bekleme: (_) => const Duration(milliseconds: 10)),
+        yoklamaAraligi: const Duration(milliseconds: 60), grafikAraligi: const Duration(milliseconds: 60));
+    addTearDown(d.dispose);
+    d.baslat();
+    await bekle(() => d.sunucuBagli);
+    d.grafikIste(true);
+    d.durdur();
+    final once = s.istekler.where((i) => i == 'GET /state?grafik=1').length;
+    d.baslat();
+    await bekle(() => s.istekler.where((i) => i == 'GET /state?grafik=1').length > once + 1);
+    expect(s.istekler.where((i) => i == 'GET /state?grafik=1').length, greaterThan(once + 1));
+  });
+
+  test('grafik yoklaması sürerken depo kapanırsa kapanmış depoya bildirim gitmez', () async {
+    final d = SunucuDeposu(SunucuIstemcisi(s.adres, bekleme: (_) => const Duration(milliseconds: 10)),
+        yoklamaAraligi: const Duration(milliseconds: 30), grafikAraligi: const Duration(milliseconds: 30));
+    d.baslat();
+    await bekle(() => d.sunucuBagli);
+    d.grafikIste(true);
+    await Future<void>.delayed(const Duration(milliseconds: 5)); // istek yolda
+    d.dispose();
+    await Future<void>.delayed(const Duration(milliseconds: 1500)); // erteleme süresi dolsun: hata fırlatılmamalı
   });
 }

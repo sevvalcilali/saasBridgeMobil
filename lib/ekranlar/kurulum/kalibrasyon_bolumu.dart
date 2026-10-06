@@ -37,6 +37,13 @@ class _KalibrasyonBolumuState extends State<KalibrasyonBolumu> {
   String? _uygulama;
 
   @override
+  void didUpdateWidget(KalibrasyonBolumu eski) {
+    super.didUpdateWidget(eski);
+    // Sunucu değişince eski çift ve ölçümler (ör. sahte veri Demo'su) yeni sunucuya eşik göndermesin.
+    if (eski.depo != widget.depo) _cifteGec(null);
+  }
+
+  @override
   void dispose() {
     _sayac?.cancel();
     super.dispose();
@@ -82,7 +89,7 @@ class _KalibrasyonBolumuState extends State<KalibrasyonBolumu> {
         return;
       }
       t.cancel();
-      final deger = _secili?.rssi.toDouble();
+      final deger = _secili?.dbm;
       setState(() {
         _olcuyor = null;
         if (adim == 0) {
@@ -180,7 +187,7 @@ class _KalibrasyonBolumuState extends State<KalibrasyonBolumu> {
           if (oneri != null) ...[
             const SizedBox(height: 8),
             DecoratedBox(
-              decoration: const BoxDecoration(color: Renkler.vurguZemin, borderRadius: Olculer.koseYaricap),
+              decoration: BoxDecoration(color: Renkler.vurguZemin, borderRadius: Olculer.koseYaricap),
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Column(

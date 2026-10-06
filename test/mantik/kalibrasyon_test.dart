@@ -26,4 +26,8 @@ void main() {
     expect(kalanSaniye(0, 10000), 0);
     expect(kalanSaniye(0, 12000), 0);
   });
+
+  test('önerilen eşik web (JS Math.round) gibi yuvarlanır: −68,5 → −68', () {
+    expect(onerilenEsik(-58, -79)!.deger, -68);
+  });
 }

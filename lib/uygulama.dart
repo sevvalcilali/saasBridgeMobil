@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'ekranlar/kabuk.dart';
+import 'tema/renkler.dart';
 import 'tema/tema.dart';
 import 'veri/etkinlik_deposu.dart';
 
@@ -18,10 +19,13 @@ class YakinlikUygulamasi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    // Koyu tema açılıp kapanınca (Kabuk → Renkler.koyu) bütün ağaç yeni paletle kurulur.
+    return ValueListenableBuilder<bool>(
+      valueListenable: Renkler.koyuBildirici,
+      builder: (context, koyu, _) => MaterialApp(
       title: 'Yakınlık Panosu',
       debugShowCheckedModeBanner: false,
-      theme: yakinlikTemasi(),
+      theme: yakinlikTemasi(koyu: koyu),
       themeMode: ThemeMode.light,
       locale: const Locale('tr'),
       supportedLocales: const [Locale('tr')],
@@ -32,6 +36,7 @@ class YakinlikUygulamasi extends StatelessWidget {
         child: child!,
       ),
       home: Kabuk(depo: depo),
+      ),
     );
   }
 }

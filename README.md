@@ -57,10 +57,11 @@ Kurallar (`test/mimari_test.dart` denetler):
 - Uygulama planı: `docs/superpowers/plans/2026-10-03-yakinlik-mobil.md`
 - Sunucuya bağlanma ve web ile eşitleme planı (06.10.2026): `docs/superpowers/plans/2026-10-06-web-esitleme-plani.md`
 - Teslim notu ve ekran görüntüleri: `docs/teslim/`
+- Dağıtım ve etkinlik günü: `docs/DAGITIM.md`
 
 ## Bu sürümde olmayanlar
 
-Web'den henüz taşınmayanlar (eşitleme planı M5): koyu tema, uygulama ikonu, mağaza dağıtımı. PDF çıktı yok; rapor CSV
-ve metin olarak sistem paylaşım sayfasıyla gönderilir.
+PDF çıktı yok; rapor CSV ve metin olarak sistem paylaşım sayfasıyla gönderilir. Sunum modu ve CSV içe aktarma web'de kalır
+(telefon işi değil). Mağaza yayını `docs/DAGITIM.md`.
 
 1b (Sade) varyantı.

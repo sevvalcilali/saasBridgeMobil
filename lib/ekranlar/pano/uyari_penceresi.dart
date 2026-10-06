@@ -93,13 +93,13 @@ class UyariPenceresi extends StatelessWidget {
         return Semantics(
           liveRegion: true,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(Olculer.sayfaKenari, 6, Olculer.sayfaKenari, 0),
+            padding: EdgeInsets.fromLTRB(Olculer.sayfaKenari, 6, Olculer.sayfaKenari, 0),
             child: DecoratedBox(
               decoration: BoxDecoration(
                 color: Renkler.yuzey,
                 borderRadius: Olculer.koseYaricap,
                 border: Border.all(color: Renkler.kural, width: 2),
-                boxShadow: const [
+                boxShadow: [
                   BoxShadow(color: Renkler.golge1, blurRadius: 3, offset: Offset(0, 1)),
                   BoxShadow(color: Renkler.golge2, blurRadius: 16, offset: Offset(0, 4)),
                 ],
@@ -111,7 +111,7 @@ class UyariPenceresi extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.notifications_active_outlined, size: 18, color: Renkler.kural),
+                        Icon(Icons.notifications_active_outlined, size: 18, color: Renkler.kural),
                         const SizedBox(width: 6),
                         Text('UYARI KURALI · ${b.saat}',
                             style: Yazi.olcu(11, agirlik: FontWeight.w700, renk: Renkler.kural, harfAraligi: 1)),

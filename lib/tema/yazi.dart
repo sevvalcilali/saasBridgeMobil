@@ -12,7 +12,7 @@ abstract final class Yazi {
     double punto, {
     FontWeight agirlik = FontWeight.w400,
     double satir = 1.4,
-    Color renk = Renkler.metin,
+    Color? renk,
     bool rakam = false,
     FontStyle? stil,
     double harfAraligi = 0,
@@ -21,7 +21,7 @@ abstract final class Yazi {
       fontSize: punto,
       fontWeight: agirlik,
       height: satir,
-      color: renk,
+      color: renk ?? Renkler.metin,
       fontStyle: stil,
       letterSpacing: harfAraligi,
       fontFeatures: rakam ? _tabular : null,
@@ -35,8 +35,8 @@ abstract final class Yazi {
       olcu(punto, agirlik: FontWeight.w600, satir: satir, harfAraligi: -0.015 * punto);
 
   /// Gövde: 15 px / 1.4.
-  static final TextStyle govde = olcu(15);
+  static TextStyle get govde => olcu(15);
 
   /// Kicker: 11 px, harf aralığı .1em, ikincil renk (metin büyük harfe çevrilir).
-  static final TextStyle kicker = olcu(11, renk: Renkler.metin2, harfAraligi: 1.1);
+  static TextStyle get kicker => olcu(11, renk: Renkler.metin2, harfAraligi: 1.1);
 }

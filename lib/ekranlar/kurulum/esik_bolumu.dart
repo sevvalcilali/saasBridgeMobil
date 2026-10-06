@@ -41,7 +41,7 @@ class EsikBolumu extends StatelessWidget {
                   children: [
                     TextSpan(
                       text: '$ustu',
-                      style: const TextStyle(fontWeight: FontWeight.w600, color: Renkler.metin),
+                      style: TextStyle(fontWeight: FontWeight.w600, color: Renkler.metin),
                     ),
                     const TextSpan(text: ' çift eşiğin üstünde.'),
                   ],

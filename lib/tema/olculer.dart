@@ -22,8 +22,8 @@ abstract final class Olculer {
   static const BorderRadius koseYaricap = BorderRadius.all(Radius.circular(kose));
   static const BorderRadius hapYaricap = BorderRadius.all(Radius.circular(hap));
 
-  static const List<BoxShadow> altSayfaGolgesi = [
-    BoxShadow(color: Renkler.golge1, offset: Offset(0, 1), blurRadius: 3),
-    BoxShadow(color: Renkler.golge2, offset: Offset(0, 4), blurRadius: 16),
+  static List<BoxShadow> get altSayfaGolgesi => [
+    BoxShadow(color: Renkler.golge1, offset: const Offset(0, 1), blurRadius: 3),
+    BoxShadow(color: Renkler.golge2, offset: const Offset(0, 4), blurRadius: 16),
   ];
 }

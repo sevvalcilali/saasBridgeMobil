@@ -32,7 +32,7 @@ Sözleşme: `SaasBridge/SUNUCUDAN_ISTENENLER.md` (sunucu uçları), `saasBridgeB
 - Rapor: KPI'lar ve girişimci satırları sunucu verisinden; kişiye özel rapor sayfası (yalnız o kişinin görüşmeleri).
 - Dışa aktarma: telefonda "Paylaş" (CSV sistem paylaşım sayfasına; PDF yok, kişiye özel rapor metin olarak).
 
-## M5 — Cila ve dağıtım
+## M5 — Cila ve dağıtım — ✅ (PR #9; gerçek cihaz denemesi Şevval'in telefonuyla)
 - Koyu tema (web token'larının koyu sürümü), uygulama ikonu, açılış ekranı.
 - Gerçek cihaz denemesi: iPhone + Android telefon, salon Wi-Fi'ında sunucuya bağlı.
 - TestFlight / Android APK dağıtımı için hazırlık.

@@ -10,16 +10,30 @@ import 'kalibrasyon_bolumu.dart';
 import 'kart_sagligi_bolumu.dart';
 import 'sinyal_grafigi.dart';
 import 'sunucu_bolumu.dart';
+import '../../bilesenler/bolmeli_anahtar.dart';
+import '../../bilesenler/kicker.dart';
+import '../../veri/tema_ayari.dart';
 
 /// Kurulum sekmesi: eşik, canlı sinyal, kalibrasyon, kart sağlığı.
 class KurulumEkrani extends StatelessWidget {
-  const KurulumEkrani({super.key, required this.depo, this.sunucuAdresi = '', this.onSunucuAdresi});
+  const KurulumEkrani({
+    super.key,
+    required this.depo,
+    this.sunucuAdresi = '',
+    this.onSunucuAdresi,
+    this.temaAyari = TemaAyari.sistem,
+    this.onTemaAyari,
+  });
 
   final EtkinlikDeposu depo;
 
   /// Kayıtlı sunucu adresi ve "Bağlan" geri çağrısı; verilmezse Sunucu bölümü çizilmez (testler).
   final String sunucuAdresi;
   final ValueChanged<String>? onSunucuAdresi;
+
+  /// Görünüm ayarı; geri çağrı verilmezse bölüm çizilmez.
+  final TemaAyari temaAyari;
+  final ValueChanged<TemaAyari>? onTemaAyari;
 
   static const double _bolumAraligi = 28;
 
@@ -45,6 +59,21 @@ class KurulumEkrani extends StatelessWidget {
               const SizedBox(height: _bolumAraligi),
               if (onSunucuAdresi case final onAdres?) ...[
                 SunucuBolumu(depo: depo, sunucuAdresi: sunucuAdresi, onSunucuAdresi: onAdres),
+                const SizedBox(height: _bolumAraligi),
+              ],
+              if (onTemaAyari case final onTema?) ...[
+                const Kicker('Görünüm'),
+                const SizedBox(height: 8),
+                BolmeliAnahtar<TemaAyari>(
+                  yukseklik: 40,
+                  secenekler: const [
+                    BolmeSecenegi(deger: TemaAyari.sistem, etiket: 'Sistem'),
+                    BolmeSecenegi(deger: TemaAyari.acik, etiket: 'Açık'),
+                    BolmeSecenegi(deger: TemaAyari.koyu, etiket: 'Koyu'),
+                  ],
+                  secili: temaAyari,
+                  onSecildi: onTema,
+                ),
                 const SizedBox(height: _bolumAraligi),
               ],
               EsikBolumu(depo: depo),

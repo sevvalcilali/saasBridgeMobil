@@ -155,11 +155,11 @@ class _KuralFormuSayfasiState extends State<KuralFormuSayfasi> {
               ),
               const SizedBox(height: 14),
               DecoratedBox(
-                decoration: const BoxDecoration(color: Renkler.kuralZemin, borderRadius: Olculer.koseYaricap),
+                decoration: BoxDecoration(color: Renkler.kuralZemin, borderRadius: Olculer.koseYaricap),
                 child: Padding(
                   padding: const EdgeInsets.all(12),
                   child: Text.rich(
-                    TextSpan(text: 'Önizleme: ', style: const TextStyle(fontWeight: FontWeight.w700, color: Renkler.kural), children: [
+                    TextSpan(text: 'Önizleme: ', style: TextStyle(fontWeight: FontWeight.w700, color: Renkler.kural), children: [
                       TextSpan(text: _onizleme(), style: TextStyle(fontWeight: FontWeight.w400, color: gecerli ? Renkler.metin : Renkler.uyari)),
                     ]),
                     style: Yazi.olcu(14),
@@ -286,7 +286,7 @@ class _SecimSeciciState extends State<_SecimSecici> {
                 child: Container(
                   constraints: const BoxConstraints(minHeight: Olculer.dokunmaEnAz),
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Renkler.ayrac))),
+                  decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Renkler.ayrac))),
                   child: Text('＋ ${katilimciAdi(k)}', style: Yazi.olcu(15)),
                 ),
               ),

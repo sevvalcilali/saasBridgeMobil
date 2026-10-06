@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'sse.dart';
 
@@ -86,6 +87,15 @@ class SunucuIstemcisi {
   /// Alıcının duyduğu kartlar (`/api/cards`): pil, boştaki kartlar.
   Future<List<Map<String, dynamic>>> kartlar() async =>
       ((await _json(await _istek('GET', '/api/cards'))) as List).cast<Map<String, dynamic>>();
+
+  /// Kurulum grafiği: `/state?grafik=1` (97 kişide ~620 KB). Gövde ana iş parçacığında yalnız okunur; çözme ve
+  /// geçmişin ayıklanması ayrı isolate'te yapılır (arayüz takılmasın). Dönüş: "a-b" → [(saniye önce, dBm)].
+  Future<({Map<String, List<(int, double)>> gecmis, int saniye})> grafikGecmisi() async {
+    final yanit = await _istek('GET', '/state?grafik=1');
+    final metin = await utf8.decoder.bind(yanit).join();
+    if (yanit.statusCode != 200) throw HttpException('${yanit.statusCode}');
+    return Isolate.run(() => gecmisAyikla(metin));
+  }
 
   /// Kişi ekler (`POST /api/people`); sunucu reddederse [SunucuHatasi] (hata metniyle).
   Future<Map<String, dynamic>> kisiEkle(Map<String, Object?> govde) async =>
@@ -226,4 +236,18 @@ class SunucuIstemcisi {
     if (yanit.statusCode != 200) throw HttpException('${yanit.statusCode}: $metin');
     return jsonDecode(metin);
   }
+}
+
+/// `/state?grafik=1` metninden yalnız grafik geçmişi; 100+ dinleyici kartlı çiftler atılır. Ayrı isolate'te çalışır.
+({Map<String, List<(int, double)>> gecmis, int saniye}) gecmisAyikla(String metin) {
+  final ham = jsonDecode(metin) as Map<String, dynamic>;
+  bool kisiKarti(String id) => (int.tryParse(id) ?? 1000) < 100;
+  return (
+    gecmis: {
+      for (final e in ((ham['history'] as Map?) ?? const {}).entries)
+        if ((e.key as String).split('-').every(kisiKarti))
+          e.key as String: [for (final n in (e.value as List).cast<List>()) ((n[0] as num).toInt(), (n[1] as num).toDouble())],
+    },
+    saniye: (ham['chartSeconds'] as num?)?.toInt() ?? 90,
+  );
 }

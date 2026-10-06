@@ -65,7 +65,7 @@ class _NabizState extends State<Nabiz> with SingleTickerProviderStateMixin {
             ),
             SizedBox.square(
               dimension: widget.boyut - 32,
-              child: const DecoratedBox(
+              child: DecoratedBox(
                 decoration: BoxDecoration(color: Renkler.vurgu, shape: BoxShape.circle),
               ),
             ),

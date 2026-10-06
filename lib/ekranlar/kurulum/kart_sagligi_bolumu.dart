@@ -15,10 +15,10 @@ class KartSagligiBolumu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Gerçek sunucuda alıcının duyduğu tüm kartlar (/api/cards); sahte veride kişiler.
+    // Gerçek sunucuda alıcının bildiği tüm kartlar (/api/cards, sessiz ve kayıplar dahil); sahte veride kişiler.
     final kartKisi = {for (final k in depo.katilimcilar) if (k.atananKart != null) k.atananKart!: k.kurum ?? k.ad};
-    final satirlar = depo.demo ? kartSagligi(depo.kisiler) : kartSagligiKartlardan(depo.acikKartlar, kartKisi);
-    final sorunlu = depo.demo ? sorunluKartSayisi(depo.kisiler) : sorunluKartSayisiKartlardan(depo.acikKartlar);
+    final satirlar = depo.demo ? kartSagligi(depo.kisiler) : kartSagligiKartlardan(depo.tumKartlar, kartKisi);
+    final sorunlu = depo.demo ? sorunluKartSayisi(depo.kisiler) : sorunluKartSayisiKartlardan(depo.tumKartlar);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -33,7 +33,7 @@ class KartSagligiBolumu extends StatelessWidget {
               ),
               const TextSpan(text: ' kart duyuluyor · '),
               TextSpan(
-                style: const TextStyle(color: Renkler.ciddi),
+                style: TextStyle(color: Renkler.ciddi),
                 children: uyariParcalari('⚠ $sorunlu sorunlu', boyut: 14, renk: Renkler.ciddi),
               ),
             ],
@@ -59,7 +59,7 @@ class _SaglikSatiriGorunumu extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: satir.sorunlu ? Renkler.ciddiZemin : null,
-        border: const Border(bottom: BorderSide(color: Renkler.ayrac)),
+        border: Border(bottom: BorderSide(color: Renkler.ayrac)),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 9),

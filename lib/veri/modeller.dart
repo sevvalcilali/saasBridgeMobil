@@ -86,11 +86,18 @@ class GunBoyuCift {
 
 /// Sinyali ölçülen kart çifti (dBm).
 class Cift {
-  const Cift(this.a, this.b, this.rssi);
+  const Cift(this.a, this.b, this.rssi, {this.ham});
 
   final String a;
   final String b;
+
+  /// Yuvarlanmış değer (liste, grafik, eşik sayımı).
   final int rssi;
+  /// Sunucunun ham değeri (son 10 sn ortancası); verilmezse yuvarlanmış değer.
+  final double? ham;
+
+  /// Kalibrasyon ölçümü bunu kullanır (yuvarlanmamış).
+  double get dbm => ham ?? rssi.toDouble();
 }
 
 /// Alıcının şu an duyduğu kart (`/api/cards`).
