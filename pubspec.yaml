@@ -1,7 +1,7 @@
 name: yakinlik_mobil
 description: "Yakınlık Panosu — saha görevlileri için mobil uygulama."
 publish_to: 'none'
-version: 0.1.0+1
+version: 1.0.0+1
 
 environment:
   sdk: ^3.12.2
@@ -24,3 +24,12 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+# Uygulama ikonu: `flutter test tool/ikon_uret_test.dart` → assets/ikon/*.png, sonra `dart run flutter_launcher_icons`.
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/ikon/ikon.png"
+  adaptive_icon_background: "#F7F2E9"
+  adaptive_icon_foreground: "assets/ikon/ikon_on.png"
