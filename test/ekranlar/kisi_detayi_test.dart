@@ -53,8 +53,7 @@ void main() {
     expect(find.text('az önce'), findsOneWidget);
     expect(find.text('Bugünkü toplam'), findsOneWidget);
     expect(find.text('19 sn'), findsNWidgets(2)); // toplam + eş satırı
-    expect(find.text('Pil'), findsOneWidget);
-    expect(find.text('%92'), findsOneWidget);
+    expect(find.text('Pil'), findsNothing); // Pil kaldırıldı (web kararı 05.10.2026)
     expect(find.text('Kartı değiştir'), findsOneWidget);
     expect(find.text('Kartı iade al'), findsOneWidget);
     expect(find.text('BUGÜN KİMİNLE'), findsOneWidget);
