@@ -45,10 +45,10 @@ void main() {
     expect([2, 3, 4, 5, 6].map(grupSiralari).toList(), [(0, 2), (1, 2), (2, 2), (2, 3), (3, 3)]);
   });
 
-  test('süre rengi: gri → sarı (5 dk) → turuncu (10 dk) → kırmızı (20 dk)', () {
+  test('süre rengi: gri → mavi (5 dk) → turuncu (10 dk) → kırmızı (20 dk)', () {
     expect(sureRengi(0), SureRengi.gri);
     expect(sureRengi(299), SureRengi.gri);
-    expect(sureRengi(300), SureRengi.sari);
+    expect(sureRengi(300), SureRengi.mavi);
     expect(sureRengi(600), SureRengi.turuncu);
     expect(sureRengi(1200), SureRengi.kirmizi);
   });

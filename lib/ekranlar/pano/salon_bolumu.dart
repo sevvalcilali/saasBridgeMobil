@@ -42,14 +42,12 @@ class _SalonBolumuState extends State<SalonBolumu> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Zemin sade: figürlerin arkası koyulaşmaz (Şevval 06.10.2026).
           DecoratedBox(
             decoration: const BoxDecoration(
               borderRadius: Olculer.koseYaricap,
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Renkler.seffaf, Renkler.acikYuzey],
-              ),
+              color: Renkler.yuzey,
+              border: Border.fromBorderSide(BorderSide(color: Renkler.ayrac)),
             ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8, 10, 8, 8),
