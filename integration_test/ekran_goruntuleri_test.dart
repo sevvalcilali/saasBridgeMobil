@@ -64,12 +64,7 @@ void main() {
     await tester.tap(sekme('Kart Ver'));
     await cek('05_kart_ver_adim1');
     await dokun(find.text('Nova Robotik · Cem Erdem'));
-    await cek('06_kart_ver_bekleme');
-    await dokun(find.text('Demo: boş bir kartı yaklaştır'));
-    await bekle(1600);
-    await cek('07_kart_ver_bulundu');
-    await dokun(find.text('Numarayı yaz'));
-    await cek('08_kart_ver_numara');
+    await cek('06_kart_ver_numara');
     await dokun(find.text('Kart 88'));
     await cek('09_kart_ver_kontrol');
     await dokun(find.text('Onayla'));

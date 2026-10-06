@@ -71,11 +71,11 @@ void main() {
     expect(find.text('Ciddi 1'), findsOneWidget);
     expect(find.text('Uyarı 2'), findsOneWidget);
     expect(find.text('Olumlu 1'), findsOneWidget);
-    expect(find.text('Pil düşük'), findsOneWidget);
+    expect(find.text('Hiç görüşmedi'), findsOneWidget);
     expect(find.text('Yeni görüşme'), findsOneWidget);
     expect(find.text('Yalnız kaldı'), findsOneWidget);
     expect(find.text('Kart kayboldu'), findsOneWidget);
-    expect(find.text('Kart 46 · Mehmet Kılıç · %16 — kartı masada değiştirin'), findsOneWidget);
+    expect(find.text('Anadolu Fonu · Zeynep Tekin ★★ henüz kimseyle birlikte olmadı'), findsOneWidget);
     expect(find.text('15:02'), findsOneWidget);
   });
 
@@ -87,7 +87,7 @@ void main() {
     await tester.tap(find.text('Ciddi 1'));
     await tester.pump();
     expect(find.text('Kart kayboldu'), findsOneWidget);
-    expect(find.text('Pil düşük'), findsNothing);
+    expect(find.text('Hiç görüşmedi'), findsNothing);
     await tester.tap(find.text('Kart kayboldu'));
     expect(k.acilanlar, ['40']);
 

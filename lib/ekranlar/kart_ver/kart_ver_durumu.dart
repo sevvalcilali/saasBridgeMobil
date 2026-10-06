@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/widgets.dart';
 
 import '../../mantik/kart_no.dart';
@@ -8,21 +6,15 @@ import '../../veri/modeller.dart';
 
 enum KartVerModu { ver, iade, uyari }
 
-enum KartSecimModu { yaklastir, numara }
-
 /// Son yapılan atama (bantta gösterilir).
 typedef SonAtama = ({String ad, String kart});
 
 /// Kart Ver / Kart İadesi ekranının durumu. Onayla, Geri al ve İade al depoya gider (gerçek sunucuda
 /// `/api/assign` ve `/api/unassign`; sahte veride yalnız bant). Kişiler kayıtlı kişilerdir (`Katilimci`,
-/// kartı olmayanlar dahil). "Yaklaştır ve tanı" gerçek sunucuda alıcının duyduğu kartlardan bulur;
-/// sahte veride demo düğmesiyle. Sekme değişse de korunur.
+/// kartı olmayanlar dahil). Kart yalnız numarayla seçilir (kartın üstündeki etiket; "yaklaştır ve tanı" yok,
+/// Şevval kararı 07.10.2026). Sekme değişse de korunur.
 class KartVerDurumu extends ChangeNotifier {
-  KartVerDurumu(
-    this._depo, {
-    this.demoGecikmesi = const Duration(milliseconds: 1400),
-    this.demoKarti = '88',
-  }) {
+  KartVerDurumu(this._depo) {
     aramaDenetleyici.addListener(notifyListeners);
     numaraDenetleyici.addListener(notifyListeners);
     _depo.addListener(_depoDegisti);
@@ -30,11 +22,6 @@ class KartVerDurumu extends ChangeNotifier {
 
   final EtkinlikDeposu _depo;
 
-  /// "Demo: kartı yaklaştır"dan sonra kartın bulunma süresi (yalnız sahte veri).
-  final Duration demoGecikmesi;
-
-  /// Demo yaklaştırmada bulunan kart.
-  final String demoKarti;
 
   /// Adım 1 ve Kart İadesi aramasının ortak metni.
   final TextEditingController aramaDenetleyici = TextEditingController();
@@ -46,8 +33,6 @@ class KartVerDurumu extends ChangeNotifier {
   int _adim = 1;
   String? _seciliKisi; // kisiId
   String? _seciliKart;
-  KartSecimModu _kartModu = KartSecimModu.yaklastir;
-  String? _demoBulundu;
   SonAtama? _sonAtama;
   String? _bilgi;
   String? _hata;
@@ -55,7 +40,6 @@ class KartVerDurumu extends ChangeNotifier {
   bool _yalnizBekleyen = false;
   bool _sahipOnayi = false;
   String? _iadeSecili; // kisiId
-  Timer? _demo;
 
   KartVerModu get mod => _mod;
 
@@ -76,14 +60,7 @@ class KartVerDurumu extends ChangeNotifier {
 
   /// "Geri alındı" onayı verildi mi (yalnız başkasının kartı için gerekir).
   bool get sahipOnayi => _sahipOnayi;
-  KartSecimModu get kartModu => _kartModu;
 
-  /// "Yaklaştır ve tanı" ile bulunan kart: gerçek sunucuda alıcının −55 dBm'den güçlü duyduğu tek boş
-  /// kart; sahte veride demo.
-  String? get bulundu => _depo.demo ? _demoBulundu : yaklastirilanKart(_depo.acikKartlar).kart;
-
-  /// Birden çok kart yakınsa uyarı.
-  String? get yaklastirmaUyarisi => _depo.demo ? null : yaklastirilanKart(_depo.acikKartlar).uyari;
   SonAtama? get sonAtama => _sonAtama;
 
   /// Geri alma ya da iade sonrası gösterilen bilgi metni.
@@ -119,21 +96,13 @@ class KartVerDurumu extends ChangeNotifier {
     return null;
   }
 
-  /// Depo değişince (kartlar, kişiler) ekran tazelenir: "yaklaştır" kartı bulsun.
+  /// Depo değişince (kartlar, kişiler) ekran tazelenir: açık kartlar ve kişi listesi güncel kalsın.
   void _depoDegisti() => notifyListeners();
 
-  /// Bekleyen demo yaklaştırmayı iptal eder: adım ya da kişi değişince eski
-  /// "Kart 88 bulundu" sonradan belirmesin.
-  void _demoIptal() {
-    _demo?.cancel();
-    _demo = null;
-  }
 
   void kisiSec(String kisiId) {
-    _demoIptal();
     _seciliKisi = kisiId;
     _adim = 2;
-    _demoBulundu = null;
     _hata = null;
     numaraDenetleyici.clear();
     notifyListeners();
@@ -145,22 +114,7 @@ class KartVerDurumu extends ChangeNotifier {
     notifyListeners();
   }
 
-  void kartModuSec(KartSecimModu mod) {
-    if (_kartModu == mod) return;
-    _demoIptal();
-    _kartModu = mod;
-    notifyListeners();
-  }
 
-  /// Donanım olmadan yaklaştırmayı taklit eder (yalnız sahte veri).
-  void demoYaklastir() {
-    _demoIptal();
-    _demo = Timer(demoGecikmesi, () {
-      _demo = null;
-      _demoBulundu = demoKarti;
-      notifyListeners();
-    });
-  }
 
   void _kartSec(String kart) {
     _seciliKart = kart;
@@ -169,11 +123,6 @@ class KartVerDurumu extends ChangeNotifier {
     notifyListeners();
   }
 
-  void bulunanSec() {
-    final kart = bulundu;
-    if (kart == null) return;
-    _kartSec(kart);
-  }
 
   void numaraSec() {
     if (!numaraSecilebilir) return;
@@ -189,16 +138,12 @@ class KartVerDurumu extends ChangeNotifier {
   }
 
   void kisiAdiminaDon() {
-    _demoIptal();
     _adim = 1;
-    _demoBulundu = null;
     notifyListeners();
   }
 
   void kartAdiminaDon() {
-    _demoIptal();
     _adim = 2;
-    _demoBulundu = null;
     notifyListeners();
   }
 
@@ -208,7 +153,6 @@ class KartVerDurumu extends ChangeNotifier {
     final kart = _seciliKart;
     if (k == null || kart == null || _gonderiliyor) return;
     if (kartinSahibi != null && !_sahipOnayi) return; // başkasının kartı: önce "geri alındı" onayı
-    _demoIptal();
     _gonderiliyor = true;
     _hata = null;
     notifyListeners();
@@ -227,8 +171,7 @@ class KartVerDurumu extends ChangeNotifier {
       _seciliKisi = null;
       _seciliKart = null;
       _sahipOnayi = false;
-      _demoBulundu = null;
-      numaraDenetleyici.clear();
+        numaraDenetleyici.clear();
       aramaDenetleyici.clear();
     }
     notifyListeners();
@@ -261,7 +204,6 @@ class KartVerDurumu extends ChangeNotifier {
   }
 
   void modIade() {
-    _demoIptal();
     _mod = KartVerModu.iade;
     _hata = null;
     notifyListeners();
@@ -269,7 +211,6 @@ class KartVerDurumu extends ChangeNotifier {
 
   /// Uyarı kuralları (organizatör ayarı).
   void modUyari() {
-    _demoIptal();
     _mod = KartVerModu.uyari;
     _hata = null;
     notifyListeners();
@@ -309,11 +250,9 @@ class KartVerDurumu extends ChangeNotifier {
   void kartDegistirBaslat(String kart) {
     final k = _karttakiKisi(kart);
     if (k == null) return;
-    _demoIptal();
     _mod = KartVerModu.ver;
     _seciliKisi = k.kisiId;
     _adim = 2;
-    _demoBulundu = null;
     _hata = null;
     numaraDenetleyici.clear();
     notifyListeners();
@@ -331,7 +270,6 @@ class KartVerDurumu extends ChangeNotifier {
 
   @override
   void dispose() {
-    _demoIptal();
     _depo.removeListener(_depoDegisti);
     aramaDenetleyici.dispose();
     numaraDenetleyici.dispose();

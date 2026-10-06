@@ -56,6 +56,8 @@ class SahteDepo extends EtkinlikDeposu {
   @override
   List<AcikKart> get acikKartlar => SahteVeri.acikKartlar;
   @override
+  List<AcikKart> get tumKartlar => SahteVeri.tumKartlar;
+  @override
   List<Katilimci> get katilimcilar => SahteVeri.katilimcilar;
   @override
   bool get demo => true;

@@ -70,22 +70,9 @@ void main() {
     expect(grafikSerileri(const [], renkler, 0, 362, 150), isEmpty);
   });
 
-  test('kartSagligi: pile göre artan, eşitlikte özgün sıra, ilk 8', () {
-    final satirlar = kartSagligi(SahteVeri.kisiler);
-    expect(satirlar.map((r) => r.kart), ['46', '5', '14', '37', '58', '45', '4', '47']);
-    expect(satirlar.first.sorunlu, isTrue);
-    expect(satirlar.first.durum, '⚠ pil düşük');
-    expect(satirlar.first.kisi, 'Mehmet Kılıç');
-    expect(satirlar.first.pil, 16);
-    expect(satirlar[1].kisi, 'Şehir Sensör');
-    expect(satirlar[1].sorunlu, isFalse);
-    expect(satirlar[1].durum, '✓ iyi');
-    expect(satirlar[2].kisi, 'Kart 14');
-    expect(satirlar[2].adsiz, isTrue);
-  });
 
   test('sorunluKartSayisi', () {
-    expect(sorunluKartSayisi(SahteVeri.kisiler), 1);
+    expect(sorunluKartSayisi(SahteVeri.tumKartlar), 1); // Kaan Öztürk görünmüyor
     expect(sorunluKartSayisi(const []), 0);
   });
 
@@ -103,19 +90,21 @@ void main() {
     expect(seriler.last.noktalar, hasLength(1)); // geçmiş yok: yalnız şimdiki değer
   });
 
-  test('kart sağlığı (kartlardan): kayıp > sessiz > pil düşük önce, gerisi kart no; web ölçütleri', () {
+  test('kart sağlığı: yalnız son duyulma — duyulmuyor (≥ 60 sn) > görünmüyor (> 30 sn), gerisi kart no; pil yok', () {
     const kartlar = [
-      AcikKart('5', seenAgo: 1, pil: 80),
-      AcikKart('3', seenAgo: 40, pil: 90), // görünmüyor (> 30 sn)
-      AcikKart('9', seenAgo: 2, pil: 12), // pil düşük
-      AcikKart('7', seenAgo: 75, pil: 60), // duyulmuyor (≥ 60 sn)
-      AcikKart('1', seenAgo: 0, pil: null),
+      AcikKart('5', seenAgo: 1),
+      AcikKart('3', seenAgo: 40), // görünmüyor
+      AcikKart('9', seenAgo: 2),
+      AcikKart('7', seenAgo: 75), // duyulmuyor
+      AcikKart('1', seenAgo: 0),
     ];
-    final satirlar = kartSagligiKartlardan(kartlar, {'5': 'Nova'});
+    final satirlar = kartSagligi(kartlar, {'5': 'Nova'});
     expect(satirlar.map((s) => (s.kart, s.durum)).toList(), [
-      ('7', '⚠ duyulmuyor'), ('3', '◌ görünmüyor'), ('9', '⚠ pil düşük'), ('1', '✓ iyi'), ('5', '✓ iyi'),
+      ('7', '⚠ duyulmuyor'), ('3', '◌ görünmüyor'), ('1', '✓ iyi'), ('5', '✓ iyi'), ('9', '✓ iyi'),
     ]);
-    expect(sorunluKartSayisiKartlardan(kartlar), 3);
-    expect(satirlar.last.kisi, 'Nova');
+    expect(sorunluKartSayisi(kartlar), 2);
+    expect(satirlar[3].kisi, 'Nova');
+    expect(satirlar.first.duyulma, '1 dk önce');
+    expect(satirlar.last.duyulma, 'az önce');
   });
 }

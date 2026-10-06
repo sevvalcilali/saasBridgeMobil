@@ -16,7 +16,6 @@ class Kisi {
     required this.id,
     required this.rol,
     required this.renk,
-    this.pil,
     this.ad,
     this.kurum,
     this.ile,
@@ -38,9 +37,6 @@ class Kisi {
 
   /// Başlangıçtaki süre (saniye).
   final int sn;
-
-  /// Pil yüzdesi; sunucu kartı duymuyorsa ya da bilinmiyorsa null.
-  final int? pil;
 
   /// 0–5; yatırımcı değilse 0.
   final int yildiz;
@@ -102,17 +98,14 @@ class Cift {
 
 /// Alıcının şu an duyduğu kart (`/api/cards`).
 class AcikKart {
-  const AcikKart(this.no, {this.atanmis = false, this.rssi, this.seenAgo = 0, this.pil});
+  const AcikKart(this.no, {this.atanmis = false, this.seenAgo = 0});
 
   final String no;
   final bool atanmis;
 
-  /// Alıcının kartı duyduğu güç (dBm); "Yaklaştır ve tanı" bununla bulur.
-  final int? rssi;
 
   /// Kaç saniye önce duyuldu.
   final double seenAgo;
-  final int? pil;
 }
 
 /// Kayıtlı kişi (`/api/people`): kartı olsun olmasın. Kart Ver 1. adımı ve İade bununla çalışır.

@@ -24,8 +24,6 @@ void main() {
     expect(d.adim, 1);
     expect(d.kisi, isNull);
     expect(d.seciliKart, isNull);
-    expect(d.kartModu, KartSecimModu.yaklastir);
-    expect(d.bulundu, isNull);
     expect(d.sonAtama, isNull);
     expect(d.bilgi, isNull);
     expect(d.iadeKisisi, isNull);
@@ -40,68 +38,6 @@ void main() {
     expect(d.adim, 2);
     expect(d.kisi!.kisiId, 'k24');
     expect(d.numara, '');
-    expect(d.bulundu, isNull);
-  });
-
-  test('kartModuSec', () async {
-    d.kartModuSec(KartSecimModu.numara);
-    expect(d.kartModu, KartSecimModu.numara);
-  });
-
-  testWidgets('demoYaklastir: 1,4 sn sonra Kart 88 bulunur; seçince adım 3', (tester) async {
-    d.kisiSec('k24');
-    d.demoYaklastir();
-    await tester.pump(const Duration(milliseconds: 1399));
-    expect(d.bulundu, isNull);
-    await tester.pump(const Duration(milliseconds: 1));
-    expect(d.bulundu, '88');
-    d.bulunanSec();
-    expect(d.adim, 3);
-    expect(d.seciliKart, '88');
-  });
-
-  testWidgets('demo: art arda basılırsa son basıştan 1,4 sn sonra, tek kez bulunur', (tester) async {
-    d.kisiSec('k24');
-    var bildirim = 0;
-    d.addListener(() => bildirim++);
-    d.demoYaklastir();
-    await tester.pump(const Duration(milliseconds: 1000));
-    d.demoYaklastir();
-    await tester.pump(const Duration(milliseconds: 1000));
-    expect(d.bulundu, isNull);
-    await tester.pump(const Duration(milliseconds: 400));
-    expect(d.bulundu, '88');
-    expect(bildirim, 1);
-  });
-
-  testWidgets('demo beklerken geri dönülürse eski kart sonradan belirmez (S16)', (tester) async {
-    d.kisiSec('k24');
-    d.demoYaklastir();
-    await tester.pump(const Duration(milliseconds: 500));
-    d.kisiAdiminaDon();
-    await tester.pump(const Duration(seconds: 2));
-    expect(d.bulundu, isNull);
-    d.kisiSec('k31');
-    await tester.pump(const Duration(seconds: 2));
-    expect(d.bulundu, isNull);
-    expect(d.adim, 2);
-  });
-
-  testWidgets('demo beklerken başka kişiye geçilirse iptal olur (S16)', (tester) async {
-    d.kisiSec('k24');
-    d.demoYaklastir();
-    await tester.pump(const Duration(milliseconds: 500));
-    d.kartDegistirBaslat('31');
-    await tester.pump(const Duration(seconds: 2));
-    expect(d.bulundu, isNull);
-    expect(d.kisi!.kisiId, 'k31');
-  });
-
-  test('bulunanSec: kart bulunmadıysa etkisiz', () async {
-    d.kisiSec('k24');
-    d.bulunanSec();
-    expect(d.adim, 2);
-    expect(d.seciliKart, isNull);
   });
 
   test('numara: yalnız rakam; 1–99 geçerli; baştaki sıfır atılır', () async {
@@ -151,7 +87,6 @@ void main() {
     expect(d.adim, 1);
     expect(d.kisi, isNull);
     expect(d.seciliKart, isNull);
-    expect(d.bulundu, isNull);
     expect(d.numara, '');
     expect(d.arama, '');
     expect(d.bilgi, isNull);
@@ -223,7 +158,6 @@ void main() {
     expect(d.adim, 2);
     expect(d.kisi!.kisiId, 'k61');
     expect(d.numara, '');
-    expect(d.bulundu, isNull);
   });
 
   test('iadeBaslat: Kart iadesi modu, kişi seçili', () async {
@@ -254,26 +188,6 @@ void main() {
     h.kisiAdiminaDon();
     h.kisiSec('k31');
     expect(h.hata, isNull);
-  });
-
-  testWidgets('demo beklerken kart seçim modu değişirse eski kart sonradan belirmez', (tester) async {
-    d.kisiSec('k24');
-    d.demoYaklastir();
-    await tester.pump(const Duration(milliseconds: 500));
-    d.kartModuSec(KartSecimModu.numara);
-    await tester.pump(const Duration(seconds: 2));
-    d.kartModuSec(KartSecimModu.yaklastir);
-    expect(d.bulundu, isNull);
-  });
-
-  testWidgets('demo beklerken Kart iadesi moduna geçilirse eski kart sonradan belirmez', (tester) async {
-    d.kisiSec('k24');
-    d.demoYaklastir();
-    await tester.pump(const Duration(milliseconds: 500));
-    d.modIade();
-    await tester.pump(const Duration(seconds: 2));
-    d.modVer();
-    expect(d.bulundu, isNull);
   });
 
   test('başkasına atanmış kart: sahibi gösterilir, onay verilmeden Onayla etkisiz (sözleşme §2)', () async {

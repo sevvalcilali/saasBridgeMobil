@@ -13,7 +13,7 @@ import 'sunucu_istemcisi.dart';
 
 /// Gerçek sunucuya bağlı depo. Açılışta `/state`, sonra `/events` canlı akışı (~2 Hz): süreler ve saat
 /// sunucudan gelir, yerel sayaç yoktur. Kopunca son veri kalır, `sunucuBagli` false olur; istemci
-/// kendiliğinden yeniden bağlanır. Kartlar (pil, boştakiler) ve kayıtlı kişi sayısı `/api/cards` ve
+/// kendiliğinden yeniden bağlanır. Kartlar (son duyulma, boştakiler) ve kayıtlı kişi sayısı `/api/cards` ve
 /// `/api/people`'dan seyrek yoklanır.
 class SunucuDeposu extends EtkinlikDeposu {
   SunucuDeposu(
@@ -24,7 +24,7 @@ class SunucuDeposu extends EtkinlikDeposu {
 
   final SunucuIstemcisi _istemci;
 
-  /// Kartlar ve kayıtlı kişiler bu sıklıkla yoklanır (masa "yaklaştır"ı 1–3 sn'de bir ister).
+  /// Kartlar ve kayıtlı kişiler bu sıklıkla yoklanır (masadaki açık kartlar ve kart sağlığı tazelensin).
   final Duration yoklamaAraligi;
 
   /// Kurulum grafiği geçmişi bu sıklıkla istenir (büyük yanıt; 90 sn'lik pencerede 4 sn yeterli).
@@ -57,12 +57,6 @@ class SunucuDeposu extends EtkinlikDeposu {
 
   /// Ekran saniyede en çok bir kez yeniden çizilir (sakin ekran; akış 2 Hz).
   static const Duration _enSikBildirim = Duration(seconds: 1);
-
-  /// Kart no → pil (son `/api/cards`).
-  Map<String, int> get _piller => {
-    for (final k in _kartlar)
-      if (k['pil'] is num) k['kart'] as String: (k['pil'] as num).toInt(),
-  };
 
   /// Dinleyicileri saniyede en çok bir kez uyandırır; arada gelen güncellemeler birleşir (sonuncusu kalır).
   void _bildir() {
@@ -144,9 +138,7 @@ class SunucuDeposu extends EtkinlikDeposu {
         AcikKart(
           k['kart'] as String,
           atanmis: k['atanan'] != null,
-          rssi: (k['rssiAlici'] as num?)?.round(),
           seenAgo: ((k['seenAgo'] as num?) ?? 999).toDouble(),
-          pil: (k['pil'] as num?)?.toInt(),
         ),
   ];
 
@@ -256,7 +248,7 @@ class SunucuDeposu extends EtkinlikDeposu {
 
   void _durumAyarla(Map<String, dynamic> ham) {
     _hamDurum = ham;
-    _durum = SunucuDurumu.ayristir(ham, piller: _piller);
+    _durum = SunucuDurumu.ayristir(ham);
     if (_esikYerel != null && _durum!.esik == _esikYerel) _esikYerel = null;
     _bagli = true;
     _bildir();
@@ -287,7 +279,7 @@ class SunucuDeposu extends EtkinlikDeposu {
       }
       if (!degisti || _kapandi) return;
       final ham = _hamDurum;
-      if (ham != null) _durum = SunucuDurumu.ayristir(ham, piller: _piller);
+      if (ham != null) _durum = SunucuDurumu.ayristir(ham);
       _bildir();
     } catch (_) {
       /* sonraki yoklamada yeniden denenir; bant akışa bağlıdır */

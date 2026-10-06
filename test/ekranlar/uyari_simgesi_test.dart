@@ -26,7 +26,7 @@ void main() {
     denetle('Pano · kopuk bandı', 1);
     await tester.tap(sekme('Kurulum'));
     await tester.pump();
-    denetle('Kurulum: bant + özet + pil düşük', 3);
+    denetle('Kurulum: bant + özet + duyulmayan kart', 3);
     await tester.tap(sekme('Rapor'));
     await tester.pump();
     denetle('Rapor: bant + iki görüşmemiş girişimci', 3);

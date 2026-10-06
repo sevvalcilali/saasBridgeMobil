@@ -52,11 +52,13 @@ void main() {
     expect(find.text('KART SAĞLIĞI'), findsOneWidget);
     expect(find.textContaining('32 kart duyuluyor · '), findsOneWidget);
     expect(find.textContaining('1 sorunlu'), findsOneWidget);
-    expect(find.text('Mehmet Kılıç'), findsOneWidget);
-    expect(find.textContaining('pil düşük'), findsOneWidget);
-    expect(find.text('%16'), findsOneWidget);
-    expect(find.text('✓ iyi'), findsNWidgets(7));
-    expect(find.text('%72'), findsNWidgets(2));
+    // Pil yok: yalnız son duyulma. Görünmeyen Kaan Öztürk (3 dk önce duyuldu) en üstte "duyulmuyor".
+    expect(find.text('Kaan Öztürk'), findsOneWidget);
+    expect(find.textContaining('duyulmuyor'), findsOneWidget);
+    expect(find.text('3 dk önce'), findsOneWidget);
+    expect(find.text('✓ iyi'), findsNWidgets(30));
+    expect(find.textContaining('pil'), findsNothing);
+    expect(find.textContaining('%'), findsNothing);
     expect(find.text('Kart 14'), findsOneWidget);
   });
 
@@ -131,11 +133,10 @@ void main() {
   testWidgets('kart sağlığı: sorunlu satır vurgulanır', (tester) async {
     await _kur(tester);
     final kutu = tester.widget<DecoratedBox>(
-      find.ancestor(of: find.text('Mehmet Kılıç'), matching: find.byType(DecoratedBox)).first,
+      find.ancestor(of: find.text('Kaan Öztürk'), matching: find.byType(DecoratedBox)).first,
     );
     expect((kutu.decoration as BoxDecoration).color, Renkler.ciddiZemin);
-    expect(tester.widget<Text>(find.textContaining('pil düşük')).style!.color, Renkler.ciddi);
-    expect(tester.widget<Text>(find.text('%16')).style!.color, Renkler.ciddi);
+    expect(tester.widget<Text>(find.text('3 dk önce')).style!.color, Renkler.ciddi);
     // Adsız kart ikincil renkte yazılır.
     expect(tester.widget<Text>(find.text('Kart 14')).style!.color, Renkler.metin2);
   });

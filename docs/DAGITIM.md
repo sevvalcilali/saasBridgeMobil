@@ -48,5 +48,5 @@ Sürüm: `pubspec.yaml` → `version: 1.0.0+1` (mağaza için her yüklemede `+N
 |---|---|
 | "Bağlı değil, deneniyor…" | Adres yanlış ya da farklı ağ. Telefonun tarayıcısında `http://<ip>:8002` açılıyor mu? |
 | iOS'ta hiç bağlanmıyor | Ayarlar → Yakınlık Panosu → Yerel Ağ izni açık mı? |
-| Kart Ver'de "Yaklaştır" kartı bulmuyor | Kart alıcıya 1 m içinde ve boş (atanmamış) olmalı; iki kart yakınsa birini uzaklaştırın |
+| Kart Ver'de kart "Şu an açık kartlar"da çıkmıyor | Numara yine yazılabilir; kartın açık olduğuna ve alıcının onu duyduğuna Kurulum → Kart sağlığı'ndan bakın. Başka kişide olan kart önce iade alınmalı |
 | Grafik boş | Kurulum açıkken 2 sn içinde dolar; sunucu geçmişi yalnız bu sekmede istenir |

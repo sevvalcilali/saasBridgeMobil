@@ -58,12 +58,7 @@ void main() {
         await tester.tap(sekme('Kart Ver'));
         await denetle('Kart Ver · adım 1');
         await dokun(find.text('Nova Robotik · Cem Erdem'));
-        await denetle('Kart Ver · adım 2 (bekleme)');
-        await dokun(find.text('Demo: boş bir kartı yaklaştır'));
-        await tester.pump(const Duration(milliseconds: 1500));
-        await denetle('Kart Ver · kart bulundu');
-        await dokun(find.text('Numarayı yaz'));
-        await denetle('Kart Ver · numara');
+        await denetle('Kart Ver · adım 2 (numara)');
         await tester.enterText(find.byType(TextField), '14');
         await denetle('Kart Ver · numara yazıldı');
         await dokun(find.text('Bu kartı seç'));

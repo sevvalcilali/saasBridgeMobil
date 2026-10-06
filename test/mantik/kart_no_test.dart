@@ -31,8 +31,8 @@ void main() {
     expect(oner(''), hasLength(9));
     expect(oner('8'), ['88', '89']);
     expect(oner('9'), ['90', '96', '97']);
-    expect(oner('09'), ['90', '96', '97']);
-    expect(oner('0'), hasLength(9));
+    expect(oner('09'), isEmpty); // baştaki sıfır: tam olarak Kart 9 (açık değil)
+    expect(oner('0'), hasLength(9)); // yalnız sıfır: henüz numara yok, hepsi
     expect(oner('3'), isEmpty);
   });
 
@@ -77,15 +77,10 @@ void katilimciTestleri() {
     expect(katilimciKartMetni(Katilimci(kisiId: 'k9', ad: 'Y', rol: Rol.yatirimci, renk: KisiRengi.gri, yildiz: 3)), 'Kart bekliyor · ★★★');
   });
 
-  test('yaklaştır ve tanı: −55 dBm üstü tek boş kart bulunur; iki kart uyarı; atanmış ya da uzak kart sayılmaz', () {
-    const bos = AcikKart('88', rssi: -40, seenAgo: 1);
-    const uzak = AcikKart('12', rssi: -70, seenAgo: 1);
-    const atanmis = AcikKart('14', atanmis: true, rssi: -38, seenAgo: 0);
-    const bayat = AcikKart('30', rssi: -40, seenAgo: 20);
-    expect(yaklastirilanKart([bos, uzak, atanmis, bayat]), (kart: '88', uyari: null));
-    expect(yaklastirilanKart([uzak, atanmis]), (kart: null, uyari: null));
-    final iki = yaklastirilanKart([bos, const AcikKart('89', rssi: -45, seenAgo: 1)]);
-    expect(iki.kart, isNull);
-    expect(iki.uyari, contains('88, 89'));
+  test('açık kart önerisi: numara sırasıyla; yazılan numaranın tam eşi en başta; "03" yalnız Kart 3', () {
+    const kartlar = [AcikKart('30'), AcikKart('5'), AcikKart('3'), AcikKart('31', atanmis: true)];
+    expect(acikKartOner(kartlar, '').map((k) => k.no).toList(), ['3', '5', '30', '31']);
+    expect(acikKartOner(kartlar, '3').map((k) => k.no).toList(), ['3', '30', '31']);
+    expect(acikKartOner(kartlar, '03').map((k) => k.no).toList(), ['3']);
   });
 }

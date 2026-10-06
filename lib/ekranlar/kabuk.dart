@@ -171,8 +171,8 @@ class _KabukState extends State<Kabuk> with WidgetsBindingObserver {
               UyariPenceresi(durum: _uyariDurumu, depo: _depo, onKisi: _kisiDetayiAc),
               Expanded(
                 // Sekme değişince ekran durumu ve kaydırma konumu korunur.
-                // Gizli sekmedeki animasyonlar (Kart Ver nabzı) TickerMode ile
-                // durur; yoksa görünmeden saniyede 60 kare çizilir (pil).
+                // Gizli sekmedeki animasyonlar TickerMode ile durur; yoksa
+                // görünmeden kare çizilmeye devam eder (telefonun şarjı).
                 child: IndexedStack(
                   index: _sekme,
                   children: [

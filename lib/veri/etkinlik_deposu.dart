@@ -52,7 +52,7 @@ abstract class EtkinlikDeposu extends ChangeNotifier {
   /// Kayıtlı kişiler (kartı olsun olmasın): Kart Ver ve İade.
   List<Katilimci> get katilimcilar;
 
-  /// Sahte veriyle mi çalışıyor (Kart Ver'de "Demo: kartı yaklaştır" düğmesi yalnız o zaman).
+  /// Sahte veriyle mi çalışıyor (Kurulum'daki demo düğmeleri ve yerel grafik yalnız o zaman).
   bool get demo;
 
   /// Sıfırla'dan bu yana geçen saniye; "birlikte" süreleri bununla akar (sunucuda hep 0: süre sunucudan gelir).

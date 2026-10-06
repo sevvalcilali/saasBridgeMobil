@@ -18,7 +18,6 @@ void main() {
     expect(ayse.renk, KisiRengi.mavi); // #3987e5
     expect(ayse.kurum, 'Atlas Ventures');
     expect(ayse.yildiz, 3);
-    expect(ayse.pil, isNull); // durumda pil yok; kartlardan gelir
   });
 
   test('kayıtsız kart ("Kart 14") adsız kişidir', () {
@@ -103,11 +102,6 @@ void main() {
     expect(SunucuDurumu.ayristir({...ornek(), 'receiverAge': 4.9}).aliciBagli, isTrue);
   });
 
-  test('kart pilleri verilirse kişiye yazılır', () {
-    final d = SunucuDurumu.ayristir(ornek(), piller: {'84': 63});
-    expect(d.kisiler.firstWhere((k) => k.id == '84').pil, 63);
-    expect(d.kisiler.firstWhere((k) => k.id == '14').pil, isNull);
-  });
 
   test('bilinmeyen sunucu rengi griye düşer; 100+ dinleyici kartlar atılır', () {
     final d = SunucuDurumu.ayristir({

@@ -6,8 +6,8 @@ kişi formu ve uyarı kuralı formu.
 
 Uygulama gerçek sunucuya (saasBridgeBackend, `/state` + `/events`) bağlanır: adres Kurulum → Sunucu'dan
 girilir ve telefonda kalır. Kart Ver / İade / Geri al / Sıfırla / eşik sunucuya gider (`/api/assign`,
-`/api/unassign`, `/control`); "Yaklaştır ve tanı" alıcının duyduğu kartlardan bulur. Adres boş bırakılırsa
-gömülü sahte veriyle çalışır: işlemler yalnız bant gösterir, yaklaştırma demo düğmesiyle.
+`/api/unassign`, `/control`); kart, üstündeki numara yazılarak verilir (şu an açık kartlar önerilir).
+Adres boş bırakılırsa gömülü sahte veriyle çalışır: işlemler yalnız bant gösterir.
 
 ## Çalıştırma
 

@@ -24,14 +24,18 @@ bool numaraGecerli(String girdi) {
 /// Rakam dışındaki her şeyi atar.
 String yalnizRakam(String girdi) => girdi.replaceAll(_rakamDisi, '');
 
-/// "Şu an açık kartlar" ızgarası: girilen numarayla başlayanlar (boş girdi → hepsi).
+/// "Şu an açık kartlar" ızgarası (kart numarayla verilir; "yaklaştır" yok, 07.10.2026): numara sırasıyla, girilen
+/// numarayla başlayanlar; tam eşi en başta. Baştaki sıfırla yazılan ("03") tam numaradır: yalnız o kart.
 List<AcikKart> acikKartOner(List<AcikKart> kartlar, String numara) {
-  if (numara.isEmpty) return kartlar;
+  final sirali = [...kartlar]..sort((a, b) => (int.tryParse(a.no) ?? 0).compareTo(int.tryParse(b.no) ?? 0));
+  if (numara.isEmpty) return sirali;
   final onEk = numaraTemizle(numara);
-  return [
-    for (final k in kartlar)
-      if (k.no.startsWith(onEk)) k,
+  if (onEk.isEmpty) return sirali; // yalnız sıfır yazıldı: henüz numara yok
+  final eslesen = [
+    for (final k in sirali)
+      if (onEk == numara ? k.no.startsWith(onEk) : k.no == onEk) k,
   ];
+  return [...eslesen.where((k) => k.no == onEk), ...eslesen.where((k) => k.no != onEk)];
 }
 
 String acikKartEtiketi(AcikKart k) => k.atanmis ? 'atanmış' : 'boşta';
@@ -58,18 +62,4 @@ String katilimciKartMetni(Katilimci k) {
   final kart = k.atananKart;
   final metin = kart == null ? (k.ayrildi ? 'Ayrıldı' : 'Kart bekliyor') : 'Kart $kart';
   return k.yildiz > 0 ? '$metin · ${'★' * k.yildiz}' : metin;
-}
-
-/// "Yaklaştır ve tanı" (sözleşme §3): alıcıya −55 dBm'den güçlü duyulan tek boş kart bulunmuş sayılır;
-/// iki ve daha çoksa "birini uzaklaştırın".
-const int yaklastirmaEsigi = -55;
-
-({String? kart, String? uyari}) yaklastirilanKart(List<AcikKart> kartlar) {
-  final yakin = [
-    for (final k in kartlar)
-      if (!k.atanmis && (k.rssi ?? -999) > yaklastirmaEsigi && k.seenAgo <= 8) k.no,
-  ];
-  if (yakin.length == 1) return (kart: yakin.single, uyari: null);
-  if (yakin.length > 1) return (kart: null, uyari: 'Birden çok kart yakın (${yakin.join(', ')}); birini uzaklaştırın.');
-  return (kart: null, uyari: null);
 }

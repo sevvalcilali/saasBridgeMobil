@@ -3,12 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:yakinlik_mobil/ekranlar/kart_ver/adim_gostergesi.dart';
 import 'package:yakinlik_mobil/ekranlar/kart_ver/kart_ver_durumu.dart';
 import 'package:yakinlik_mobil/ekranlar/kart_ver/kart_ver_ekrani.dart';
-import 'package:yakinlik_mobil/ekranlar/kart_ver/nabiz.dart';
 import 'package:yakinlik_mobil/veri/etkinlik_deposu.dart';
 
 import '../yardimci.dart';
 
-// Not: Nabız sonsuz bir animasyondur; bu dosyada pumpAndSettle KULLANILMAZ.
+// Not: Kart Ver'de sonsuz animasyon yok (nabız kalktı, 07.10.2026).
 
 class _Kurulum {
   _Kurulum(WidgetTester tester) : depo = EtkinlikDeposu() {
@@ -63,41 +62,24 @@ void main() {
     expect(find.text('Peak Enerji · İrem Korkmaz'), findsOneWidget);
   });
 
-  testWidgets('kişi seçince adım 2: bekleme görünümü', (tester) async {
+  testWidgets('kişi seçince adım 2: yalnız kart numarası alanı ve açık kartlar (yaklaştır yok)', (tester) async {
     await _kisiSecili(tester);
     expect(find.text('Kişi: $_cem'), findsOneWidget);
-    expect(find.text('Yaklaştır ve tanı'), findsOneWidget);
-    expect(find.text('önerilen'), findsOneWidget);
-    expect(find.text('Numarayı yaz'), findsOneWidget);
-    expect(find.byType(Nabiz), findsOneWidget);
-    expect(find.text('Kartı alıcıya yaklaştırın…'), findsOneWidget);
-    expect(find.text('Demo: boş bir kartı yaklaştır'), findsOneWidget);
+    expect(find.text('Kart numarası (kartın üstündeki etiket)'), findsOneWidget);
+    expect(find.text('ŞU AN AÇIK KARTLAR'), findsOneWidget);
+    expect(find.textContaining('aklaştır'), findsNothing);
+    expect(find.textContaining('Demo'), findsNothing);
     expect(find.text('← Kişi'), findsOneWidget);
-    expect(find.text('Bu kartı seç'), findsNothing);
+    expect(find.text('Bu kartı seç'), findsNothing); // numara yazılmadı
   });
 
-  testWidgets('demo yaklaştırma: 1,4 sn sonra kart bulunur; seçince Kontrol adımı', (tester) async {
+  testWidgets('numara yazıp klavyede Bitti: Kontrol adımı', (tester) async {
     await _kisiSecili(tester);
-    await tester.tap(find.text('Demo: boş bir kartı yaklaştır'));
-    await tester.pump(const Duration(milliseconds: 1000));
-    expect(find.text('Kart 88 bulundu ✓'), findsNothing);
-    await tester.pump(const Duration(milliseconds: 400));
-    await tester.pump();
-    expect(find.text('Kart 88 bulundu ✓'), findsOneWidget);
-    expect(find.text('Açık · az önce duyuldu · boşta'), findsOneWidget);
-    expect(find.byType(Nabiz), findsNothing);
-
-    await tester.tap(find.text('Bu kartı seç'));
+    await tester.enterText(find.byType(TextField), '88');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pump();
     expect(find.text('Kontrol'), findsOneWidget);
-    expect(find.text('Durum'), findsOneWidget);
-    expect(find.text('Açık'), findsOneWidget);
-    expect(find.text('Son duyulma'), findsOneWidget);
-    expect(find.text('az önce'), findsOneWidget);
-    expect(find.text('boşta'), findsOneWidget); // kart 88 açık kartlarda boşta
     expect(find.text('$_cem → Kart 88'), findsOneWidget);
-    expect(find.text('← Kart'), findsOneWidget);
-    expect(find.text('Onayla'), findsOneWidget);
   });
 
   testWidgets('onayla: son atama bandı ve adım 1; geri al: bilgi bandı', (tester) async {
@@ -119,8 +101,6 @@ void main() {
 
   testWidgets('numara yolu: geçersiz numarada düğme yok; geçerli numarayla seçilir', (tester) async {
     await _kisiSecili(tester);
-    await tester.tap(find.text('Numarayı yaz'));
-    await tester.pump();
     expect(find.text('Kart numarası (kartın üstündeki etiket)'), findsOneWidget);
     expect(find.text('ŞU AN AÇIK KARTLAR'), findsOneWidget);
     expect(find.text('9'), findsOneWidget);
@@ -145,8 +125,6 @@ void main() {
 
   testWidgets('numara alanı harf kabul etmez; ızgara ön eke göre süzülür', (tester) async {
     final k = await _kisiSecili(tester);
-    await tester.tap(find.text('Numarayı yaz'));
-    await tester.pump();
     await tester.enterText(find.byType(TextField), '8a');
     await tester.pump();
     expect(k.durum.numaraDenetleyici.text, '8');
@@ -157,8 +135,6 @@ void main() {
 
   testWidgets('açık karta dokununca Kontrol adımına geçer', (tester) async {
     await _kisiSecili(tester);
-    await tester.tap(find.text('Numarayı yaz'));
-    await tester.pump();
     await tester.tap(find.text('Kart 89'));
     await tester.pump();
     expect(find.text('$_cem → Kart 89'), findsOneWidget);
@@ -174,31 +150,6 @@ void main() {
     await tester.tap(find.text('← Kişi'));
     await tester.pump();
     expect(find.text('Düzenle'), findsNWidgets(25));
-  });
-
-  testWidgets('demo beklerken geri dönülürse eski kart sonradan belirmez (S16)', (tester) async {
-    await _kisiSecili(tester);
-    await tester.tap(find.text('Demo: boş bir kartı yaklaştır'));
-    await tester.pump(const Duration(milliseconds: 500));
-    await tester.tap(find.text('← Kişi'));
-    await tester.pump(const Duration(seconds: 2));
-    await tester.tap(find.text('Peak Enerji · İrem Korkmaz'));
-    await tester.pump(const Duration(seconds: 2));
-    expect(find.text('Kişi: Peak Enerji · İrem Korkmaz'), findsOneWidget);
-    expect(find.text('Kartı alıcıya yaklaştırın…'), findsOneWidget);
-    expect(find.text('Kart 88 bulundu ✓'), findsNothing);
-  });
-
-  testWidgets('yaklaştır modunda alttaki "Bu kartı seç" görünmez (S13)', (tester) async {
-    await _kisiSecili(tester);
-    await tester.tap(find.text('Numarayı yaz'));
-    await tester.pump();
-    await tester.enterText(find.byType(TextField), '14');
-    await tester.pump();
-    expect(find.text('Bu kartı seç'), findsOneWidget);
-    await tester.tap(find.text('Yaklaştır ve tanı'));
-    await tester.pump();
-    expect(find.text('Bu kartı seç'), findsNothing);
   });
 
   testWidgets('Kart iadesi: liste, onay kutusu, vazgeç ve iade al', (tester) async {
@@ -282,7 +233,6 @@ void main() {
     final k = _Kurulum(tester);
     await tester.pumpWidget(k.widget);
     k.durum.kisiSec('k24');
-    k.durum.kartModuSec(KartSecimModu.numara);
     await tester.pump();
     await tester.tap(find.text('Kart 61')); // atanmış
     await tester.pump();
@@ -303,11 +253,4 @@ void main() {
     expect(find.text('Düzenle'), findsNWidgets(25));
   });
 
-  testWidgets('"hareketi azalt" açıkken nabız sabit durur', (tester) async {
-    await tester.pumpWidget(
-      temali(const MediaQuery(data: MediaQueryData(disableAnimations: true), child: Center(child: Nabiz()))),
-    );
-    await tester.pumpAndSettle(); // sonsuz animasyon olsaydı zaman aşımına düşerdi
-    expect(find.byType(Nabiz), findsOneWidget);
-  });
 }

@@ -20,8 +20,8 @@ void main() {
   setUp(() async {
     s = await SahteSunucu.ac(durum: _durum);
     s.akisMesajlari = null; // akış açık kalır; mesajlar yayinla ile gelir
-    s.kartlarYaniti = '[{"kart":"2","rssiAlici":-60,"seenAgo":0.5,"atanan":"k1","pil":35},{"kart":"9","rssiAlici":-70,"seenAgo":1,"atanan":null,"pil":80},'
-        '{"kart":"101","rssiAlici":-40,"seenAgo":0.2,"atanan":null,"pil":90},{"kart":"12","rssiAlici":-90,"seenAgo":75,"atanan":"k2","pil":50}]';
+    s.kartlarYaniti = '[{"kart":"2","rssiAlici":-60,"seenAgo":0.5,"atanan":"k1"},{"kart":"9","rssiAlici":-70,"seenAgo":1,"atanan":null},'
+        '{"kart":"101","rssiAlici":-40,"seenAgo":0.2,"atanan":null},{"kart":"12","rssiAlici":-90,"seenAgo":75,"atanan":"k2"}]';
     s.kisilerYaniti = '[{"kisiId":"k1","ad":"Ayşe Demir","rol":"investor","kurum":"Atlas","yildiz":4,"renk":"#3987e5","atananKart":"2","ayrildi":false},'
         '{"kisiId":"k2","ad":"Ali Kaya","rol":"founder","kurum":"","yildiz":0,"renk":"#d95926","atananKart":null,"ayrildi":false},'
         '{"kisiId":"k3","ad":"Gitti","rol":"guest","kurum":"","yildiz":0,"renk":"#898781","atananKart":null,"ayrildi":true}]';
@@ -51,7 +51,6 @@ void main() {
     expect(d.tick, 0);
     expect(d.bul('2').ile, '3');
     expect(d.bul('2').sn, 90);
-    expect(d.bul('2').pil, 35); // /api/cards'tan
     expect(d.bildirimler.single.onem, Onem.olumlu);
     expect(d.ciftler.single.rssi, -60);
     expect(d.duyulanKartSayisi, 2); // 101 dinleyici cihaz, sayılmaz
@@ -59,7 +58,6 @@ void main() {
     expect(d.katilimcilar.map((k) => k.kisiId).toList(), ['k1', 'k2', 'k3']);
     expect(d.katilimcilar[0].kurum, 'Atlas');
     expect(d.katilimcilar[1].kartBekliyor, isTrue);
-    expect(d.acikKartlar.first.rssi, -60);
     expect(d.demo, isFalse);
     expect(d.acikKartlar.map((k) => (k.no, k.atanmis)).toList(), [('2', true), ('9', false)]);
     expect(d.seriRenkleri, hasLength(1));

@@ -13,32 +13,32 @@ abstract final class SahteVeri {
   static const kayitliKatilimci = 25;
 
   static const kisiler = <Kisi>[
-    Kisi(id: '24', ad: 'Cem Erdem', kurum: 'Nova Robotik', rol: Rol.girisimci, renk: KisiRengi.hardal, ile: '19', sn: 19, pil: 92),
-    Kisi(id: '31', ad: 'İrem Korkmaz', kurum: 'Peak Enerji', rol: Rol.girisimci, renk: KisiRengi.pembe, ile: '65', sn: 74, pil: 81),
-    Kisi(id: '33', ad: 'Onur Çelik', kurum: 'Bitki Teknoloji', rol: Rol.girisimci, renk: KisiRengi.mor, ile: '46', sn: 15, pil: 77),
-    Kisi(id: '35', ad: 'Gizem Polat', kurum: 'Akıllı Tarım', rol: Rol.girisimci, renk: KisiRengi.mercan, ile: '71', sn: 59, pil: 88),
-    Kisi(id: '37', ad: 'Ece Arslan', kurum: 'Sağlık Cebi', rol: Rol.girisimci, renk: KisiRengi.turuncu, ile: '61', sn: 59, pil: 69),
-    Kisi(id: '39', ad: 'Tolga Koç', kurum: 'Hızlı Kargo', rol: Rol.girisimci, renk: KisiRengi.petrol, ile: '47', sn: 72, pil: 90),
-    Kisi(id: '41', ad: 'Naz Özkan', kurum: 'Temiz Deniz', rol: Rol.girisimci, renk: KisiRengi.hardal, ile: '4', sn: 70, pil: 83),
-    Kisi(id: '43', ad: 'Pelin Güneş', kurum: 'Fin Radar', rol: Rol.girisimci, renk: KisiRengi.mor, ile: '52', sn: 64, pil: 95),
-    Kisi(id: '45', ad: 'Uğur Demir', kurum: 'Eğitim Yıldızı', rol: Rol.girisimci, renk: KisiRengi.mercan, ile: '58', sn: 71, pil: 72),
-    Kisi(id: '5', ad: 'Aslı Kılıç', kurum: 'Şehir Sensör', rol: Rol.girisimci, renk: KisiRengi.mavi, ile: '44', sn: 19, pil: 65),
-    Kisi(id: '49', ad: 'Can Yıldız', kurum: 'Veri Köprüsü', rol: Rol.girisimci, renk: KisiRengi.mavi, pil: 84, hic: true),
-    Kisi(id: '51', ad: 'Serkan Doğan', kurum: 'Oyun Evreni', rol: Rol.girisimci, renk: KisiRengi.pembe, pil: 86, hic: true),
-    Kisi(id: '61', ad: 'Ayşe Demir', rol: Rol.yatirimci, renk: KisiRengi.mavi, yildiz: 4, ile: '37', sn: 59, pil: 91),
-    Kisi(id: '46', ad: 'Mehmet Kılıç', rol: Rol.yatirimci, renk: KisiRengi.turuncu, yildiz: 5, ile: '33', sn: 15, pil: 16),
-    Kisi(id: '83', ad: 'Zeynep Tekin', rol: Rol.yatirimci, renk: KisiRengi.petrol, yildiz: 2, pil: 79, hic: true),
-    Kisi(id: '65', ad: 'Emre Kaya', rol: Rol.yatirimci, renk: KisiRengi.hardal, yildiz: 3, ile: '31', sn: 74, pil: 88),
-    Kisi(id: '19', ad: 'Elif Aydın', rol: Rol.yatirimci, renk: KisiRengi.pembe, yildiz: 3, ile: '24', sn: 19, pil: 87),
-    Kisi(id: '52', ad: 'Burak Aksoy', rol: Rol.yatirimci, renk: KisiRengi.mor, yildiz: 4, ile: '43', sn: 64, pil: 93),
-    Kisi(id: '71', ad: 'Selin Şahin', rol: Rol.yatirimci, renk: KisiRengi.mercan, yildiz: 3, ile: '35', sn: 59, pil: 80),
-    Kisi(id: '44', ad: 'Merve Bulut', rol: Rol.yatirimci, renk: KisiRengi.turuncu, yildiz: 2, ile: '5', sn: 19, pil: 76),
-    Kisi(id: '58', ad: 'Deniz Yılmaz', rol: Rol.yatirimci, renk: KisiRengi.petrol, yildiz: 4, ile: '45', sn: 71, pil: 70),
-    Kisi(id: '40', ad: 'Kaan Öztürk', rol: Rol.yatirimci, renk: KisiRengi.mavi, yildiz: 3, pil: 82, gorunmuyor: true),
-    Kisi(id: '47', ad: 'Kerem Tekin', rol: Rol.misafir, renk: KisiRengi.turuncu, ile: '39', sn: 72, pil: 74),
-    Kisi(id: '4', ad: 'Duygu Kaya', rol: Rol.misafir, renk: KisiRengi.petrol, ile: '41', sn: 70, pil: 72),
-    Kisi(id: '22', ad: 'Volkan Aydın', rol: Rol.misafir, renk: KisiRengi.hardal, pil: 87, hic: true),
-    Kisi(id: '14', rol: Rol.misafir, renk: KisiRengi.pembe, pil: 66, hic: true),
+    Kisi(id: '24', ad: 'Cem Erdem', kurum: 'Nova Robotik', rol: Rol.girisimci, renk: KisiRengi.hardal, ile: '19', sn: 19),
+    Kisi(id: '31', ad: 'İrem Korkmaz', kurum: 'Peak Enerji', rol: Rol.girisimci, renk: KisiRengi.pembe, ile: '65', sn: 74),
+    Kisi(id: '33', ad: 'Onur Çelik', kurum: 'Bitki Teknoloji', rol: Rol.girisimci, renk: KisiRengi.mor, ile: '46', sn: 15),
+    Kisi(id: '35', ad: 'Gizem Polat', kurum: 'Akıllı Tarım', rol: Rol.girisimci, renk: KisiRengi.mercan, ile: '71', sn: 59),
+    Kisi(id: '37', ad: 'Ece Arslan', kurum: 'Sağlık Cebi', rol: Rol.girisimci, renk: KisiRengi.turuncu, ile: '61', sn: 59),
+    Kisi(id: '39', ad: 'Tolga Koç', kurum: 'Hızlı Kargo', rol: Rol.girisimci, renk: KisiRengi.petrol, ile: '47', sn: 72),
+    Kisi(id: '41', ad: 'Naz Özkan', kurum: 'Temiz Deniz', rol: Rol.girisimci, renk: KisiRengi.hardal, ile: '4', sn: 70),
+    Kisi(id: '43', ad: 'Pelin Güneş', kurum: 'Fin Radar', rol: Rol.girisimci, renk: KisiRengi.mor, ile: '52', sn: 64),
+    Kisi(id: '45', ad: 'Uğur Demir', kurum: 'Eğitim Yıldızı', rol: Rol.girisimci, renk: KisiRengi.mercan, ile: '58', sn: 71),
+    Kisi(id: '5', ad: 'Aslı Kılıç', kurum: 'Şehir Sensör', rol: Rol.girisimci, renk: KisiRengi.mavi, ile: '44', sn: 19),
+    Kisi(id: '49', ad: 'Can Yıldız', kurum: 'Veri Köprüsü', rol: Rol.girisimci, renk: KisiRengi.mavi, hic: true),
+    Kisi(id: '51', ad: 'Serkan Doğan', kurum: 'Oyun Evreni', rol: Rol.girisimci, renk: KisiRengi.pembe, hic: true),
+    Kisi(id: '61', ad: 'Ayşe Demir', rol: Rol.yatirimci, renk: KisiRengi.mavi, yildiz: 4, ile: '37', sn: 59),
+    Kisi(id: '46', ad: 'Mehmet Kılıç', rol: Rol.yatirimci, renk: KisiRengi.turuncu, yildiz: 5, ile: '33', sn: 15),
+    Kisi(id: '83', ad: 'Zeynep Tekin', rol: Rol.yatirimci, renk: KisiRengi.petrol, yildiz: 2, hic: true),
+    Kisi(id: '65', ad: 'Emre Kaya', rol: Rol.yatirimci, renk: KisiRengi.hardal, yildiz: 3, ile: '31', sn: 74),
+    Kisi(id: '19', ad: 'Elif Aydın', rol: Rol.yatirimci, renk: KisiRengi.pembe, yildiz: 3, ile: '24', sn: 19),
+    Kisi(id: '52', ad: 'Burak Aksoy', rol: Rol.yatirimci, renk: KisiRengi.mor, yildiz: 4, ile: '43', sn: 64),
+    Kisi(id: '71', ad: 'Selin Şahin', rol: Rol.yatirimci, renk: KisiRengi.mercan, yildiz: 3, ile: '35', sn: 59),
+    Kisi(id: '44', ad: 'Merve Bulut', rol: Rol.yatirimci, renk: KisiRengi.turuncu, yildiz: 2, ile: '5', sn: 19),
+    Kisi(id: '58', ad: 'Deniz Yılmaz', rol: Rol.yatirimci, renk: KisiRengi.petrol, yildiz: 4, ile: '45', sn: 71),
+    Kisi(id: '40', ad: 'Kaan Öztürk', rol: Rol.yatirimci, renk: KisiRengi.mavi, yildiz: 3, gorunmuyor: true),
+    Kisi(id: '47', ad: 'Kerem Tekin', rol: Rol.misafir, renk: KisiRengi.turuncu, ile: '39', sn: 72),
+    Kisi(id: '4', ad: 'Duygu Kaya', rol: Rol.misafir, renk: KisiRengi.petrol, ile: '41', sn: 70),
+    Kisi(id: '22', ad: 'Volkan Aydın', rol: Rol.misafir, renk: KisiRengi.hardal, hic: true),
+    Kisi(id: '14', rol: Rol.misafir, renk: KisiRengi.pembe, hic: true),
   ];
 
   /// Kayıtlı kişiler: adı olan her kart bir katılımcı (kisiId = "k" + kart no), kartı atanmış.
@@ -50,11 +50,11 @@ abstract final class SahteVeri {
 
   static const bildirimler = <Bildirim>[
     Bildirim(
-      baslik: 'Pil düşük',
-      detay: 'Kart 46 · Mehmet Kılıç · %16 — kartı masada değiştirin',
+      baslik: 'Hiç görüşmedi',
+      detay: 'Anadolu Fonu · Zeynep Tekin ★★ henüz kimseyle birlikte olmadı',
       saat: '15:09',
       onem: Onem.uyari,
-      kisiler: ['46'],
+      kisiler: ['83'],
     ),
     Bildirim(
       baslik: 'Yeni görüşme',
@@ -100,6 +100,12 @@ abstract final class SahteVeri {
     KisiRengi.mor,
     KisiRengi.turuncu,
     KisiRengi.mercan,
+  ];
+
+  /// Alıcının bildiği tüm kartlar (kart sağlığı): kişi kartları (görünmeyen 3 dk önce duyuldu) + masadaki yedekler.
+  static List<AcikKart> get tumKartlar => [
+    for (final k in kisiler) AcikKart(k.id, atanmis: k.ad != null, seenAgo: k.gorunmuyor ? 180 : 1),
+    for (final k in acikKartlar) if (!k.atanmis) k,
   ];
 
   static const acikKartlar = <AcikKart>[

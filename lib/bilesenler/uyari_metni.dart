@@ -4,7 +4,7 @@ import '../tema/renkler.dart';
 
 // "⚠" yazı simgesi Android'de renkli emoji olarak çizilir. Ekranda her "⚠",
 // yazıyla aynı boyut ve renkte Material uyarı ikonuyla değiştirilir (şartname
-// §10). Mantık katmanı metni "⚠ pil düşük" diye üretmeye devam eder; değişim
+// §10). Mantık katmanı metni "⚠ duyulmuyor" diye üretmeye devam eder; değişim
 // yalnız görünümdedir.
 
 const String _uyariIsareti = '⚠';
