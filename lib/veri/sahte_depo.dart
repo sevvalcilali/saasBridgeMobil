@@ -8,13 +8,14 @@ import 'sahte_veri.dart';
 /// Gömülü sahte veriyle çalışan depo: saati kendi yürütür, işlemler veriyi değiştirmez.
 /// Sunucusuz deneme ve testler için; `EtkinlikDeposu()` bunu kurar.
 class SahteDepo extends EtkinlikDeposu {
-  SahteDepo({bool? aliciBagli, List<Bildirim>? bildirimler})
+  SahteDepo({bool? aliciBagli, this.sunucuBagli = true, List<Bildirim>? bildirimler})
     : aliciBagli = aliciBagli ?? const bool.fromEnvironment('ALICI_BAGLI', defaultValue: true),
       bildirimler = bildirimler ?? SahteVeri.bildirimler,
       super.temel();
 
+  /// Testlerde kopuk bandını göstermek için false verilir.
   @override
-  bool get sunucuBagli => true;
+  final bool sunucuBagli;
   @override
   final bool aliciBagli;
   @override

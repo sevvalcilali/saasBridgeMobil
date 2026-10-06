@@ -11,7 +11,7 @@ import '../yardimci.dart';
 void main() {
   testWidgets('uyarılar emoji değil ikon: kopuk bandı, kart sağlığı, rapor', (tester) async {
     telefonBoyutu(tester);
-    final depo = EtkinlikDeposu(aliciBagli: false);
+    final depo = EtkinlikDeposu(aliciBagli: false, sunucuBagli: false);
     addTearDown(depo.dispose);
     await tester.pumpWidget(YakinlikUygulamasi(depo: depo));
 

@@ -5,6 +5,8 @@ import 'package:yakinlik_mobil/ekranlar/kabuk.dart';
 import 'package:yakinlik_mobil/ekranlar/kisi_detayi/kisi_detay_sayfasi.dart';
 import 'package:yakinlik_mobil/uygulama.dart';
 import 'package:yakinlik_mobil/veri/etkinlik_deposu.dart';
+import 'package:yakinlik_mobil/veri/sunucu_deposu.dart';
+import 'package:yakinlik_mobil/veri/sunucu_istemcisi.dart';
 
 import '../yardimci.dart';
 
@@ -154,15 +156,27 @@ void main() {
     expect(find.text('● Alıcı bağlı'), findsOneWidget);
   });
 
-  testWidgets('alıcı kopukken bant her sekmede görünür; son veri gösterilmeye devam eder', (tester) async {
+  testWidgets('alıcı kopukken yalnız etiket değişir; sunucu bandı çıkmaz (sunucu ayrı şey)', (tester) async {
     await _baslat(tester, aliciBagli: false);
-    expect(find.textContaining(_bantMetni), findsOneWidget);
+    expect(find.textContaining(_bantMetni), findsNothing);
     expect(find.text('● Alıcı yok'), findsOneWidget);
     expect(find.byType(BasiliOpaklik), findsNWidgets(12));
     await tester.tap(_sekme('Rapor'));
     await tester.pump();
-    expect(find.textContaining(_bantMetni), findsOneWidget);
+    expect(find.textContaining(_bantMetni), findsNothing);
     expect(find.text('8 dk 42 sn'), findsOneWidget);
+  });
+
+  testWidgets('sunucuya bağlı değilken bant her sekmede görünür; son veri kalır', (tester) async {
+    telefonBoyutu(tester);
+    final depo = SunucuDeposu(SunucuIstemcisi('http://127.0.0.1:1')); // baslat çağrılmaz: bağlı değil
+    addTearDown(depo.dispose);
+    await tester.pumpWidget(YakinlikUygulamasi(depo: depo));
+    await tester.pump();
+    expect(find.textContaining(_bantMetni), findsOneWidget);
+    await tester.tap(_sekme('Rapor'));
+    await tester.pump();
+    expect(find.textContaining(_bantMetni), findsOneWidget);
   });
 
   testWidgets('sistem yazı ölçeği 1.3 ile sınırlanır', (tester) async {

@@ -156,4 +156,26 @@ void main() {
     expect(_grafik(), paints..path());
     expect(find.text('27 · 28'), findsOneWidget);
   });
+
+  testWidgets('sunucu bölümü: adres yazılıp Bağlan\'a basılınca düzeltilmiş adres geri çağrıya gider', (tester) async {
+    telefonBoyutu(tester);
+    final depo = EtkinlikDeposu();
+    addTearDown(depo.dispose);
+    String? alinan;
+    await tester.pumpWidget(temali(KurulumEkrani(depo: depo, sunucuAdresi: '', onSunucuAdresi: (a) => alinan = a)));
+    expect(find.text('SUNUCU'), findsOneWidget);
+    expect(find.text('Sahte veri (sunucu yok)'), findsOneWidget);
+    await tester.enterText(find.byType(TextField).first, '192.168.1.10');
+    await tester.tap(find.text('Bağlan'));
+    await tester.pump();
+    expect(alinan, 'http://192.168.1.10:8002');
+  });
+
+  testWidgets('sunucu bölümü: adres varken bağlı/bağlı değil yazar', (tester) async {
+    telefonBoyutu(tester);
+    final depo = EtkinlikDeposu();
+    addTearDown(depo.dispose);
+    await tester.pumpWidget(temali(KurulumEkrani(depo: depo, sunucuAdresi: 'http://10.0.0.5:8002', onSunucuAdresi: (_) {})));
+    expect(find.text('● Bağlı'), findsOneWidget); // sahte depo hep bağlı
+  });
 }

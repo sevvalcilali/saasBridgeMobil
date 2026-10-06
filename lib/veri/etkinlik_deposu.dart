@@ -12,7 +12,7 @@ abstract class EtkinlikDeposu extends ChangeNotifier {
 
   /// Varsayılan: sahte veri. `aliciBagli` verilmezse derleme değişkeni okunur
   /// (`--dart-define=ALICI_BAGLI=false` kopuk durumu gösterir); `bildirimler` yalnız testlerde.
-  factory EtkinlikDeposu({bool? aliciBagli, List<Bildirim>? bildirimler}) = SahteDepo;
+  factory EtkinlikDeposu({bool? aliciBagli, bool sunucuBagli, List<Bildirim>? bildirimler}) = SahteDepo;
 
   /// Sunucuyla bağlantı var mı (sahte veride hep var). Yoksa üstte bant çıkar, son veri kalır.
   bool get sunucuBagli;

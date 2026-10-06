@@ -6,6 +6,16 @@
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<!-- Pano sunucusu yerel ağda http:// ile çalışır (şifresiz); iOS buna izin vermez, açıkça izin verilir. -->
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Yakınlık Panosu sunucusuna aynı Wi-Fi üzerinden bağlanmak için.</string>
 	<key>CFBundleDisplayName</key>
 	<string>Yakınlık Panosu</string>
 	<key>CFBundleExecutable</key>

@@ -6,6 +6,7 @@ import '../tema/olculer.dart';
 import '../tema/renkler.dart';
 import '../tema/yazi.dart';
 import '../veri/etkinlik_deposu.dart';
+import '../veri/sunucu_ayari.dart';
 import 'kart_ver/kart_ver_durumu.dart';
 import 'kart_ver/kart_ver_ekrani.dart';
 import 'kisi_detayi/kisi_detay_sayfasi.dart';
@@ -30,10 +31,13 @@ class _KabukState extends State<Kabuk> with WidgetsBindingObserver {
   static const int _sekmeKartVer = 1;
   static const int _sekmeKurulum = 2;
 
-  late final EtkinlikDeposu _depo;
+  late EtkinlikDeposu _depo;
   late final PanoDurumu _panoDurumu;
-  late final KartVerDurumu _kartVerDurumu;
+  late KartVerDurumu _kartVerDurumu;
   int _sekme = 0;
+
+  /// Kayıtlı sunucu adresi; boş = sahte veri.
+  String _sunucuAdresi = '';
 
   @override
   void initState() {
@@ -42,6 +46,24 @@ class _KabukState extends State<Kabuk> with WidgetsBindingObserver {
     _panoDurumu = PanoDurumu();
     _kartVerDurumu = KartVerDurumu(_depo);
     WidgetsBinding.instance.addObserver(this);
+    // Kayıtlı adres varsa sahte veriden sunucuya geçilir (ayar okunana dek sahte veri görünür).
+    if (widget.depo == null) SunucuAyari.oku().then(_sunucuyaBaglan);
+  }
+
+  /// Kurulum → Sunucu → Bağlan: depo değişir (eski kapatılır), Kart Ver durumu yeni depoyla kurulur.
+  Future<void> _sunucuyaBaglan(String adres) async {
+    if (!mounted || adres == _sunucuAdresi) return;
+    final eskiDepo = _depo;
+    final eskiKartVer = _kartVerDurumu;
+    final yeni = depoKur(adres)..baslat();
+    setState(() {
+      _sunucuAdresi = adres;
+      _depo = yeni;
+      _kartVerDurumu = KartVerDurumu(yeni);
+    });
+    eskiKartVer.dispose();
+    eskiDepo.dispose();
+    await SunucuAyari.yaz(adres);
   }
 
   /// Şartname §10: arka planda saat durur, dönünce kaldığı yerden sürer
@@ -98,7 +120,10 @@ class _KabukState extends State<Kabuk> with WidgetsBindingObserver {
           bottom: false,
           child: Column(
             children: [
-              if (!_depo.aliciBagli) const KopukBandi(),
+              ListenableBuilder(
+                listenable: _depo,
+                builder: (context, _) => _depo.sunucuBagli ? const SizedBox.shrink() : const KopukBandi(),
+              ),
               Expanded(
                 // Sekme değişince ekran durumu ve kaydırma konumu korunur.
                 // Gizli sekmedeki animasyonlar (Kart Ver nabzı) TickerMode ile
@@ -114,7 +139,7 @@ class _KabukState extends State<Kabuk> with WidgetsBindingObserver {
                         onKurulumaGit: () => _sekmeSec(_sekmeKurulum),
                       ),
                       KartVerEkrani(depo: _depo, durum: _kartVerDurumu),
-                      KurulumEkrani(depo: _depo),
+                      KurulumEkrani(depo: _depo, sunucuAdresi: _sunucuAdresi, onSunucuAdresi: _sunucuyaBaglan),
                       RaporEkrani(depo: _depo),
                     ].indexed)
                       TickerMode(enabled: i == _sekme, child: ekran),
@@ -139,7 +164,7 @@ class _KabukState extends State<Kabuk> with WidgetsBindingObserver {
   }
 }
 
-/// Alıcı kopukken en üstte görünen bant. Veri silinmez; son veri gösterilir.
+/// Sunucuya bağlanılamıyorken en üstte görünen bant. Veri silinmez; son veri gösterilir.
 class KopukBandi extends StatelessWidget {
   const KopukBandi({super.key});
 
