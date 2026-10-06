@@ -88,4 +88,18 @@ void main() {
     expect(sorunluKartSayisi(SahteVeri.kisiler), 1);
     expect(sorunluKartSayisi(const []), 0);
   });
+
+  test('grafikSerileriGecmisten: en güçlü 6 çift, x saniye-önce ile, y dBm; geçmişi olmayan çift tek nokta', () {
+    final gecmis = {
+      '2-3': [(90, -60.0), (45, -62.0), (0, -58.0)],
+      '4-5': [(10, -80.0), (0, -81.0)],
+    };
+    final seriler = grafikSerileriGecmisten(gecmis, const [Cift('2', '3', -58), Cift('4', '5', -81), Cift('6', '7', -90)], renkler, 362, 150, 90);
+    expect(seriler.map((s) => s.ad).toList(), ['2 · 3', '4 · 5', '6 · 7']);
+    final ilk = seriler.first.noktalar;
+    expect(ilk.first.x, closeTo(grafikSolBosluk, 1e-9)); // 90 sn önce solda
+    expect(ilk.last.x, closeTo(362, 1e-9)); // şimdi sağda
+    expect(ilk.last.y, closeTo(grafikY(-58, 150), 1e-9));
+    expect(seriler.last.noktalar, hasLength(1)); // geçmiş yok: yalnız şimdiki değer
+  });
 }

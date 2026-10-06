@@ -164,7 +164,7 @@ void main() {
     await tester.tap(_sekme('Rapor'));
     await tester.pump();
     expect(find.textContaining(_bantMetni), findsNothing);
-    expect(find.text('8 dk 42 sn'), findsOneWidget);
+    expect(find.text('6 dk 20 sn'), findsOneWidget); // yatırımcı–girişimci toplamı
   });
 
   testWidgets('sunucuya bağlı değilken bant her sekmede görünür; son veri kalır', (tester) async {

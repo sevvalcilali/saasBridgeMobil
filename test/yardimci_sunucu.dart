@@ -26,6 +26,7 @@ class SahteSunucu {
   String kisilerYaniti = '[{"kisiId":"k1"}]';
   String kartlarYaniti = '[]';
   String kurallarYaniti = '[]';
+  String oturumlarYaniti = '[]';
 
   /// Verilirse sonraki yazma isteği bu kodla `{ok:false, hata}` döner (sözleşmedeki hata biçimi).
   (int, String)? hata;
@@ -93,6 +94,7 @@ class SahteSunucu {
           ('/api/people', true) => '{"kisiId":"k9","ad":"Yeni"}',
           ('/api/cards', _) => kartlarYaniti,
           ('/api/rules', false) => kurallarYaniti,
+          ('/api/sessions', false) => oturumlarYaniti,
           ('/api/rules', true) => '{"kuralId":"r9","ad":"Yeni","kim":{"rol":"herkes","enAzYildiz":0},"kiminle":{"rol":"herkes","enAzYildiz":0},"dakika":0,"acik":true}',
           _ => yol.startsWith('/api/people/')
               ? '{"kisiId":"k1"}'

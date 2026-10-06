@@ -75,8 +75,9 @@ class SunucuIstemcisi {
     return Duration(milliseconds: ms.clamp(0, _enUzunBekleme.inMilliseconds));
   }
 
-  Future<Map<String, dynamic>> durumAl() async =>
-      (await _json(await _istek('GET', '/state$_sorgu'))) as Map<String, dynamic>;
+  /// `grafik`: Kurulum grafiğinin geçmişi de gelsin (büyük; yalnız Kurulum açıkken).
+  Future<Map<String, dynamic>> durumAl({bool grafik = false}) async =>
+      (await _json(await _istek('GET', grafik ? '/state?grafik=1' : '/state$_sorgu'))) as Map<String, dynamic>;
 
   /// Kayıtlı kişiler (`/api/people`): kartı olmayanlar da burada (Kart Ver 1. adım).
   Future<List<Map<String, dynamic>>> kisiler() async =>
@@ -93,6 +94,10 @@ class SunucuIstemcisi {
   /// Yalnız değişen alanlar (`PATCH /api/people/{kisiId}`).
   Future<Map<String, dynamic>> kisiGuncelle(String kisiId, Map<String, Object?> govde) async =>
       (await _jsonYaz('PATCH', '/api/people/${Uri.encodeComponent(kisiId)}', govde)) as Map<String, dynamic>;
+
+  /// Görüşme kayıtları (sözleşme §6).
+  Future<List<Map<String, dynamic>>> oturumlar() async =>
+      ((await _json(await _istek('GET', '/api/sessions'))) as List).cast<Map<String, dynamic>>();
 
   /// Uyarı kuralları (sözleşme §10).
   Future<List<Map<String, dynamic>>> kurallar() async =>

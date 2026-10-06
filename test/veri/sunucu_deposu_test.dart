@@ -205,4 +205,33 @@ void main() {
     s.hata = (400, 'kim: en az bir kişi seçin');
     expect(await d.kuralEkle({'kim': {'kisiler': <String>[]}}), 'kim: en az bir kişi seçin');
   });
+
+  test('grafikIste: açıkken /state?grafik=1 yoklanır ve geçmiş dolar; kapatınca durur', () async {
+    s.durum = _durum.replaceFirst('"signals"', '"history":{"2-3":[[90,-60.0],[0,-58.0]]},"chartSeconds":90,"signals"');
+    final d = SunucuDeposu(SunucuIstemcisi(s.adres, bekleme: (_) => const Duration(milliseconds: 10)),
+        yoklamaAraligi: const Duration(milliseconds: 60));
+    addTearDown(d.dispose);
+    d.baslat();
+    await bekle(() => d.sunucuBagli);
+    expect(d.gecmis, isEmpty); // akış grafiksiz
+    d.grafikIste(true);
+    await bekle(() => d.gecmis.isNotEmpty);
+    expect(d.gecmis['2-3']!.last, (0, -58.0));
+    expect(s.istekler.where((i) => i == 'GET /state?grafik=1').length, greaterThanOrEqualTo(1));
+    d.grafikIste(false);
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    final sayi = s.istekler.where((i) => i == 'GET /state?grafik=1').length;
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    expect(s.istekler.where((i) => i == 'GET /state?grafik=1').length, sayi);
+  });
+
+  test('oturumlar: /api/sessions ayrıştırılır; gecenSn sunucunun elapsed\'ı', () async {
+    s.oturumlarYaniti = '[{"a":"k1","b":"k2","start":10.5,"end":70.0},{"a":"k1","b":"kart:14","start":80,"end":null}]';
+    final d = depo();
+    d.baslat();
+    await bekle(() => d.sunucuBagli);
+    final o = await d.oturumlar();
+    expect(o.map((x) => (x.a, x.b, x.start, x.end)).toList(), [('k1', 'k2', 10.5, 70.0), ('k1', 'kart:14', 80.0, null)]);
+    expect(d.gecenSn, 65);
+  });
 }

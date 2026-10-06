@@ -18,6 +18,8 @@ class SunucuDurumu {
     required this.canliCiftSayisi,
     required this.canliCiftler,
     required this.gunBoyu,
+    this.gecmis = const {},
+    this.grafikSaniyesi = 90,
   });
 
   final List<Kisi> kisiler;
@@ -39,6 +41,10 @@ class SunucuDurumu {
 
   /// Çiftlerin bugünkü toplam süreleri (kişi detayı "Bugün kiminle").
   final List<GunBoyuCift> gunBoyu;
+
+  /// Sinyal geçmişi (yalnız `?grafik=1`): "a-b" → [(saniye önce, dBm)]; Kurulum grafiği.
+  final Map<String, List<(int, double)>> gecmis;
+  final int grafikSaniyesi;
 
   /// `receiverAge` (sn) bundan büyükse alıcı kopuk sayılır.
   static const double aliciEnCokYasSn = 5;
@@ -88,6 +94,14 @@ class SunucuDurumu {
           if (kisiKartiMi(e['a'] as String) && kisiKartiMi(e['b'] as String))
             GunBoyuCift(e['a'] as String, e['b'] as String, (((e['min'] as num?) ?? 0) * 60).round()),
       ],
+      gecmis: {
+        for (final e in ((ham['history'] as Map?) ?? const {}).entries)
+          if ((e.key as String).split('-').every(kisiKartiMi))
+            e.key as String: [
+              for (final n in (e.value as List).cast<List>()) ((n[0] as num).toInt(), (n[1] as num).toDouble()),
+            ],
+      },
+      grafikSaniyesi: (ham['chartSeconds'] as num?)?.toInt() ?? 90,
     );
   }
 

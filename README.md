@@ -19,6 +19,8 @@ flutter run                                    # açık simülatör/emülatörde
 flutter run --dart-define=SUNUCU=http://192.168.1.10:8002   # açılışta bu sunucuya bağlan (Kurulum'dan da girilir)
 flutter run --dart-define=ALICI_BAGLI=false    # sahte veride "alıcı kopuk" durumunu görmek için
 flutter test                                   # birim + widget testleri
+flutter drive --driver=test_driver/integration_test.dart --target=integration_test/sunucu_canli_test.dart \
+  -d "iPhone 17 Pro" --dart-define=SUNUCU=http://127.0.0.1:8002   # gerçek sunucuyla uçtan uca (m1b/m3/m4 dosyaları da var)
 flutter analyze
 ```
 
@@ -58,7 +60,7 @@ Kurallar (`test/mimari_test.dart` denetler):
 
 ## Bu sürümde olmayanlar
 
-Web'den henüz taşınmayanlar (eşitleme planı M4–M5): kalibrasyon sihirbazı, kişiye özel rapor ve paylaşım, Kurulum
-sinyal grafiğinin sunucu geçmişi (şimdilik yerel çizgi), koyu tema, uygulama ikonu.
+Web'den henüz taşınmayanlar (eşitleme planı M5): koyu tema, uygulama ikonu, mağaza dağıtımı. PDF çıktı yok; rapor CSV
+ve metin olarak sistem paylaşım sayfasıyla gönderilir.
 
 1b (Sade) varyantı.

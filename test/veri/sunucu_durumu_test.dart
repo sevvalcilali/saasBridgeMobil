@@ -130,4 +130,16 @@ void main() {
     expect(d.gunBoyu.single.a, '84');
     expect(d.gunBoyu.single.sn, 330);
   });
+
+  test('history: çift anahtarı → (saniye önce, dBm) listesi; dinleyici çiftler atılır; chartSeconds', () {
+    final d = SunucuDurumu.ayristir({
+      ...ornek(),
+      'history': {'2-3': [[90, -60.5], [88, -61.0]], '2-101': [[90, -50.0]]},
+      'chartSeconds': 90,
+    });
+    expect(d.gecmis.keys.toList(), ['2-3']);
+    expect(d.gecmis['2-3'], [(90, -60.5), (88, -61.0)]);
+    expect(d.grafikSaniyesi, 90);
+    expect(SunucuDurumu.ayristir(ornek()).gecmis, isEmpty); // grafik=0: boş
+  });
 }

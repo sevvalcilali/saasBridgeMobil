@@ -3,6 +3,7 @@ import 'dart:async';
 import '../mantik/gruplar.dart';
 import '../mantik/kural.dart';
 import '../mantik/kurulum.dart';
+import '../mantik/rapor_hesap.dart';
 import 'etkinlik_deposu.dart';
 import 'modeller.dart';
 import 'sahte_veri.dart';
@@ -49,6 +50,10 @@ class SahteDepo extends EtkinlikDeposu {
   @override
   List<KisiRengi> get seriRenkleri => SahteVeri.seriRenkleri;
   @override
+  Map<String, List<(int, double)>> get gecmis => const {};
+  @override
+  int get grafikSaniyesi => 90;
+  @override
   List<AcikKart> get acikKartlar => SahteVeri.acikKartlar;
   @override
   List<Katilimci> get katilimcilar => SahteVeri.katilimcilar;
@@ -64,6 +69,17 @@ class SahteDepo extends EtkinlikDeposu {
   Future<String?> kisiEkle(Map<String, Object?> govde) async => null;
   @override
   Future<String?> kisiGuncelle(String kisiId, Map<String, Object?> govde) async => null;
+
+  /// Sahte etkinlik 1 saat önce başlamış sayılır; süreler tick ile akar.
+  @override
+  double get gecenSn => (3600 + _tick).toDouble();
+
+  /// Her birlikte çift için sürmekte olan bir görüşme (kisiId = "k" + kart no).
+  @override
+  Future<List<Oturum>> oturumlar() async => [
+    for (final k in kisiler)
+      if (k.ile != null && _noSirasi(k.id, k.ile!) < 0) Oturum('k${k.id}', 'k${k.ile}', 3600.0 - k.sn, null),
+  ];
 
   // Kurallar bellekte (arayüz sunucusuz denenebilsin); sunucuyla aynı doğrulama ve ad üretimi.
   final List<Kural> _kurallar = [];

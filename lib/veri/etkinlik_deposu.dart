@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../mantik/bicim.dart';
 import '../mantik/gruplar.dart';
 import '../mantik/kural.dart';
+import '../mantik/rapor_hesap.dart';
 import 'modeller.dart';
 import 'sahte_depo.dart';
 
@@ -36,6 +37,13 @@ abstract class EtkinlikDeposu extends ChangeNotifier {
   List<CanliCift> get canliCiftler;
   List<Cift> get ciftler;
   List<KisiRengi> get seriRenkleri;
+
+  /// Sinyal geçmişi: "a-b" → [(saniye önce, dBm)]; sunucuda yalnız `grafikIste(true)` iken dolar.
+  Map<String, List<(int, double)>> get gecmis;
+  int get grafikSaniyesi;
+
+  /// Kurulum açıkken true: sunucudan grafik geçmişi istenir (büyük veri, yalnız gerekince).
+  void grafikIste(bool iste) {}
   List<AcikKart> get acikKartlar;
 
   /// Kayıtlı kişiler (kartı olsun olmasın): Kart Ver ve İade.
@@ -85,6 +93,12 @@ abstract class EtkinlikDeposu extends ChangeNotifier {
 
   /// Kişiyi günceller; `govde` yalnız değişen alanlar. Hata metni ya da null.
   Future<String?> kisiGuncelle(String kisiId, Map<String, Object?> govde);
+
+  /// Görüşme kayıtları (`/api/sessions`; rapor açılışta ve "Yenile" ile ister).
+  Future<List<Oturum>> oturumlar();
+
+  /// Etkinliğin başından geçen saniye (`/state.elapsed`): oturum sürelerinin "şimdi"si.
+  double get gecenSn;
 
   /// Uyarı kuralları (sözleşme §10): sunucuda tutulur, her açılışta istenir (önbellek yok).
   Future<List<Kural>> kurallar();

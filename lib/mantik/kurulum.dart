@@ -76,6 +76,32 @@ List<GrafikSerisi> grafikSerileri(
   ];
 }
 
+/// Sunucunun geçmişinden (`history`: çift → [(saniye önce, dBm)]) en güçlü 6 çiftin çizgileri. x: saniye önce
+/// (sol = `grafikSaniyesi` önce, sağ = şimdi); geçmişi olmayan çift yalnız şimdiki değeriyle tek nokta.
+List<GrafikSerisi> grafikSerileriGecmisten(
+  Map<String, List<(int, double)>> gecmis,
+  List<Cift> ciftler,
+  List<KisiRengi> renkler,
+  double genislik,
+  double yukseklik,
+  int grafikSaniyesi,
+) {
+  final sirali = [...ciftler]..sort((a, b) => b.rssi.compareTo(a.rssi));
+  final adet = math.min(sirali.length, _grafikCiftSayisi);
+  double x(num snOnce) => grafikSolBosluk + (genislik - grafikSolBosluk) * (1 - snOnce / grafikSaniyesi).clamp(0, 1);
+  return [
+    for (var i = 0; i < adet; i++)
+      GrafikSerisi(
+        ad: '${sirali[i].a} · ${sirali[i].b}',
+        renk: renkler.isEmpty ? KisiRengi.gri : renkler[i % renkler.length],
+        noktalar: [
+          for (final (snOnce, dbm) in gecmis['${sirali[i].a}-${sirali[i].b}'] ?? gecmis['${sirali[i].b}-${sirali[i].a}'] ?? [(0, sirali[i].rssi.toDouble())])
+            (x: x(snOnce), y: grafikY(dbm, yukseklik)),
+        ],
+      ),
+  ];
+}
+
 class SaglikSatiri {
   const SaglikSatiri({
     required this.kart,
@@ -125,3 +151,25 @@ List<SaglikSatiri> kartSagligi(List<Kisi> kisiler) {
 bool pilDusuk(Kisi k) => k.pil != null && k.pil! < _dusukPil;
 
 int sorunluKartSayisi(List<Kisi> kisiler) => kisiler.where(pilDusuk).length;
+
+/// Gerçek sunucuda: alıcının duyduğu tüm kartlar (masadaki yedekler dahil), pili en düşük 8'i.
+/// `kartKisi`: kart no → kişi/kurum adı (atanmamış kart adsız).
+List<SaglikSatiri> kartSagligiKartlardan(List<AcikKart> kartlar, Map<String, String> kartKisi) {
+  final sirali = [for (var i = 0; i < kartlar.length; i++) (sira: i, kart: kartlar[i])]
+    ..sort((a, b) {
+      final fark = (a.kart.pil ?? 101).compareTo(b.kart.pil ?? 101);
+      return fark != 0 ? fark : a.sira.compareTo(b.sira);
+    });
+  return [
+    for (final e in sirali.take(_saglikSatirSayisi))
+      SaglikSatiri(
+        kart: e.kart.no,
+        kisi: kartKisi[e.kart.no] ?? 'Kart ${e.kart.no}',
+        adsiz: !kartKisi.containsKey(e.kart.no),
+        pil: e.kart.pil,
+        sorunlu: e.kart.pil != null && e.kart.pil! < _dusukPil,
+      ),
+  ];
+}
+
+int sorunluKartSayisiKartlardan(List<AcikKart> kartlar) => kartlar.where((k) => k.pil != null && k.pil! < _dusukPil).length;
