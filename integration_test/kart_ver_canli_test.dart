@@ -53,7 +53,7 @@ void main() {
     await tester.tap(find.descendant(of: find.byType(KartVerEkrani), matching: find.byType(RolSekli)).first);
     await bekle(() => find.text('Numarayı yaz').evaluate().isNotEmpty);
     await tester.tap(find.text('Numarayı yaz'));
-    await bekle(() => find.text('Bu kartı seç').evaluate().isNotEmpty || find.byType(TextField).evaluate().length >= 1);
+    await bekle(() => find.text('Bu kartı seç').evaluate().isNotEmpty || find.byType(TextField).evaluate().isNotEmpty);
     await tester.enterText(find.byType(TextField).last, bosKart);
     await bekle(() => find.text('Bu kartı seç').evaluate().isNotEmpty);
     await tester.tap(find.text('Bu kartı seç'));
