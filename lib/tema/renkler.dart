@@ -37,9 +37,13 @@ abstract final class Renkler {
   static const ciddiZemin = Color(0xFFF9E2E0);
   static const ciddiKoyu = Color(0xFF8A1F1B);
 
-  // --- Görüşme süresi (salon figürleri): gri → sarı → turuncu → kırmızı; web --sure-1/5/10/20 ---
+  /// Uyarı kuralı (web --kural): süre renkleriyle karışmasın diye mavi.
+  static const kural = Color(0xFF2B5797);
+  static const kuralZemin = Color(0xFFE3EBF7);
+
+  // --- Görüşme süresi (salon figürleri): gri → mavi → turuncu → kırmızı (Şevval 06.10.2026) ---
   static const sure1 = Color(0xFF7A7369);
-  static const sure5 = Color(0xFFB38600);
+  static const sure5 = Color(0xFF2A7FD0);
   static const sure10 = Color(0xFFD2621A);
   static const sure20 = Color(0xFFC42D28);
 
@@ -78,7 +82,7 @@ abstract final class Renkler {
   /// Salon figürünün rengi (görüşme süresi).
   static Color sure(SureRengi r) => switch (r) {
     SureRengi.gri => sure1,
-    SureRengi.sari => sure5,
+    SureRengi.mavi => sure5,
     SureRengi.turuncu => sure10,
     SureRengi.kirmizi => sure20,
   };
@@ -88,5 +92,6 @@ abstract final class Renkler {
     Onem.ciddi => ciddi,
     Onem.uyari => uyari,
     Onem.olumlu => vurguBasili,
+    Onem.kural => kural,
   };
 }

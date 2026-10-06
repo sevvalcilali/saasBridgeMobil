@@ -17,6 +17,7 @@ class SunucuDurumu {
     required this.aliciBagli,
     required this.canliCiftSayisi,
     required this.canliCiftler,
+    required this.gunBoyu,
   });
 
   final List<Kisi> kisiler;
@@ -35,6 +36,9 @@ class SunucuDurumu {
   final bool aliciBagli;
   final int canliCiftSayisi;
   final List<CanliCift> canliCiftler;
+
+  /// Çiftlerin bugünkü toplam süreleri (kişi detayı "Bugün kiminle").
+  final List<GunBoyuCift> gunBoyu;
 
   /// `receiverAge` (sn) bundan büyükse alıcı kopuk sayılır.
   static const double aliciEnCokYasSn = 5;
@@ -79,6 +83,11 @@ class SunucuDurumu {
         for (final c in canli)
           if (kisiKartiMi(c['a'] as String) && kisiKartiMi(c['b'] as String)) CanliCift(c['a'] as String, c['b'] as String),
       ],
+      gunBoyu: [
+        for (final e in (ham['edges'] as List? ?? const []).cast<Map<String, dynamic>>())
+          if (kisiKartiMi(e['a'] as String) && kisiKartiMi(e['b'] as String))
+            GunBoyuCift(e['a'] as String, e['b'] as String, (((e['min'] as num?) ?? 0) * 60).round()),
+      ],
     );
   }
 
@@ -113,6 +122,7 @@ class SunucuDurumu {
     saat: b['clock'] as String? ?? '',
     onem: _onem(b['severity'] as String?),
     kisiler: (b['people'] as List? ?? const []).cast<String>(),
+    t: ((b['t'] as num?) ?? 0).toDouble(),
   );
 
   static Rol _rol(String? rol) => switch (rol) {
@@ -121,11 +131,11 @@ class SunucuDurumu {
     _ => Rol.misafir,
   };
 
-  // Web ile aynı (src/api/bildirim.js): deal olumlu, warn uyarı, serious ciddi. Organizatörün uyarı kuralı
-  // (`kural`) M2'de kendi türünü alır; şimdilik uyarı.
+  // Web ile aynı (src/api/bildirim.js): deal olumlu, warn uyarı, serious ciddi, kural kural.
   static Onem _onem(String? onem) => switch (onem) {
     'deal' => Onem.olumlu,
     'serious' => Onem.ciddi,
+    'kural' => Onem.kural,
     _ => Onem.uyari,
   };
 

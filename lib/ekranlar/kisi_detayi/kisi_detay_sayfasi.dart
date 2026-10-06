@@ -50,8 +50,7 @@ class KisiDetaySayfasi extends StatelessWidget {
       listenable: depo,
       builder: (context, _) {
         final k = depo.bul(kisiId);
-        final ile = k.ile;
-        final es = ile == null ? null : depo.bul(ile);
+        final gunBoyu = depo.gunBoyu(k.id);
         final toplam = sureYazisi(gecenSn(k, depo.tick));
         return Container(
           constraints: BoxConstraints(maxHeight: enCok),
@@ -103,7 +102,7 @@ class KisiDetaySayfasi extends StatelessWidget {
                       ),
                       const SizedBox(height: 18),
                       const Kicker('Bugün kiminle'),
-                      if (es == null)
+                      if (gunBoyu.isEmpty)
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
                           child: Text(
@@ -112,7 +111,7 @@ class KisiDetaySayfasi extends StatelessWidget {
                           ),
                         )
                       else
-                        _EsSatiri(es: es, sure: toplam),
+                        for (final e in gunBoyu) _EsSatiri(es: e.kisi, sure: sureYazisi(e.sn)),
                       const SizedBox(height: 18),
                       const Kicker('Görüşme zaman çizelgesi'),
                       const SizedBox(height: 8),

@@ -50,6 +50,9 @@ abstract class EtkinlikDeposu extends ChangeNotifier {
 
   Kisi bul(String id);
 
+  /// Kişinin bugün görüştükleri ve toplam süreleri, en uzun önce (kişi detayı "Bugün kiminle").
+  List<({Kisi kisi, int sn})> gunBoyu(String id);
+
   /// Veri akışını başlatır (saat ya da sunucu bağlantısı). Yeniden çağırmak etkisizdir.
   void baslat();
 

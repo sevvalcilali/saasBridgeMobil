@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:yakinlik_mobil/ekranlar/pano/uyari_penceresi.dart';
 import 'package:yakinlik_mobil/uygulama.dart';
 
 /// Gerçek sunucuya bağlı uçtan uca deneme (M1): uygulama `--dart-define=SUNUCU=http://…:8002` ile açılır,
@@ -36,6 +37,18 @@ void main() {
     await binding.takeScreenshot('$platform/m2_salon_sunucu');
     await tester.tap(find.text('Kişiler'));
     await tester.pump(const Duration(milliseconds: 200));
+
+    // Sunucuda "herkes ile herkes yan yana" kuralı varsa açılır uyarı gelir (deneme betiği kuralı önceden ekler).
+    var uyari = false;
+    for (var i = 0; i < 150 && !uyari; i++) {
+      await tester.pump(const Duration(milliseconds: 200));
+      uyari = find.byType(UyariPenceresi).evaluate().isNotEmpty && find.text('Tamam').evaluate().isNotEmpty;
+    }
+    if (uyari) {
+      await binding.takeScreenshot('$platform/m2_uyari_sunucu');
+      await tester.tap(find.text('Tamam'));
+      await tester.pump(const Duration(milliseconds: 300));
+    }
 
     await tester.tap(find.descendant(of: find.byType(BottomNavigationBar), matching: find.text('Kurulum')));
     for (var i = 0; i < 8; i++) {

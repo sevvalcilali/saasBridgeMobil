@@ -99,12 +99,12 @@ bool yalnizMi(Kisi k) => k.rol == Rol.yatirimci && k.yildiz >= yalnizEnAzYildiz 
   return (arka, n - arka);
 }
 
-/// Figürün rengi = o kişinin görüşme süresi; yalnız sınır geçilince değişir (sakin). Isınan ölçek
-/// gri → sarı → turuncu → kırmızı (Şevval kararı 06.10.2026). Renk hep yazılı süreyle birlikte.
-enum SureRengi { gri, sari, turuncu, kirmizi }
+/// Figürün rengi = o kişinin görüşme süresi; yalnız sınır geçilince değişir (sakin). Ölçek
+/// gri → mavi → turuncu → kırmızı (Şevval kararı 06.10.2026). Renk hep yazılı süreyle birlikte.
+enum SureRengi { gri, mavi, turuncu, kirmizi }
 
-const sureSinirlari = [(SureRengi.gri, 0), (SureRengi.sari, 300), (SureRengi.turuncu, 600), (SureRengi.kirmizi, 1200)];
-const sureEtiketleri = {SureRengi.gri: '1–5 dk', SureRengi.sari: '5–10 dk', SureRengi.turuncu: '10–20 dk', SureRengi.kirmizi: '20 dk+'};
+const sureSinirlari = [(SureRengi.gri, 0), (SureRengi.mavi, 300), (SureRengi.turuncu, 600), (SureRengi.kirmizi, 1200)];
+const sureEtiketleri = {SureRengi.gri: '1–5 dk', SureRengi.mavi: '5–10 dk', SureRengi.turuncu: '10–20 dk', SureRengi.kirmizi: '20 dk+'};
 
 SureRengi sureRengi(int sn) => sureSinirlari.lastWhere((s) => sn >= s.$2).$1;
 

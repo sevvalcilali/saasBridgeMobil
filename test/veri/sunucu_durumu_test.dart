@@ -66,7 +66,7 @@ void main() {
     expect(b.renk, KisiRengi.gri);
   });
 
-  test('bildirimler: en yeni başta; önem deal→olumlu, warn→uyarı, serious→ciddi, kural→uyarı', () {
+  test('bildirimler: en yeni başta; önem deal→olumlu, warn→uyarı, serious→ciddi, kural→kural; t taşınır', () {
     final d = SunucuDurumu.ayristir({
       ...ornek(),
       'alerts': [
@@ -77,7 +77,8 @@ void main() {
       ],
     });
     expect(d.bildirimler.map((b) => b.baslik).toList(), ['Anlaşma', 'Kural', 'Yalnız', 'Kart kayıp']);
-    expect(d.bildirimler.map((b) => b.onem).toList(), [Onem.olumlu, Onem.uyari, Onem.uyari, Onem.ciddi]);
+    expect(d.bildirimler.map((b) => b.onem).toList(), [Onem.olumlu, Onem.kural, Onem.uyari, Onem.ciddi]);
+    expect(d.bildirimler.first.t, 4);
     expect(d.bildirimler.first.saat, '13:04');
     expect(d.bildirimler.first.kisiler, ['5', '28']);
   });
@@ -119,5 +120,14 @@ void main() {
     });
     expect(d.kisiler.map((k) => k.id).toList(), ['3']);
     expect(d.kisiler.first.renk, KisiRengi.gri);
+  });
+
+  test('gün boyu: edges çiftin bugünkü toplam süresi (dakika → saniye); dinleyici kartlar atılır', () {
+    final d = SunucuDurumu.ayristir({
+      ...ornek(),
+      'edges': [{'a': '84', 'b': '56', 'min': 5.5}, {'a': '84', 'b': '101', 'min': 9}],
+    });
+    expect(d.gunBoyu.single.a, '84');
+    expect(d.gunBoyu.single.sn, 330);
   });
 }

@@ -67,8 +67,8 @@ void main() {
 
   test('bildirim süzme, sayıları ve etiketleri', () {
     const b = SahteVeri.bildirimler;
-    expect([for (final o in onemSirasi) onemSayisi(b, o)], [4, 1, 2, 1]);
-    expect([for (final o in onemSirasi) onemEtiketi(o)], ['Tümü', 'Ciddi', 'Uyarı', 'Olumlu']);
+    expect([for (final o in onemSirasi) onemSayisi(b, o)], [4, 1, 2, 1, 0]);
+    expect([for (final o in onemSirasi) onemEtiketi(o)], ['Tümü', 'Ciddi', 'Uyarı', 'Olumlu', 'Kural']);
     expect(bildirimleriSuz(b, null), hasLength(4));
     expect(bildirimleriSuz(b, Onem.ciddi).single.baslik, 'Kart kayboldu');
     expect(bildirimleriSuz(const [], Onem.uyari), isEmpty);
