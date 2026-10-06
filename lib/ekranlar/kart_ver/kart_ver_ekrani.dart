@@ -12,6 +12,7 @@ import 'kart_adimi.dart';
 import 'kart_ver_durumu.dart';
 import 'kisi_adimi.dart';
 import 'kontrol_adimi.dart';
+import 'kural_paneli.dart';
 
 /// Kart Ver sekmesi: "Kart ver" sihirbazı ve "Kart iadesi" modu.
 class KartVerEkrani extends StatelessWidget {
@@ -26,6 +27,7 @@ class KartVerEkrani extends StatelessWidget {
       listenable: durum,
       builder: (context, _) {
         final ver = durum.mod == KartVerModu.ver;
+        final uyari = durum.mod == KartVerModu.uyari;
         return SingleChildScrollView(
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           padding: const EdgeInsets.only(bottom: 24),
@@ -39,11 +41,15 @@ class KartVerEkrani extends StatelessWidget {
                   children: [
                     Semantics(
                       header: true,
-                      child: Text(ver ? 'Kart Ver' : 'Kart İadesi', style: Yazi.baslik(26, 1.1)),
+                      child: Text(ver ? 'Kart Ver' : uyari ? 'Uyarı Kuralları' : 'Kart İadesi', style: Yazi.baslik(26, 1.1)),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      ver ? 'Karşılama masası — gelen kişiye kart verin' : 'Ayrılan kişiden kartı geri alın',
+                      ver
+                          ? 'Karşılama masası — gelen kişiye kart verin'
+                          : uyari
+                          ? 'Kimler yan yana gelince ya da uzun görüşünce Pano uyarsın'
+                          : 'Ayrılan kişiden kartı geri alın',
                       style: Yazi.olcu(14, renk: Renkler.metin2),
                     ),
                     const SizedBox(height: 14),
@@ -54,9 +60,14 @@ class KartVerEkrani extends StatelessWidget {
                       secenekler: const [
                         BolmeSecenegi(deger: KartVerModu.ver, etiket: 'Kart ver'),
                         BolmeSecenegi(deger: KartVerModu.iade, etiket: 'Kart iadesi'),
+                        BolmeSecenegi(deger: KartVerModu.uyari, etiket: 'Uyarılar'),
                       ],
                       secili: durum.mod,
-                      onSecildi: (mod) => mod == KartVerModu.ver ? durum.modVer() : durum.modIade(),
+                      onSecildi: (mod) => switch (mod) {
+                        KartVerModu.ver => durum.modVer(),
+                        KartVerModu.iade => durum.modIade(),
+                        KartVerModu.uyari => durum.modUyari(),
+                      },
                     ),
                     if (durum.sonAtama case final atama?) ...[
                       const SizedBox(height: 14),
@@ -73,7 +84,9 @@ class KartVerEkrani extends StatelessWidget {
                   ],
                 ),
               ),
-              if (!ver)
+              if (uyari)
+                KuralPaneli(depo: depo)
+              else if (!ver)
                 IadePaneli(depo: depo, durum: durum)
               else ...[
                 AdimGostergesi(adim: durum.adim),

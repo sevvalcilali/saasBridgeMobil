@@ -94,6 +94,22 @@ class SunucuIstemcisi {
   Future<Map<String, dynamic>> kisiGuncelle(String kisiId, Map<String, Object?> govde) async =>
       (await _jsonYaz('PATCH', '/api/people/${Uri.encodeComponent(kisiId)}', govde)) as Map<String, dynamic>;
 
+  /// Uyarı kuralları (sözleşme §10).
+  Future<List<Map<String, dynamic>>> kurallar() async =>
+      ((await _json(await _istek('GET', '/api/rules'))) as List).cast<Map<String, dynamic>>();
+
+  Future<Map<String, dynamic>> kuralEkle(Map<String, Object?> govde) async =>
+      (await _jsonYaz('POST', '/api/rules', govde)) as Map<String, dynamic>;
+
+  Future<Map<String, dynamic>> kuralGuncelle(String kuralId, Map<String, Object?> govde) async =>
+      (await _jsonYaz('PATCH', '/api/rules/${Uri.encodeComponent(kuralId)}', govde)) as Map<String, dynamic>;
+
+  Future<void> kuralSil(String kuralId) async {
+    final yanit = await _istek('DELETE', '/api/rules/${Uri.encodeComponent(kuralId)}', govde: const {});
+    await yanit.drain<void>();
+    if (yanit.statusCode < 200 || yanit.statusCode >= 300) throw HttpException('kural silinemedi: ${yanit.statusCode}');
+  }
+
   Future<bool> esikGonder(int dbm) => _komut({'cmd': 'threshold', 'value': dbm});
 
   /// Tüm süreleri/geçmişi/bildirimleri sıfırlar — çağıran onay almış olmalı.

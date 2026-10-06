@@ -25,6 +25,7 @@ class SahteSunucu {
   bool akisHatali = false;
   String kisilerYaniti = '[{"kisiId":"k1"}]';
   String kartlarYaniti = '[]';
+  String kurallarYaniti = '[]';
 
   /// Verilirse sonraki yazma isteği bu kodla `{ok:false, hata}` döner (sözleşmedeki hata biçimi).
   (int, String)? hata;
@@ -91,7 +92,13 @@ class SahteSunucu {
           ('/api/people', false) => kisilerYaniti,
           ('/api/people', true) => '{"kisiId":"k9","ad":"Yeni"}',
           ('/api/cards', _) => kartlarYaniti,
-          _ => yol.startsWith('/api/people/') ? '{"kisiId":"k1"}' : '{"ok":true}',
+          ('/api/rules', false) => kurallarYaniti,
+          ('/api/rules', true) => '{"kuralId":"r9","ad":"Yeni","kim":{"rol":"herkes","enAzYildiz":0},"kiminle":{"rol":"herkes","enAzYildiz":0},"dakika":0,"acik":true}',
+          _ => yol.startsWith('/api/people/')
+              ? '{"kisiId":"k1"}'
+              : yol.startsWith('/api/rules/') && r.method == 'PATCH'
+              ? '{"kuralId":"r1","ad":"A","kim":{"rol":"herkes","enAzYildiz":0},"kiminle":{"rol":"herkes","enAzYildiz":0},"dakika":0,"acik":false}'
+              : '{"ok":true}',
         });
       }
     } else {

@@ -190,4 +190,19 @@ void main() {
     s.hata = (400, 'ad boş olamaz');
     expect(await d.kisiEkle({'ad': '', 'rol': 'guest'}), 'ad boş olamaz');
   });
+
+  test('kurallar: GET/POST/PATCH/DELETE /api/rules; 400 hatası metin olarak döner', () async {
+    s.kurallarYaniti = '[{"kuralId":"r1","ad":"Herkes","kim":{"rol":"herkes","enAzYildiz":0},"kiminle":{"kisiler":["k1"]},"dakika":5,"acik":true}]';
+    final d = depo();
+    final liste = await d.kurallar();
+    expect(liste.single.kuralId, 'r1');
+    expect(liste.single.kiminle.kisiler, ['k1']);
+    expect(await d.kuralEkle({'ad': '', 'kim': {'rol': 'herkes', 'enAzYildiz': 0}, 'kiminle': {'rol': 'herkes', 'enAzYildiz': 0}, 'dakika': 0}), isNull);
+    expect(await d.kuralGuncelle('r1', {'acik': false}), isNull);
+    expect(await d.kuralSil('r1'), isNull);
+    expect(s.istekler.where((i) => i.startsWith('GET /api/rules')).length, 1);
+    expect(s.istekler, containsAll(['POST /api/rules', 'PATCH /api/rules/r1', 'DELETE /api/rules/r1']));
+    s.hata = (400, 'kim: en az bir kişi seçin');
+    expect(await d.kuralEkle({'kim': {'kisiler': <String>[]}}), 'kim: en az bir kişi seçin');
+  });
 }
