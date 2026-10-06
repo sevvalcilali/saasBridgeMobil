@@ -250,6 +250,26 @@ class SunucuDeposu extends EtkinlikDeposu {
   }
 
   @override
+  Future<String?> kisiEkle(Map<String, Object?> govde) => _yaz(() => _istemci.kisiEkle(govde), 'Kişi eklenemedi');
+
+  @override
+  Future<String?> kisiGuncelle(String kisiId, Map<String, Object?> govde) =>
+      _yaz(() => _istemci.kisiGuncelle(kisiId, govde), 'Kişi güncellenemedi');
+
+  /// Yazma: sunucunun hata metni varsa o, yoksa genel metin; başarıda listeler hemen tazelenir.
+  Future<String?> _yaz(Future<Object?> Function() istek, String genelHata) async {
+    try {
+      await istek();
+    } on SunucuHatasi catch (h) {
+      return h.metin;
+    } catch (_) {
+      return '$genelHata: sunucuya ulaşılamıyor.';
+    }
+    await _hemenYokla();
+    return null;
+  }
+
+  @override
   Future<void> sifirla() async {
     await _istemci.sifirla();
   }

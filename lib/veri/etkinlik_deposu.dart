@@ -79,6 +79,12 @@ abstract class EtkinlikDeposu extends ChangeNotifier {
   /// Kartı iade alır; `ayrildi: false` = "Geri al" (kişi ayrılmadı, hâlâ kart bekliyor).
   Future<String?> kartIadeAl(String kart, {bool ayrildi = true});
 
+  /// Yeni kayıtlı kişi (`POST /api/people` gövdesi). Hata metni ya da null.
+  Future<String?> kisiEkle(Map<String, Object?> govde);
+
+  /// Kişiyi günceller; `govde` yalnız değişen alanlar. Hata metni ya da null.
+  Future<String?> kisiGuncelle(String kisiId, Map<String, Object?> govde);
+
   void esikArtir() => esikAyarla(esik + 1);
 
   void esikAzalt() => esikAyarla(esik - 1);

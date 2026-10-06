@@ -178,4 +178,16 @@ void main() {
     expect(bildirim, inInclusiveRange(1, 3)); // 6 mesaj ~200 ms'de: birleşir
     expect(d.saat, '10:00:05'); // en son mesaj ekranda
   });
+
+  test('kisiEkle / kisiGuncelle: POST ve PATCH /api/people, başarıda liste tazelenir; 400 hatası metin olarak döner', () async {
+    final d = depo();
+    d.baslat();
+    await bekle(() => d.sunucuBagli && d.katilimcilar.isNotEmpty);
+    expect(await d.kisiEkle({'ad': 'Yeni Kişi', 'rol': 'guest'}), isNull);
+    expect(await d.kisiGuncelle('k1', {'yildiz': 5}), isNull);
+    expect(s.istekler.where((i) => i == 'POST /api/people').length, 1);
+    expect(s.istekler.where((i) => i == 'PATCH /api/people/k1').length, 1);
+    s.hata = (400, 'ad boş olamaz');
+    expect(await d.kisiEkle({'ad': '', 'rol': 'guest'}), 'ad boş olamaz');
+  });
 }

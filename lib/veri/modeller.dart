@@ -120,6 +120,13 @@ class Katilimci {
     this.yildiz = 0,
     this.atananKart,
     this.ayrildi = false,
+    this.notu = '',
+    this.sektor = '',
+    this.asama = '',
+    this.tanitim = '',
+    this.web = '',
+    this.eposta = '',
+    this.paylasim = false,
   });
 
   final String kisiId;
@@ -130,6 +137,19 @@ class Katilimci {
   final int yildiz;
   final String? atananKart;
   final bool ayrildi;
+  final String notu;
+
+  // Rapor bilgileri (kişiye özel rapor 2. adım): girişimcide sektör/aşama/tanıtım/web; yatırımcıda ilgi alanları (sektor).
+  final String sektor;
+
+  /// fikir | mvp | gelir | buyume ya da boş; yalnız girişimcide.
+  final String asama;
+  final String tanitim;
+  final String web;
+  final String eposta;
+
+  /// İletişim bilgisi başkalarının raporunda görünebilir mi (KVKK; varsayılan hayır).
+  final bool paylasim;
 
   bool get kartBekliyor => atananKart == null && !ayrildi;
 }

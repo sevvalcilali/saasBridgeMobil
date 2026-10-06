@@ -4,6 +4,16 @@ import 'dart:io';
 
 import 'sse.dart';
 
+/// Sunucunun reddi: 4xx + `{ok:false, hata}` — `hata` kullanıcıya gösterilir (sözleşme).
+class SunucuHatasi implements Exception {
+  const SunucuHatasi(this.metin);
+
+  final String metin;
+
+  @override
+  String toString() => metin;
+}
+
 /// Canlı akıştan gelen olay (`SunucuIstemcisi.olaylar`).
 sealed class SunucuOlayi {
   const SunucuOlayi();
@@ -75,6 +85,14 @@ class SunucuIstemcisi {
   /// Alıcının duyduğu kartlar (`/api/cards`): pil, boştaki kartlar.
   Future<List<Map<String, dynamic>>> kartlar() async =>
       ((await _json(await _istek('GET', '/api/cards'))) as List).cast<Map<String, dynamic>>();
+
+  /// Kişi ekler (`POST /api/people`); sunucu reddederse [SunucuHatasi] (hata metniyle).
+  Future<Map<String, dynamic>> kisiEkle(Map<String, Object?> govde) async =>
+      (await _jsonYaz('POST', '/api/people', govde)) as Map<String, dynamic>;
+
+  /// Yalnız değişen alanlar (`PATCH /api/people/{kisiId}`).
+  Future<Map<String, dynamic>> kisiGuncelle(String kisiId, Map<String, Object?> govde) async =>
+      (await _jsonYaz('PATCH', '/api/people/${Uri.encodeComponent(kisiId)}', govde)) as Map<String, dynamic>;
 
   Future<bool> esikGonder(int dbm) => _komut({'cmd': 'threshold', 'value': dbm});
 
@@ -166,6 +184,20 @@ class SunucuIstemcisi {
       istek.write(jsonEncode(govde));
     }
     return istek.close().timeout(_istekSuresi);
+  }
+
+  /// Yazma isteği: 2xx → JSON; 4xx `{ok:false, hata}` → [SunucuHatasi]; başka → HttpException.
+  Future<Object?> _jsonYaz(String yontem, String yol, Map<String, Object?> govde) async {
+    final yanit = await _istek(yontem, yol, govde: govde);
+    final metin = await utf8.decoder.bind(yanit).join();
+    if (yanit.statusCode >= 200 && yanit.statusCode < 300) return jsonDecode(metin);
+    try {
+      final cozulen = jsonDecode(metin);
+      if (cozulen is Map && cozulen['hata'] is String) throw SunucuHatasi(cozulen['hata'] as String);
+    } on FormatException {
+      // JSON değil: aşağıdaki genel hata
+    }
+    throw HttpException('${yanit.statusCode}: $metin');
   }
 
   Future<Object?> _json(HttpClientResponse yanit) async {

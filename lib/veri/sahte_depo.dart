@@ -59,6 +59,10 @@ class SahteDepo extends EtkinlikDeposu {
   Future<String?> kartAta(String kisiId, String kart) async => null;
   @override
   Future<String?> kartIadeAl(String kart, {bool ayrildi = true}) async => null;
+  @override
+  Future<String?> kisiEkle(Map<String, Object?> govde) async => null;
+  @override
+  Future<String?> kisiGuncelle(String kisiId, Map<String, Object?> govde) async => null;
 
   int _tick = 0;
   int _saatSn = SahteVeri.baslangicSaatSn;
