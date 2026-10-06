@@ -32,6 +32,10 @@ class Kabuk extends StatefulWidget {
 class _KabukState extends State<Kabuk> with WidgetsBindingObserver {
   static const int _sekmeKartVer = 1;
   static const int _sekmeKurulum = 2;
+  static const int _sekmeRapor = 3;
+
+  /// Rapor sekmesine her gelişte artar: rapor kayıtları yeniden ister (anlık görüntü tazelenir).
+  int _raporYenileme = 0;
 
   late EtkinlikDeposu _depo;
   late final PanoDurumu _panoDurumu;
@@ -130,7 +134,10 @@ class _KabukState extends State<Kabuk> with WidgetsBindingObserver {
   void _sekmeSec(int sekme) {
     // Gizlenen sekmedeki girdinin klavyesi açık kalmasın.
     FocusManager.instance.primaryFocus?.unfocus();
-    setState(() => _sekme = sekme);
+    setState(() {
+      _sekme = sekme;
+      if (sekme == _sekmeRapor) _raporYenileme++;
+    });
     // Sinyal geçmişi büyük veri: yalnız Kurulum açıkken istenir.
     _depo.grafikIste(sekme == _sekmeKurulum);
   }
@@ -159,7 +166,7 @@ class _KabukState extends State<Kabuk> with WidgetsBindingObserver {
             children: [
               ListenableBuilder(
                 listenable: _depo,
-                builder: (context, _) => _depo.sunucuBagli ? const SizedBox.shrink() : const KopukBandi(),
+                builder: (context, _) => _depo.sunucuBagli ? const SizedBox.shrink() : KopukBandi(), // const değil: tema değişince yeniden çizilsin
               ),
               UyariPenceresi(durum: _uyariDurumu, depo: _depo, onKisi: _kisiDetayiAc),
               Expanded(
@@ -184,7 +191,7 @@ class _KabukState extends State<Kabuk> with WidgetsBindingObserver {
                         temaAyari: _temaAyari,
                         onTemaAyari: _temaUygula,
                       ),
-                      RaporEkrani(depo: _depo),
+                      RaporEkrani(depo: _depo, yenileme: _raporYenileme),
                     ].indexed)
                       TickerMode(enabled: i == _sekme, child: ekran),
                   ],

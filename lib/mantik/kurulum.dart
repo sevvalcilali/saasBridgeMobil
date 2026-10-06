@@ -21,7 +21,8 @@ const int _grafikCiftSayisi = 6;
 const int _dusukPil = 20;
 const int _saglikSatirSayisi = 8;
 
-int esikSinirla(num deger) => deger.round().clamp(esikAlt, esikUst).toInt();
+/// Yuvarlama web (JS `Math.round`) gibi: yarım yukarı (−68,5 → −68).
+int esikSinirla(num deger) => (deger + 0.5).floor().clamp(esikAlt, esikUst).toInt();
 
 /// Şu an eşiğin üstünde (eşikten güçlü) olan çift sayısı.
 int esikUstuCiftSayisi(List<Cift> ciftler, int esik) => ciftler.where((c) => c.rssi > esik).length;
@@ -109,6 +110,7 @@ class SaglikSatiri {
     required this.adsiz,
     required this.pil,
     required this.sorunlu,
+    this.durumMetni,
   });
 
   final String kart;
@@ -123,7 +125,10 @@ class SaglikSatiri {
   final int? pil;
   final bool sorunlu;
 
-  String get durum => sorunlu ? '⚠ pil düşük' : '✓ iyi';
+  /// Sorunun metni (kartlardan: duyulmuyor / görünmüyor / pil düşük); verilmezse pil ölçütü.
+  final String? durumMetni;
+
+  String get durum => durumMetni ?? (sorunlu ? '⚠ pil düşük' : '✓ iyi');
   String get pilYazisi => pil == null ? '—' : '%$pil';
 }
 
@@ -152,24 +157,36 @@ bool pilDusuk(Kisi k) => k.pil != null && k.pil! < _dusukPil;
 
 int sorunluKartSayisi(List<Kisi> kisiler) => kisiler.where(pilDusuk).length;
 
-/// Gerçek sunucuda: alıcının duyduğu tüm kartlar (masadaki yedekler dahil), pili en düşük 8'i.
+/// Kart sağlığı ölçütleri (web `kartSagligi.js`): ≥ 60 sn duyulmayan "duyulmuyor" (kayıp), > 30 sn "görünmüyor",
+/// pil %20 altı "pil düşük". Sorunlular üstte (en ağırı önce), gerisi kart numarasına göre.
+const int kayipSn = 60;
+const int sessizSn = 30;
+
+({int agirlik, String metin})? _kartSorunu(AcikKart k) {
+  if (k.seenAgo >= kayipSn) return (agirlik: 0, metin: '⚠ duyulmuyor');
+  if (k.seenAgo > sessizSn) return (agirlik: 1, metin: '◌ görünmüyor');
+  if (k.pil != null && k.pil! < _dusukPil) return (agirlik: 2, metin: '⚠ pil düşük');
+  return null;
+}
+
+/// Gerçek sunucuda: alıcının bildiği tüm kartlar (masadaki yedekler, sessiz ve kayıp olanlar dahil).
 /// `kartKisi`: kart no → kişi/kurum adı (atanmamış kart adsız).
 List<SaglikSatiri> kartSagligiKartlardan(List<AcikKart> kartlar, Map<String, String> kartKisi) {
-  final sirali = [for (var i = 0; i < kartlar.length; i++) (sira: i, kart: kartlar[i])]
-    ..sort((a, b) {
-      final fark = (a.kart.pil ?? 101).compareTo(b.kart.pil ?? 101);
-      return fark != 0 ? fark : a.sira.compareTo(b.sira);
+  final sirali = [...kartlar]..sort((a, b) {
+      final fark = (_kartSorunu(a)?.agirlik ?? 9).compareTo(_kartSorunu(b)?.agirlik ?? 9);
+      return fark != 0 ? fark : (int.tryParse(a.no) ?? 0).compareTo(int.tryParse(b.no) ?? 0);
     });
   return [
-    for (final e in sirali.take(_saglikSatirSayisi))
+    for (final k in sirali)
       SaglikSatiri(
-        kart: e.kart.no,
-        kisi: kartKisi[e.kart.no] ?? 'Kart ${e.kart.no}',
-        adsiz: !kartKisi.containsKey(e.kart.no),
-        pil: e.kart.pil,
-        sorunlu: e.kart.pil != null && e.kart.pil! < _dusukPil,
+        kart: k.no,
+        kisi: kartKisi[k.no] ?? 'Kart ${k.no}',
+        adsiz: !kartKisi.containsKey(k.no),
+        pil: k.pil,
+        sorunlu: _kartSorunu(k) != null,
+        durumMetni: _kartSorunu(k)?.metin,
       ),
   ];
 }
 
-int sorunluKartSayisiKartlardan(List<AcikKart> kartlar) => kartlar.where((k) => k.pil != null && k.pil! < _dusukPil).length;
+int sorunluKartSayisiKartlardan(List<AcikKart> kartlar) => kartlar.where((k) => _kartSorunu(k) != null).length;

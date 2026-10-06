@@ -94,10 +94,27 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink()); // depo kapanır
     await tester.pump(const Duration(seconds: 12)); // istemcinin yeniden deneme bekleyişi dolsun (sunucu yok)
   });
+
+  testWidgets('depo değişince (sunucuya bağlanılınca) seçili çift ve ölçümler sıfırlanır', (tester) async {
+    telefonBoyutu(tester, yukseklik: 1200);
+    final d1 = EtkinlikDeposu();
+    final d2 = EtkinlikDeposu();
+    addTearDown(d1.dispose);
+    addTearDown(d2.dispose);
+    await tester.pumpWidget(temali(SingleChildScrollView(child: KalibrasyonBolumu(depo: d1))));
+    await _ciftSec(tester);
+    await tester.tap(find.text('Demo').first);
+    await tester.pump();
+    expect(find.textContaining('dBm ✓'), findsOneWidget);
+    await tester.pumpWidget(temali(SingleChildScrollView(child: KalibrasyonBolumu(depo: d2))));
+    expect(find.text('Yüz yüze'), findsNothing);
+    expect(find.text('— çift seçin —'), findsOneWidget);
+  });
 }
 
 class _GrafikDepo extends SahteDepo {
   final istekler = <bool>[];
   @override
   void grafikIste(bool iste) => istekler.add(iste);
+
 }

@@ -25,13 +25,16 @@ Future<void> sistemPaylasimi(String dosyaAdi, String icerik) async {
   await SharePlus.instance.share(ShareParams(files: [dosya], subject: dosyaAdi));
 }
 
-/// Rapor sekmesi: KPI'lar ve girişimci satırları görüşme kayıtlarından (`/api/sessions`, açılışta ve "Yenile"
-/// ile); süreler sunucunun saatiyle akar. CSV'ler telefonda üretilip paylaşılır. Satıra dokununca kişiye özel rapor.
+/// Rapor sekmesi: KPI'lar ve girişimci satırları görüşme kayıtlarından (`/api/sessions`, sekmeye her gelişte ve
+/// "Yenile" ile); rapor bir anlık görüntüdür: süreler kayıtların alındığı ana göre. CSV'ler telefonda üretilip paylaşılır. Satıra dokununca kişiye özel rapor.
 class RaporEkrani extends StatefulWidget {
-  const RaporEkrani({super.key, required this.depo, this.paylas = sistemPaylasimi});
+  const RaporEkrani({super.key, required this.depo, this.paylas = sistemPaylasimi, this.yenileme = 0});
 
   final EtkinlikDeposu depo;
   final Paylasici paylas;
+
+  /// Değişince kayıtlar yeniden istenir (Kabuk: Rapor sekmesine her gelişte).
+  final int yenileme;
 
   static const double bolumAraligi = 28;
 
@@ -41,6 +44,9 @@ class RaporEkrani extends StatefulWidget {
 
 class _RaporEkraniState extends State<RaporEkrani> {
   List<Oturum>? _oturumlar;
+
+  /// Kayıtların alındığı andaki etkinlik saniyesi: rapor bir anlık görüntüdür (web gibi), süreler bununla hesaplanır.
+  double _simdi = 0;
   String? _hata;
 
   @override
@@ -52,7 +58,7 @@ class _RaporEkraniState extends State<RaporEkrani> {
   @override
   void didUpdateWidget(RaporEkrani eski) {
     super.didUpdateWidget(eski);
-    if (eski.depo != widget.depo) _yukle();
+    if (eski.depo != widget.depo || eski.yenileme != widget.yenileme) _yukle();
   }
 
   Future<void> _yukle() async {
@@ -61,6 +67,7 @@ class _RaporEkraniState extends State<RaporEkrani> {
       if (!mounted) return;
       setState(() {
         _oturumlar = liste;
+        _simdi = widget.depo.gecenSn;
         _hata = null;
       });
     } catch (_) {
@@ -76,7 +83,7 @@ class _RaporEkraniState extends State<RaporEkrani> {
       listenable: depo,
       builder: (context, _) {
         final oturumlar = _oturumlar ?? const <Oturum>[];
-        final simdi = depo.gecenSn;
+        final simdi = _simdi;
         final ozet = raporOzeti(depo.katilimcilar, oturumlar, simdi);
         final satirlar = girisimciSatirlari(depo.katilimcilar, oturumlar, simdi);
         final anlasma = depo.bildirimler.where((b) => b.onem == Onem.olumlu && b.baslik == 'Potansiyel anlaşma').length;
@@ -119,7 +126,7 @@ class _RaporEkraniState extends State<RaporEkrani> {
                 for (final satir in satirlar)
                   _GirisimciSatiriGorunumu(
                     satir: satir,
-                    onTap: () => kisiRaporuGoster(context, depo: depo, kisiId: satir.kisi.kisiId, oturumlar: oturumlar),
+                    onTap: () => kisiRaporuGoster(context, depo: depo, kisiId: satir.kisi.kisiId, oturumlar: oturumlar, simdi: simdi),
                   ),
             ],
           ),

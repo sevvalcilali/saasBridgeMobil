@@ -3,7 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:yakinlik_mobil/ekranlar/rapor/kisi_raporu_sayfasi.dart';
 import 'package:yakinlik_mobil/ekranlar/rapor/rapor_ekrani.dart';
 import 'package:yakinlik_mobil/tema/renkler.dart';
+import 'package:yakinlik_mobil/uygulama.dart';
+import 'package:yakinlik_mobil/mantik/rapor_hesap.dart';
 import 'package:yakinlik_mobil/veri/etkinlik_deposu.dart';
+import 'package:yakinlik_mobil/veri/sahte_depo.dart';
 
 import '../yardimci.dart';
 
@@ -52,14 +55,35 @@ void main() {
     expect(gorusmedi.style!.color, Renkler.ciddi);
   });
 
-  testWidgets('süreler sunucu saatiyle akar', (tester) async {
+  testWidgets('rapor anlık görüntüdür: süreler kayıtların alındığı anda donar, Yenile ile güncellenir', (tester) async {
     final k = await _kur(tester);
     for (var i = 0; i < 60; i++) {
       k.depo.ilerlet();
     }
     await tester.pump();
+    expect(find.text('6 dk 20 sn'), findsOneWidget); // değişmedi
+    await tester.tap(find.text('Yenile'));
+    await tester.pump();
     expect(find.text('14 dk 20 sn'), findsOneWidget); // 380 + 8 × 60 sn
     expect(find.text('Emre Kaya (2 dk 14 sn)'), findsOneWidget);
+  });
+
+  testWidgets('Rapor sekmesine her gelişte kayıtlar yeniden istenir', (tester) async {
+    telefonBoyutu(tester);
+    final depo = _SayanDepo();
+    addTearDown(depo.dispose);
+    await tester.pumpWidget(YakinlikUygulamasi(depo: depo));
+    await tester.pump();
+    final ilk = depo.istek;
+    Finder sekme(String ad) => find.descendant(of: find.byType(BottomNavigationBar), matching: find.text(ad));
+    await tester.tap(sekme('Rapor'));
+    await tester.pump();
+    expect(depo.istek, ilk + 1);
+    await tester.tap(sekme('Pano'));
+    await tester.pump();
+    await tester.tap(sekme('Rapor'));
+    await tester.pump();
+    expect(depo.istek, ilk + 2);
   });
 
   testWidgets('CSV paylaşımı: dosya adı ve içerik', (tester) async {
@@ -87,4 +111,13 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(KisiRaporuSayfasi), findsNothing);
   });
+}
+
+class _SayanDepo extends SahteDepo {
+  int istek = 0;
+  @override
+  Future<List<Oturum>> oturumlar() {
+    istek++;
+    return super.oturumlar();
+  }
 }

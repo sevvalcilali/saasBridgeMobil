@@ -46,6 +46,9 @@ abstract class EtkinlikDeposu extends ChangeNotifier {
   void grafikIste(bool iste) {}
   List<AcikKart> get acikKartlar;
 
+  /// Alıcının bildiği tüm kartlar (sessiz ve kayıp olanlar dahil): Kurulum → Kart sağlığı.
+  List<AcikKart> get tumKartlar => acikKartlar;
+
   /// Kayıtlı kişiler (kartı olsun olmasın): Kart Ver ve İade.
   List<Katilimci> get katilimcilar;
 

@@ -16,12 +16,22 @@ import 'sunucu_istemcisi.dart';
 /// kendiliğinden yeniden bağlanır. Kartlar (pil, boştakiler) ve kayıtlı kişi sayısı `/api/cards` ve
 /// `/api/people`'dan seyrek yoklanır.
 class SunucuDeposu extends EtkinlikDeposu {
-  SunucuDeposu(this._istemci, {this.yoklamaAraligi = const Duration(seconds: 2)}) : super.temel();
+  SunucuDeposu(
+    this._istemci, {
+    this.yoklamaAraligi = const Duration(seconds: 2),
+    this.grafikAraligi = const Duration(seconds: 4),
+  }) : super.temel();
 
   final SunucuIstemcisi _istemci;
 
   /// Kartlar ve kayıtlı kişiler bu sıklıkla yoklanır (masa "yaklaştır"ı 1–3 sn'de bir ister).
   final Duration yoklamaAraligi;
+
+  /// Kurulum grafiği geçmişi bu sıklıkla istenir (büyük yanıt; 90 sn'lik pencerede 4 sn yeterli).
+  final Duration grafikAraligi;
+
+  /// Depo kapatıldı: yolda kalan yanıtlar bildirim göndermez.
+  bool _kapandi = false;
 
   SunucuDurumu? _durum;
   bool _bagli = false;
@@ -56,6 +66,7 @@ class SunucuDeposu extends EtkinlikDeposu {
 
   /// Dinleyicileri saniyede en çok bir kez uyandırır; arada gelen güncellemeler birleşir (sonuncusu kalır).
   void _bildir() {
+    if (_kapandi) return;
     final gecen = DateTime.now().difference(_sonBildirim);
     if (gecen >= _enSikBildirim) {
       _ertelenenBildirim?.cancel();
@@ -66,6 +77,7 @@ class SunucuDeposu extends EtkinlikDeposu {
     }
     _ertelenenBildirim ??= Timer(_enSikBildirim - gecen, () {
       _ertelenenBildirim = null;
+      if (_kapandi) return;
       _sonBildirim = DateTime.now();
       notifyListeners();
     });
@@ -96,8 +108,9 @@ class SunucuDeposu extends EtkinlikDeposu {
     return kisaSaatYazisi((d.saatSn - gecen).clamp(0, 24 * 3600 - 1));
   }
 
+  /// Son 30 sn içinde duyulan kişi kartları (sessiz ve kayıp olanlar sayılmaz).
   @override
-  int get duyulanKartSayisi => _kartlar.where((k) => SunucuDurumu.kisiKartiMi(k['kart'] as String)).length;
+  int get duyulanKartSayisi => tumKartlar.where((k) => k.seenAgo <= sessizSn).length;
   @override
   int get kayitliKatilimci => _katilimcilar.where((k) => !k.ayrildi).length;
   @override
@@ -119,16 +132,20 @@ class SunucuDeposu extends EtkinlikDeposu {
     return [for (final c in sirali.take(6)) renk[c.a] ?? KisiRengi.gri];
   }
 
-  /// Alıcının şu an duyduğu kartlar (≤ 8 sn), sinyal gücüyle. 100+ dinleyici cihazlar kart değildir.
+  /// Alıcının şu an duyduğu kartlar (≤ 8 sn), sinyal gücüyle.
   @override
-  List<AcikKart> get acikKartlar => [
+  List<AcikKart> get acikKartlar => [for (final k in tumKartlar) if (k.seenAgo <= 8) k];
+
+  /// `/api/cards`'taki tüm kişi kartları; 100+ dinleyici cihazlar kart değildir.
+  @override
+  List<AcikKart> get tumKartlar => [
     for (final k in _kartlar)
-      if (SunucuDurumu.kisiKartiMi(k['kart'] as String) && ((k['seenAgo'] as num?) ?? 999) <= 8)
+      if (SunucuDurumu.kisiKartiMi(k['kart'] as String))
         AcikKart(
           k['kart'] as String,
           atanmis: k['atanan'] != null,
           rssi: (k['rssiAlici'] as num?)?.round(),
-          seenAgo: ((k['seenAgo'] as num?) ?? 0).toDouble(),
+          seenAgo: ((k['seenAgo'] as num?) ?? 999).toDouble(),
           pil: (k['pil'] as num?)?.toInt(),
         ),
   ];
@@ -146,11 +163,17 @@ class SunucuDeposu extends EtkinlikDeposu {
   void grafikIste(bool iste) {
     if (_grafikIsteniyor == iste) return;
     _grafikIsteniyor = iste;
+    _grafikZamanlayicisiniKur();
+  }
+
+  /// İstek varsa ve akış açıksa yoklamayı başlatır; yoksa durdurur. `durdur` isteği unutmaz (arka plandan dönünce
+  /// `baslat` yeniden kurar).
+  void _grafikZamanlayicisiniKur() {
     _grafikYoklama?.cancel();
     _grafikYoklama = null;
-    if (!iste) return;
+    if (!_grafikIsteniyor || _abonelik == null || _kapandi) return;
     _grafikYokla();
-    _grafikYoklama = Timer.periodic(yoklamaAraligi, (_) => _grafikYokla());
+    _grafikYoklama = Timer.periodic(grafikAraligi, (_) => _grafikYokla());
   }
 
   bool _grafikYoklaniyor = false;
@@ -158,10 +181,10 @@ class SunucuDeposu extends EtkinlikDeposu {
     if (_grafikYoklaniyor || _abonelik == null) return;
     _grafikYoklaniyor = true;
     try {
-      final ham = await _istemci.durumAl(grafik: true);
-      final d = SunucuDurumu.ayristir(ham);
-      _gecmis = d.gecmis;
-      _grafikSaniyesi = d.grafikSaniyesi;
+      final g = await _istemci.grafikGecmisi();
+      if (_kapandi || _abonelik == null || !_grafikIsteniyor) return; // bu arada durduruldu ya da kapandı
+      _gecmis = g.gecmis;
+      _grafikSaniyesi = g.saniye;
       _bildir();
     } catch (_) {
       /* sonraki yoklamada */
@@ -211,6 +234,7 @@ class SunucuDeposu extends EtkinlikDeposu {
     });
     _yokla();
     _yoklama = Timer.periodic(yoklamaAraligi, (_) => _yokla());
+    _grafikZamanlayicisiniKur(); // arka plandan dönüş: Kurulum açıksa grafik sürer
   }
 
   @override
@@ -221,7 +245,6 @@ class SunucuDeposu extends EtkinlikDeposu {
     _yoklama = null;
     _grafikYoklama?.cancel();
     _grafikYoklama = null;
-    _grafikIsteniyor = false;
     _ertelenenBildirim?.cancel();
     _ertelenenBildirim = null;
     _istemci.akisiKes();
@@ -262,7 +285,7 @@ class SunucuDeposu extends EtkinlikDeposu {
           degisti = true;
         }
       }
-      if (!degisti) return;
+      if (!degisti || _kapandi) return;
       final ham = _hamDurum;
       if (ham != null) _durum = SunucuDurumu.ayristir(ham, piller: _piller);
       _bildir();
@@ -356,6 +379,7 @@ class SunucuDeposu extends EtkinlikDeposu {
 
   @override
   void dispose() {
+    _kapandi = true;
     durdur();
     _istemci.kapat();
     super.dispose();

@@ -35,8 +35,8 @@ abstract final class Yazi {
       olcu(punto, agirlik: FontWeight.w600, satir: satir, harfAraligi: -0.015 * punto);
 
   /// Gövde: 15 px / 1.4.
-  static final TextStyle govde = olcu(15);
+  static TextStyle get govde => olcu(15);
 
   /// Kicker: 11 px, harf aralığı .1em, ikincil renk (metin büyük harfe çevrilir).
-  static final TextStyle kicker = olcu(11, renk: Renkler.metin2, harfAraligi: 1.1);
+  static TextStyle get kicker => olcu(11, renk: Renkler.metin2, harfAraligi: 1.1);
 }

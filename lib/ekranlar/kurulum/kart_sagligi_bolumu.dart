@@ -15,10 +15,10 @@ class KartSagligiBolumu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Gerçek sunucuda alıcının duyduğu tüm kartlar (/api/cards); sahte veride kişiler.
+    // Gerçek sunucuda alıcının bildiği tüm kartlar (/api/cards, sessiz ve kayıplar dahil); sahte veride kişiler.
     final kartKisi = {for (final k in depo.katilimcilar) if (k.atananKart != null) k.atananKart!: k.kurum ?? k.ad};
-    final satirlar = depo.demo ? kartSagligi(depo.kisiler) : kartSagligiKartlardan(depo.acikKartlar, kartKisi);
-    final sorunlu = depo.demo ? sorunluKartSayisi(depo.kisiler) : sorunluKartSayisiKartlardan(depo.acikKartlar);
+    final satirlar = depo.demo ? kartSagligi(depo.kisiler) : kartSagligiKartlardan(depo.tumKartlar, kartKisi);
+    final sorunlu = depo.demo ? sorunluKartSayisi(depo.kisiler) : sorunluKartSayisiKartlardan(depo.tumKartlar);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

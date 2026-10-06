@@ -142,4 +142,10 @@ void main() {
     expect(d.grafikSaniyesi, 90);
     expect(SunucuDurumu.ayristir(ornek()).gecmis, isEmpty); // grafik=0: boş
   });
+
+  test('sinyal çiftleri ham dBm\'yi de taşır (kalibrasyon ölçümü yuvarlanmaz)', () {
+    final d = SunucuDurumu.ayristir({...ornek(), 'signals': [{'a': '2', 'b': '3', 'value': -58.4}]});
+    expect(d.ciftler.single.rssi, -58);
+    expect(d.ciftler.single.dbm, -58.4);
+  });
 }

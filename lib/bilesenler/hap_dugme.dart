@@ -74,7 +74,9 @@ class _HapDugmeState extends State<HapDugme> {
     final Color? kaplama;
     switch (w.tur) {
       case HapTuru.birincil:
-        dolgu = _basili ? Renkler.vurguBasili : Renkler.vurgu;
+        // Zemin verilirse (ör. kırmızı "Sil", mavi kural "Açık") o renk; basılıyken biraz koyulaşır.
+        final z = w.zemin;
+        dolgu = z == null ? (_basili ? Renkler.vurguBasili : Renkler.vurgu) : (_basili ? Color.lerp(z, Renkler.metin, 0.2) : z);
         yazi = Renkler.zemin;
         kaplama = null;
       case HapTuru.ikincil:

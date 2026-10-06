@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yakinlik_mobil/ekranlar/kurulum/kurulum_ekrani.dart';
 import 'package:yakinlik_mobil/tema/renkler.dart';
 import 'package:yakinlik_mobil/tema/tema.dart';
+import 'package:yakinlik_mobil/tema/yazi.dart';
+import 'package:yakinlik_mobil/ekranlar/kabuk.dart';
 import 'package:yakinlik_mobil/uygulama.dart';
 import 'package:yakinlik_mobil/veri/etkinlik_deposu.dart';
 import 'package:yakinlik_mobil/veri/modeller.dart';
@@ -60,5 +62,26 @@ void main() {
     addTearDown(depo.dispose);
     await tester.pumpWidget(temali(KurulumEkrani(depo: depo)));
     expect(find.text('GÖRÜNÜM'), findsNothing);
+  });
+
+  test('gövde ve kicker yazı stilleri etkin paletin rengini alır (önbelleğe alınmaz)', () {
+    expect(Yazi.govde.color, const Color(0xFF3B332C));
+    Renkler.koyu = true;
+    expect(Yazi.govde.color, const Color(0xFFF2EBE0));
+    expect(Yazi.kicker.color, const Color(0xFFC5B9A8));
+    expect(yakinlikTemasi().textTheme.bodyMedium!.color, const Color(0xFFF2EBE0));
+  });
+
+  testWidgets('kopukluk bandı tema değişince yeni paletle çizilir', (tester) async {
+    telefonBoyutu(tester);
+    final depo = EtkinlikDeposu(sunucuBagli: false);
+    addTearDown(depo.dispose);
+    await tester.pumpWidget(YakinlikUygulamasi(depo: depo));
+    await tester.pump();
+    Color zemin() => (tester.widget<DecoratedBox>(find.descendant(of: find.byType(KopukBandi), matching: find.byType(DecoratedBox)).first).decoration as BoxDecoration).color!;
+    expect(zemin(), const Color(0xFFF9E2E0));
+    Renkler.koyu = true;
+    await tester.pump();
+    expect(zemin(), const Color(0xFF3F1C1A));
   });
 }
