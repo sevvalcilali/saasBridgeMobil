@@ -1,7 +1,8 @@
 # Yakınlık Panosu — Mobil
 
 SaasBridge "Yakınlık Panosu"nun saha görevlileri için telefon uygulaması (Flutter, iOS + Android).
-Dört sekme: **Pano** (Kişiler · Ağ · Bildirimler), **Kart Ver / İade**, **Kurulum**, **Rapor**; artı **Kişi Detayı**.
+Dört sekme: **Pano** (Kişiler · Salon · Bildirimler), **Kart Ver / İade / Uyarılar**, **Kurulum**, **Rapor**; artı **Kişi Detayı**,
+kişi formu ve uyarı kuralı formu.
 
 Uygulama gerçek sunucuya (saasBridgeBackend, `/state` + `/events`) bağlanır: adres Kurulum → Sunucu'dan
 girilir ve telefonda kalır. Kart Ver / İade / Geri al / Sıfırla / eşik sunucuya gider (`/api/assign`,
@@ -57,8 +58,7 @@ Kurallar (`test/mimari_test.dart` denetler):
 
 ## Bu sürümde olmayanlar
 
-Web'den henüz taşınmayanlar (eşitleme planı M3–M5): kişi ekleme/düzenleme ve profil alanları, uyarı kuralı
-yönetimi (Kart Ver → Uyarılar), kalibrasyon sihirbazı, kişiye özel rapor ve paylaşım, Kurulum sinyal grafiğinin
-sunucu geçmişi (şimdilik yerel çizgi), koyu tema, uygulama ikonu.
+Web'den henüz taşınmayanlar (eşitleme planı M4–M5): kalibrasyon sihirbazı, kişiye özel rapor ve paylaşım, Kurulum
+sinyal grafiğinin sunucu geçmişi (şimdilik yerel çizgi), koyu tema, uygulama ikonu.
 
 1b (Sade) varyantı.

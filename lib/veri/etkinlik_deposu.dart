@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../mantik/bicim.dart';
 import '../mantik/gruplar.dart';
+import '../mantik/kural.dart';
 import 'modeller.dart';
 import 'sahte_depo.dart';
 
@@ -78,6 +79,18 @@ abstract class EtkinlikDeposu extends ChangeNotifier {
 
   /// Kartı iade alır; `ayrildi: false` = "Geri al" (kişi ayrılmadı, hâlâ kart bekliyor).
   Future<String?> kartIadeAl(String kart, {bool ayrildi = true});
+
+  /// Yeni kayıtlı kişi (`POST /api/people` gövdesi). Hata metni ya da null.
+  Future<String?> kisiEkle(Map<String, Object?> govde);
+
+  /// Kişiyi günceller; `govde` yalnız değişen alanlar. Hata metni ya da null.
+  Future<String?> kisiGuncelle(String kisiId, Map<String, Object?> govde);
+
+  /// Uyarı kuralları (sözleşme §10): sunucuda tutulur, her açılışta istenir (önbellek yok).
+  Future<List<Kural>> kurallar();
+  Future<String?> kuralEkle(Map<String, Object?> govde);
+  Future<String?> kuralGuncelle(String kuralId, Map<String, Object?> govde);
+  Future<String?> kuralSil(String kuralId);
 
   void esikArtir() => esikAyarla(esik + 1);
 

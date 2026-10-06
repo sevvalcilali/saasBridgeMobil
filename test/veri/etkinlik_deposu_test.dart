@@ -116,4 +116,20 @@ void main() {
     expect(d.tick, 3);
     d.dispose();
   });
+
+  test('sahte veride kurallar bellekte tutulur: ekle, güncelle, sil (arayüz sunucusuz denenebilsin)', () async {
+    final d = EtkinlikDeposu();
+    addTearDown(d.dispose);
+    expect(await d.kurallar(), isEmpty);
+    expect(await d.kuralEkle({'ad': 'A', 'kim': {'rol': 'herkes', 'enAzYildiz': 0}, 'kiminle': {'rol': 'founder', 'enAzYildiz': 0}, 'dakika': 3, 'acik': true}), isNull);
+    expect(await d.kuralEkle({'ad': '', 'kim': {'kisiler': ['k24']}, 'kiminle': {'rol': 'herkes', 'enAzYildiz': 0}, 'dakika': 0}), isNull);
+    final liste = await d.kurallar();
+    expect(liste.map((k) => k.kuralId).toList(), ['r1', 'r2']);
+    expect(liste.last.ad, 'Nova Robotik ile herkes · yan yana'); // ad boşsa cümleden üretilir
+    expect(await d.kuralGuncelle('r1', {'acik': false}), isNull);
+    expect((await d.kurallar()).first.acik, isFalse);
+    expect(await d.kuralSil('r1'), isNull);
+    expect((await d.kurallar()).single.kuralId, 'r2');
+    expect(await d.kuralEkle({'kim': {'kisiler': <String>[]}, 'kiminle': {'rol': 'herkes'}}), 'kim: en az bir kişi seçin');
+  });
 }

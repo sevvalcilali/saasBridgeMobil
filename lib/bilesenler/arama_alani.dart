@@ -19,6 +19,7 @@ class AramaAlani extends StatelessWidget {
     this.agirlik = FontWeight.w400,
     this.harfAraligi = 0,
     this.rakam = false,
+    this.klavye,
   });
 
   final String ipucu;
@@ -34,6 +35,9 @@ class AramaAlani extends StatelessWidget {
   /// true: rakam klavyesi açar ve rakam dışını kabul etmez.
   final bool rakam;
 
+  /// Rakam değilse klavye türü (e-posta, adres); verilmezse metin.
+  final TextInputType? klavye;
+
   static const double _satir = 1.4;
 
   OutlineInputBorder _kenar(Color renk) =>
@@ -46,7 +50,7 @@ class AramaAlani extends StatelessWidget {
       controller: denetleyici,
       onChanged: onDegisti,
       onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
-      keyboardType: rakam ? TextInputType.number : TextInputType.text,
+      keyboardType: rakam ? TextInputType.number : (klavye ?? TextInputType.text),
       textInputAction: rakam ? TextInputAction.done : TextInputAction.search,
       inputFormatters: rakam ? [FilteringTextInputFormatter.digitsOnly] : null,
       autocorrect: false,

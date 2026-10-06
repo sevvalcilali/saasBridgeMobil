@@ -22,7 +22,7 @@ Sözleşme: `SaasBridge/SUNUCUDAN_ISTENENLER.md` (sunucu uçları), `saasBridgeB
 - "Gün boyu" (ego) görünümü: seçili kişinin gün boyu görüştükleri.
 - Kişi detayından **Pil %** kaldırılır (web kararı 05.10.2026).
 
-## M3 — Kart Ver'i web'e eşitleme
+## M3 — Kart Ver'i web'e eşitleme — ✅ (PR #7; inceleme düzeltmeleri PR #6)
 - Kişi düzenleme ve ekleme: profil alanları (sektör, aşama, tanıtım, web, e-posta, paylaşım izni).
 - **Uyarılar** sekmesi: kural listesi, ekle / düzenle / aç-kapat / sil (`/api/rules`), önizleme cümlesi.
 - Kontrol adımından Pil kaldırılır; "Kart değiştir" akışı.

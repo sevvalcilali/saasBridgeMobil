@@ -10,6 +10,7 @@ import '../../tema/yazi.dart';
 import '../../veri/etkinlik_deposu.dart';
 import '../../veri/modeller.dart';
 import 'kart_ver_durumu.dart';
+import 'kisi_formu_sayfasi.dart';
 
 /// Adım 1 — Kişi: kayıtlı kişilerde arama ve kişi kartları.
 class KisiAdimi extends StatelessWidget {
@@ -28,9 +29,18 @@ class KisiAdimi extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          AramaAlani(
-            ipucu: 'Kayıtlı kişilerde ara: ad veya kurum',
-            denetleyici: durum.aramaDenetleyici,
+          Row(
+            children: [
+              Expanded(
+                child: AramaAlani(
+                  ipucu: 'Kayıtlı kişilerde ara: ad veya kurum',
+                  denetleyici: durum.aramaDenetleyici,
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Kayıt defterinde olmayan gelen: önce eklenir, sonra kart verilir.
+              HapDugme(etiket: '+ Yeni', yukseklik: 44, onTap: () => kisiFormuGoster(context, depo: depo)),
+            ],
           ),
           const SizedBox(height: 12),
           // Süzgeç: Tümü / Kart bekliyor (dokununca değişir).
@@ -66,7 +76,11 @@ class KisiAdimi extends StatelessWidget {
           const SizedBox(height: 12),
           for (var i = 0; i < liste.length; i++) ...[
             if (i > 0) const SizedBox(height: 8),
-            _KisiKarti(kisi: liste[i], onTap: () => durum.kisiSec(liste[i].kisiId)),
+            _KisiKarti(
+              kisi: liste[i],
+              onTap: () => durum.kisiSec(liste[i].kisiId),
+              onDuzenle: () => kisiFormuGoster(context, depo: depo, katilimci: liste[i]),
+            ),
           ],
         ],
       ),
@@ -75,10 +89,11 @@ class KisiAdimi extends StatelessWidget {
 }
 
 class _KisiKarti extends StatelessWidget {
-  const _KisiKarti({required this.kisi, required this.onTap});
+  const _KisiKarti({required this.kisi, required this.onTap, required this.onDuzenle});
 
   final Katilimci kisi;
   final VoidCallback onTap;
+  final VoidCallback onDuzenle;
 
   @override
   Widget build(BuildContext context) {
@@ -118,8 +133,7 @@ class _KisiKarti extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            // Kişi düzenleme ekranı tasarlanmadı (şartname §2).
-            const HapDugme(etiket: 'Düzenle', tur: HapTuru.hayalet, yukseklik: 36, onTap: islevsiz),
+            HapDugme(etiket: 'Düzenle', tur: HapTuru.hayalet, yukseklik: 36, onTap: onDuzenle),
           ],
         ),
       ),

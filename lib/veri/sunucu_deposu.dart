@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import '../mantik/bicim.dart';
 import '../mantik/gruplar.dart';
+import '../mantik/kural.dart';
 import '../mantik/kurulum.dart';
 import 'etkinlik_deposu.dart';
 import 'modeller.dart';
@@ -246,6 +247,39 @@ class SunucuDeposu extends EtkinlikDeposu {
     final oldu = await _istemci.kartIadeAl(kart, ayrildi: ayrildi);
     if (!oldu) return 'İade alınamadı: sunucu kabul etmedi ya da ulaşılamıyor.';
     await _hemenYokla();
+    return null;
+  }
+
+  @override
+  Future<String?> kisiEkle(Map<String, Object?> govde) => _yaz(() => _istemci.kisiEkle(govde), 'Kişi eklenemedi');
+
+  @override
+  Future<String?> kisiGuncelle(String kisiId, Map<String, Object?> govde) =>
+      _yaz(() => _istemci.kisiGuncelle(kisiId, govde), 'Kişi güncellenemedi');
+
+  @override
+  Future<List<Kural>> kurallar() async => [for (final k in await _istemci.kurallar()) Kural.ayristir(k)];
+
+  @override
+  Future<String?> kuralEkle(Map<String, Object?> govde) => _yaz(() => _istemci.kuralEkle(govde), 'Kural eklenemedi', yokla: false);
+
+  @override
+  Future<String?> kuralGuncelle(String kuralId, Map<String, Object?> govde) =>
+      _yaz(() => _istemci.kuralGuncelle(kuralId, govde), 'Kural güncellenemedi', yokla: false);
+
+  @override
+  Future<String?> kuralSil(String kuralId) => _yaz(() => _istemci.kuralSil(kuralId), 'Kural silinemedi', yokla: false);
+
+  /// Yazma: sunucunun hata metni varsa o, yoksa genel metin; başarıda listeler hemen tazelenir.
+  Future<String?> _yaz(Future<Object?> Function() istek, String genelHata, {bool yokla = true}) async {
+    try {
+      await istek();
+    } on SunucuHatasi catch (h) {
+      return h.metin;
+    } catch (_) {
+      return '$genelHata: sunucuya ulaşılamıyor.';
+    }
+    if (yokla) await _hemenYokla();
     return null;
   }
 

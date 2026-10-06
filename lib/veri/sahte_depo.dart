@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import '../mantik/gruplar.dart';
+import '../mantik/kural.dart';
 import '../mantik/kurulum.dart';
 import 'etkinlik_deposu.dart';
 import 'modeller.dart';
@@ -59,6 +60,42 @@ class SahteDepo extends EtkinlikDeposu {
   Future<String?> kartAta(String kisiId, String kart) async => null;
   @override
   Future<String?> kartIadeAl(String kart, {bool ayrildi = true}) async => null;
+  @override
+  Future<String?> kisiEkle(Map<String, Object?> govde) async => null;
+  @override
+  Future<String?> kisiGuncelle(String kisiId, Map<String, Object?> govde) async => null;
+
+  // Kurallar bellekte (arayüz sunucusuz denenebilsin); sunucuyla aynı doğrulama ve ad üretimi.
+  final List<Kural> _kurallar = [];
+  int _kuralSayac = 0;
+
+  @override
+  Future<List<Kural>> kurallar() async => List.unmodifiable(_kurallar);
+
+  @override
+  Future<String?> kuralEkle(Map<String, Object?> govde) async {
+    final sonuc = kuralCoz({...govde, 'kuralId': 'r${_kuralSayac + 1}'}, katilimcilar);
+    if (sonuc is String) return sonuc;
+    _kuralSayac++;
+    _kurallar.add(sonuc as Kural);
+    return null;
+  }
+
+  @override
+  Future<String?> kuralGuncelle(String kuralId, Map<String, Object?> govde) async {
+    final i = _kurallar.indexWhere((k) => k.kuralId == kuralId);
+    if (i < 0) return 'kural yok';
+    final sonuc = kuralCoz({..._kurallar[i].govde(), ...govde, 'kuralId': kuralId}, katilimcilar);
+    if (sonuc is String) return sonuc;
+    _kurallar[i] = sonuc as Kural;
+    return null;
+  }
+
+  @override
+  Future<String?> kuralSil(String kuralId) async {
+    _kurallar.removeWhere((k) => k.kuralId == kuralId);
+    return null;
+  }
 
   int _tick = 0;
   int _saatSn = SahteVeri.baslangicSaatSn;

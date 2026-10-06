@@ -122,3 +122,47 @@ String kuralCumlesi(Kural kural, List<Katilimci> kisiler) {
   final ne = kural.dakika > 0 ? '${kural.dakika} dakikadan uzun birlikte kalınca' : 'yan yana gelince';
   return '${secimMetni(kural.kim, kisiler)} ile ${secimMetni(kural.kiminle, kisiler)} $ne';
 }
+
+const enCokDakika = 600;
+const adSiniri = 80;
+const _roller = {'investor', 'founder', 'guest', 'herkes'};
+
+/// İstek gövdesinden kural (sunucu `kural_coz` ile aynı kurallar); geçersizse kullanıcıya gösterilecek hata metni.
+/// Ad boşsa kuraldan üretilir ("Ayşe Demir ile herkes · yan yana").
+Object kuralCoz(Map<String, Object?> govde, List<Katilimci> kayitli) {
+  final kimlikler = {for (final k in kayitli) k.kisiId};
+  Object secim(Object? ham, String taraf) {
+    if (ham is! Map) return '$taraf: kişiler ya da rol seçin';
+    if (ham.containsKey('kisiler')) {
+      final kisiler = ham['kisiler'];
+      if (kisiler is! List || kisiler.isEmpty || kisiler.any((k) => k is! String)) return '$taraf: en az bir kişi seçin';
+      for (final id in kisiler.cast<String>()) {
+        if (!kimlikler.contains(id)) return '$taraf: bilinmeyen kişi $id';
+      }
+      return KuralSecimi.kisiler(kisiler.cast<String>().toSet().toList());
+    }
+    final rol = ham['rol'];
+    if (rol is! String || !_roller.contains(rol)) return '$taraf: rol yatırımcı, girişimci, misafir ya da herkes olmalı';
+    final yildiz = ham['enAzYildiz'] ?? 0;
+    if (yildiz is! int || yildiz < 0 || yildiz > 5) return '$taraf: en az yıldız 0–5 olmalı';
+    return KuralSecimi.grup(rol: rol, enAzYildiz: yildiz);
+  }
+
+  final kim = secim(govde['kim'], 'kim');
+  if (kim is String) return kim;
+  final kiminle = secim(govde['kiminle'], 'kiminle');
+  if (kiminle is String) return kiminle;
+  final dakikaHam = govde['dakika'] ?? 0;
+  if (dakikaHam is! num || dakikaHam < 0 || dakikaHam > enCokDakika) return 'dakika 0–$enCokDakika olmalı';
+  final acik = govde['acik'] ?? true;
+  if (acik is! bool) return 'acik true / false olmalı';
+  final dakika = dakikaHam.toInt();
+  var ad = (govde['ad'] as String? ?? '').trim();
+  if (ad.isEmpty) {
+    final k = kim as KuralSecimi;
+    final km = kiminle as KuralSecimi;
+    ad = '${secimMetni(k, kayitli)} ile ${secimMetni(km, kayitli)}${dakika > 0 ? ' · $dakika dk' : ' · yan yana'}';
+  }
+  if (ad.length > adSiniri) ad = ad.substring(0, adSiniri);
+  return Kural(kuralId: govde['kuralId'] as String? ?? '', ad: ad, kim: kim as KuralSecimi, kiminle: kiminle as KuralSecimi, dakika: dakika, acik: acik);
+}

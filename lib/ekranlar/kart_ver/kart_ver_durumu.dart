@@ -6,7 +6,7 @@ import '../../mantik/kart_no.dart';
 import '../../veri/etkinlik_deposu.dart';
 import '../../veri/modeller.dart';
 
-enum KartVerModu { ver, iade }
+enum KartVerModu { ver, iade, uyari }
 
 enum KartSecimModu { yaklastir, numara }
 
@@ -263,6 +263,14 @@ class KartVerDurumu extends ChangeNotifier {
   void modIade() {
     _demoIptal();
     _mod = KartVerModu.iade;
+    _hata = null;
+    notifyListeners();
+  }
+
+  /// Uyarı kuralları (organizatör ayarı).
+  void modUyari() {
+    _demoIptal();
+    _mod = KartVerModu.uyari;
     _hata = null;
     notifyListeners();
   }

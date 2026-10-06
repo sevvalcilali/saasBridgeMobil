@@ -25,6 +25,10 @@ class SahteSunucu {
   bool akisHatali = false;
   String kisilerYaniti = '[{"kisiId":"k1"}]';
   String kartlarYaniti = '[]';
+  String kurallarYaniti = '[]';
+
+  /// Verilirse sonraki yazma isteği bu kodla `{ok:false, hata}` döner (sözleşmedeki hata biçimi).
+  (int, String)? hata;
   final _acikAkislar = <HttpResponse>[];
 
   String get adres => 'http://127.0.0.1:${sunucu.port}';
@@ -77,11 +81,26 @@ class SahteSunucu {
     } else if (yol == '/control' || yol.startsWith('/api/')) {
       govdeler.add(await utf8.decoder.bind(r).join());
       r.response.headers.contentType = ContentType.json;
-      r.response.write(switch (yol) {
-        '/api/people' => kisilerYaniti,
-        '/api/cards' => kartlarYaniti,
-        _ => '{"ok":true}',
-      });
+      final yazma = r.method != 'GET';
+      final bekleyenHata = yazma ? hata : null;
+      if (bekleyenHata != null) {
+        hata = null;
+        r.response.statusCode = bekleyenHata.$1;
+        r.response.write(jsonEncode({'ok': false, 'hata': bekleyenHata.$2}));
+      } else {
+        r.response.write(switch ((yol, yazma)) {
+          ('/api/people', false) => kisilerYaniti,
+          ('/api/people', true) => '{"kisiId":"k9","ad":"Yeni"}',
+          ('/api/cards', _) => kartlarYaniti,
+          ('/api/rules', false) => kurallarYaniti,
+          ('/api/rules', true) => '{"kuralId":"r9","ad":"Yeni","kim":{"rol":"herkes","enAzYildiz":0},"kiminle":{"rol":"herkes","enAzYildiz":0},"dakika":0,"acik":true}',
+          _ => yol.startsWith('/api/people/')
+              ? '{"kisiId":"k1"}'
+              : yol.startsWith('/api/rules/') && r.method == 'PATCH'
+              ? '{"kuralId":"r1","ad":"A","kim":{"rol":"herkes","enAzYildiz":0},"kiminle":{"rol":"herkes","enAzYildiz":0},"dakika":0,"acik":false}'
+              : '{"ok":true}',
+        });
+      }
     } else {
       r.response.statusCode = 404;
     }

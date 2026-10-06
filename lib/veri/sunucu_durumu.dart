@@ -169,4 +169,11 @@ Katilimci katilimciAyristir(Map<String, dynamic> k) => Katilimci(
   yildiz: (k['yildiz'] as num?)?.toInt() ?? 0,
   atananKart: k['atananKart'] as String?,
   ayrildi: k['ayrildi'] as bool? ?? false,
+  notu: k['not'] as String? ?? '',
+  sektor: k['sektor'] as String? ?? '',
+  asama: k['asama'] as String? ?? '',
+  tanitim: k['tanitim'] as String? ?? '',
+  web: k['web'] as String? ?? '',
+  eposta: k['eposta'] as String? ?? '',
+  paylasim: k['paylasim'] as bool? ?? false,
 );
