@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../mantik/bicim.dart';
+import '../mantik/gruplar.dart';
 import 'modeller.dart';
 import 'sahte_depo.dart';
 
@@ -29,6 +30,9 @@ abstract class EtkinlikDeposu extends ChangeNotifier {
   int get duyulanKartSayisi;
   int get kayitliKatilimci;
   List<Kisi> get kisiler;
+
+  /// Şu an birlikte olan kart çiftleri (salon görünümü kümeleri bundan çıkar).
+  List<CanliCift> get canliCiftler;
   List<Cift> get ciftler;
   List<KisiRengi> get seriRenkleri;
   List<AcikKart> get acikKartlar;

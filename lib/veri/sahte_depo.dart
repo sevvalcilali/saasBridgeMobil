@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import '../mantik/gruplar.dart';
 import '../mantik/kurulum.dart';
 import 'etkinlik_deposu.dart';
 import 'modeller.dart';
@@ -35,6 +36,13 @@ class SahteDepo extends EtkinlikDeposu {
   int get kayitliKatilimci => SahteVeri.kayitliKatilimci;
   @override
   List<Kisi> get kisiler => SahteVeri.kisiler;
+  /// Sahte veride çiftler kişinin `ile` alanından türer (her çift bir kez).
+  @override
+  List<CanliCift> get canliCiftler => [
+    for (final k in kisiler)
+      if (k.ile != null && _noSirasi(k.id, k.ile!) < 0) CanliCift(k.id, k.ile!),
+  ];
+  static int _noSirasi(String a, String b) => (int.tryParse(a) ?? 0).compareTo(int.tryParse(b) ?? 0);
   @override
   List<Cift> get ciftler => SahteVeri.ciftler;
   @override

@@ -28,6 +28,15 @@ void main() {
     }
     await binding.takeScreenshot('$platform/m1_pano_sunucu');
 
+    await tester.tap(find.text('Salon'));
+    for (var i = 0; i < 8; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    expect(find.text('Süre:'), findsOneWidget);
+    await binding.takeScreenshot('$platform/m2_salon_sunucu');
+    await tester.tap(find.text('Kişiler'));
+    await tester.pump(const Duration(milliseconds: 200));
+
     await tester.tap(find.descendant(of: find.byType(BottomNavigationBar), matching: find.text('Kurulum')));
     for (var i = 0; i < 8; i++) {
       await tester.pump(const Duration(milliseconds: 100));

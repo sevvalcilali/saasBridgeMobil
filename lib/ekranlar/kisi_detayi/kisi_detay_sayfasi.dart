@@ -203,8 +203,6 @@ class KisiDetaySayfasi extends StatelessWidget {
             stil: Yazi.olcu(15, agirlik: FontWeight.w600, rakam: true),
           ),
         ),
-        const SizedBox(height: 14),
-        satir(EtiketliDeger(etiket: 'Pil', deger: k.pil == null ? '—' : '%${k.pil}'), const SizedBox.shrink()),
       ],
     );
   }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yakinlik_mobil/bilesenler/basili_opaklik.dart';
-import 'package:yakinlik_mobil/ekranlar/pano/ag_bolumu.dart';
 import 'package:yakinlik_mobil/ekranlar/pano/pano_durumu.dart';
+import 'package:yakinlik_mobil/bilesenler/siluet.dart';
 import 'package:yakinlik_mobil/ekranlar/pano/pano_ekrani.dart';
 import 'package:yakinlik_mobil/veri/etkinlik_deposu.dart';
 import 'package:yakinlik_mobil/veri/modeller.dart';
@@ -34,47 +34,32 @@ void main() {
     expect(find.byType(BasiliOpaklik), findsNWidgets(12));
   });
 
-  testWidgets('Ağ: başlıklar, düğümler ve not', (tester) async {
+  testWidgets('Salon: kümeler (etiket, adlar), boştakiler, süre anahtarı ve not', (tester) async {
     final k = _Kurulum(tester);
     await tester.pumpWidget(k.widget);
-    await tester.tap(find.text('Ağ'));
+    await tester.tap(find.text('Salon'));
     await tester.pump();
-    expect(find.text('YATIRIMCI ○'), findsOneWidget);
-    expect(find.text('GİRİŞİMCİ □'), findsOneWidget);
-    expect(find.text('Ayşe Demir'), findsOneWidget);
-    expect(find.text('Kerem Tekin'), findsOneWidget); // birlikte olan misafir solda
-    expect(find.text('Volkan Aydın'), findsNothing); // boştaki misafir ağda yok
-    expect(find.text('Nova Robotik'), findsOneWidget);
-    expect(find.text('Oyun Evreni'), findsOneWidget);
-    expect(
-      find.text(
-        'Düğümlerin konumu fiziksel konum değildir; yalnız rol gruplarını gösterir. '
-        'Bir ada dokununca ayrıntı açılır.',
-      ),
-      findsOneWidget,
-    );
+    expect(find.byType(Siluet), findsWidgets);
+    expect(find.text('2 kişi · 1 dk'), findsWidgets); // Cem Erdem – Elif Aydın 19 sn: 1 dk'dan kısa "1 dk" yazılır
+    expect(find.text('Elif Aydın · Nova Robotik'), findsOneWidget); // yatırımcı önce, girişimcide kurum
+    expect(find.text('BOŞTA'), findsOneWidget);
+    expect(find.text('Can Yıldız'), findsOneWidget); // hiç görüşmemiş → boşta figürü
+    expect(find.text('Kaan Öztürk'), findsNothing); // görünmeyen boşta çizilmez
+    expect(find.textContaining('görünmüyor 1'), findsOneWidget);
+    expect(find.text('Süre:'), findsOneWidget);
+    expect(find.text('20 dk+'), findsOneWidget);
+    expect(find.textContaining('Grupların yeri salondaki yeri göstermez'), findsOneWidget);
     expect(find.text('GİRİŞİMCİLER'), findsNothing);
   });
 
-  testWidgets('Ağ: birlikte olan çiftler arasında çizgi çizilir', (tester) async {
+  testWidgets('Salon: figüre ve boştaki figüre dokununca kişi bildirilir', (tester) async {
     final k = _Kurulum(tester);
     await tester.pumpWidget(k.widget);
-    await tester.tap(find.text('Ağ'));
+    await tester.tap(find.text('Salon'));
     await tester.pump();
-    expect(
-      find.descendant(of: find.byType(AgBolumu), matching: find.byType(CustomPaint)),
-      paints..line(),
-    );
-  });
-
-  testWidgets('Ağ: ada dokununca kişi bildirilir', (tester) async {
-    final k = _Kurulum(tester);
-    await tester.pumpWidget(k.widget);
-    await tester.tap(find.text('Ağ'));
-    await tester.pump();
-    await tester.tap(find.text('Ayşe Demir'));
-    await tester.tap(find.text('Nova Robotik'));
-    expect(k.acilanlar, ['61', '24']);
+    await tester.tap(find.bySemanticsLabel(RegExp(r'^Cem Erdem · ')));
+    await tester.tap(find.text('Can Yıldız')); // boştaki figürün adı
+    expect(k.acilanlar, ['24', '49']);
   });
 
   testWidgets('Bildirimler: dört satır ve sayılı önem çipleri', (tester) async {
@@ -128,7 +113,7 @@ void main() {
     await tester.pump();
     expect(find.byType(BasiliOpaklik), findsOneWidget);
 
-    await tester.tap(find.text('Ağ'));
+    await tester.tap(find.text('Salon'));
     await tester.pump();
     await tester.tap(find.text('Kişiler'));
     await tester.pump();

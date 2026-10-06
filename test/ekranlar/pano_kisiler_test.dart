@@ -58,11 +58,11 @@ void main() {
     expect(durum.onem, isNull);
     var bildirim = 0;
     durum.addListener(() => bildirim++);
-    durum.bolumSec(PanoBolumu.ag);
-    durum.bolumSec(PanoBolumu.ag); // aynı değer bildirim göndermez
+    durum.bolumSec(PanoBolumu.salon);
+    durum.bolumSec(PanoBolumu.salon); // aynı değer bildirim göndermez
     durum.filtreSec(PanoFiltre.tumu);
     durum.aramaDenetleyici.text = 'nova';
-    expect(durum.bolum, PanoBolumu.ag);
+    expect(durum.bolum, PanoBolumu.salon);
     expect(durum.filtre, PanoFiltre.tumu);
     expect(durum.arama, 'nova');
     expect(bildirim, 3);
@@ -79,7 +79,7 @@ void main() {
     expect(find.text('Sıfırla'), findsOneWidget);
     expect(find.text('Kişiler'), findsOneWidget);
     expect(find.text('26'), findsOneWidget);
-    expect(find.text('Ağ'), findsOneWidget);
+    expect(find.text('Salon'), findsOneWidget);
     expect(find.text('Bildirimler'), findsOneWidget);
     expect(find.text('4'), findsOneWidget);
   });

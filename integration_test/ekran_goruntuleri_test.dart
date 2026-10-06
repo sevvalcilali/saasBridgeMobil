@@ -50,8 +50,8 @@ void main() {
     }
 
     await cek('01_pano_kisiler');
-    await dokun(find.text('Ağ'));
-    await cek('02_pano_ag');
+    await dokun(find.text('Salon'));
+    await cek('02_pano_salon');
     await dokun(find.text('Bildirimler'));
     await cek('03_pano_bildirimler');
     await dokun(find.text('Kişiler'));

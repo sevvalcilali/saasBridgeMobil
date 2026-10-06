@@ -43,7 +43,9 @@ String durumCumlesi(Kisi k, int tick, Kisi Function(String id) bul) {
   if (k.gorunmuyor) return 'Görünmüyor · 3 dk önce duyuldu';
   final ile = k.ile;
   if (ile != null) return '${gorunenAd(bul(ile))} ile · ${sureYazisi(gecenSn(k, tick))}';
-  return 'Boşta';
+  // Sunucunun idleSinceS'i (web ile aynı): 1 dk'dan uzun boştaysa dakikası yazılır.
+  final dk = k.bostaSn ~/ 60;
+  return dk >= 1 ? "Boşta · $dk dk'dır" : 'Boşta';
 }
 
 /// Satırın sağındaki süre; hiç görüşmemişse "—".

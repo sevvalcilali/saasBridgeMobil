@@ -52,6 +52,10 @@ void main() {
     expect(durumCumlesi(kaan, 0, bul), 'Görünmüyor · 3 dk önce duyuldu');
     expect(durumTonu(kaan), DurumTonu.uyari);
     expect(durumCumlesi(zeynep, 5, bul), 'Boşta');
+    // Sunucunun idleSinceS'i (web ile aynı): 1 dk'dan uzun boştaysa dakikası yazılır.
+    final bosta = Kisi(id: '90', rol: Rol.misafir, renk: KisiRengi.gri, bostaSn: 185);
+    expect(durumCumlesi(bosta, 0, bul), "Boşta · 3 dk'dır");
+    expect(durumCumlesi(Kisi(id: '91', rol: Rol.misafir, renk: KisiRengi.gri, bostaSn: 40), 0, bul), 'Boşta');
     expect(durumTonu(zeynep), DurumTonu.ikincil);
   });
 

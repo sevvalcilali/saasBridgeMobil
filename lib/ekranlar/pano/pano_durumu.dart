@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import '../../mantik/pano_filtre.dart';
 import '../../veri/modeller.dart';
 
-enum PanoBolumu { kisiler, ag, bildirimler }
+enum PanoBolumu { kisiler, salon, bildirimler }
 
 /// Pano ekranının durumu: seçili bölüm, kişi filtresi, arama, bildirim önemi.
 /// Sekme değişse de korunur (Kabuk bu nesneyi tutar).
