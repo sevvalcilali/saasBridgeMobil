@@ -88,7 +88,7 @@ class PanoUst extends StatelessWidget {
             yukseklik: 40,
             secenekler: [
               BolmeSecenegi(deger: PanoBolumu.kisiler, etiket: 'Kişiler', ek: '${depo.kisiler.length}'),
-              const BolmeSecenegi(deger: PanoBolumu.ag, etiket: 'Ağ'),
+              const BolmeSecenegi(deger: PanoBolumu.salon, etiket: 'Salon'),
               BolmeSecenegi(
                 deger: PanoBolumu.bildirimler,
                 etiket: 'Bildirimler',

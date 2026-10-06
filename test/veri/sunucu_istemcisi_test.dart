@@ -51,8 +51,9 @@ void main() {
     await Future<void>.delayed(const Duration(milliseconds: 60));
     i.kapat();
     await abonelik.cancel();
+    await Future<void>.delayed(const Duration(milliseconds: 100)); // kapatma anında yoldaki istek sayılmasın
     final acilis = s.akisAcilis;
-    await Future<void>.delayed(const Duration(milliseconds: 100));
+    await Future<void>.delayed(const Duration(milliseconds: 150));
     expect(s.akisAcilis, acilis);
   });
 

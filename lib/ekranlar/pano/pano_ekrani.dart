@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../../veri/etkinlik_deposu.dart';
-import 'ag_bolumu.dart';
+import 'salon_bolumu.dart';
 import 'bildirimler_bolumu.dart';
 import 'kisiler_bolumu.dart';
 import 'pano_durumu.dart';
@@ -38,7 +38,7 @@ class PanoEkrani extends StatelessWidget {
               PanoUst(depo: depo, durum: durum, onKurulumaGit: onKurulumaGit),
               switch (durum.bolum) {
                 PanoBolumu.kisiler => KisilerBolumu(depo: depo, durum: durum, onKisi: onKisi),
-                PanoBolumu.ag => AgBolumu(depo: depo, onKisi: onKisi),
+                PanoBolumu.salon => SalonBolumu(depo: depo, onKisi: onKisi),
                 PanoBolumu.bildirimler => BildirimlerBolumu(depo: depo, durum: durum, onKisi: onKisi),
               },
             ],

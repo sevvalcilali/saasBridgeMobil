@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import '../mantik/bicim.dart';
+import '../mantik/gruplar.dart';
 import '../mantik/kurulum.dart';
 import 'etkinlik_deposu.dart';
 import 'modeller.dart';
@@ -63,6 +64,8 @@ class SunucuDeposu extends EtkinlikDeposu {
   int get kayitliKatilimci => _kayitli;
   @override
   List<Kisi> get kisiler => _durum?.kisiler ?? const [];
+  @override
+  List<CanliCift> get canliCiftler => _durum?.canliCiftler ?? const [];
   @override
   List<Cift> get ciftler => _durum?.ciftler ?? const [];
 

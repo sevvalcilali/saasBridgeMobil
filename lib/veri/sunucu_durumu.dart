@@ -1,3 +1,4 @@
+import '../mantik/gruplar.dart';
 import 'modeller.dart';
 
 /// Sunucunun `/state` (ve `/events` mesajı) JSON'unu uygulama modellerine çevirir.
@@ -15,6 +16,7 @@ class SunucuDurumu {
     required this.esik,
     required this.aliciBagli,
     required this.canliCiftSayisi,
+    required this.canliCiftler,
   });
 
   final List<Kisi> kisiler;
@@ -32,6 +34,7 @@ class SunucuDurumu {
   final int esik;
   final bool aliciBagli;
   final int canliCiftSayisi;
+  final List<CanliCift> canliCiftler;
 
   /// `receiverAge` (sn) bundan büyükse alıcı kopuk sayılır.
   static const double aliciEnCokYasSn = 5;
@@ -72,6 +75,10 @@ class SunucuDurumu {
       esik: (ham['threshold'] as num?)?.round() ?? -72,
       aliciBagli: alici != null && alici <= aliciEnCokYasSn,
       canliCiftSayisi: canli.length,
+      canliCiftler: [
+        for (final c in canli)
+          if (kisiKartiMi(c['a'] as String) && kisiKartiMi(c['b'] as String)) CanliCift(c['a'] as String, c['b'] as String),
+      ],
     );
   }
 

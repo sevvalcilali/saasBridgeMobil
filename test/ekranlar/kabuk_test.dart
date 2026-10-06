@@ -116,7 +116,7 @@ void main() {
     expect(find.text('Kart 24 iade alınsın mı?'), findsOneWidget);
   });
 
-  testWidgets('bildirimden ve ağdan kişi detayı açılır', (tester) async {
+  testWidgets('bildirimden ve salondaki figürden kişi detayı açılır', (tester) async {
     await _baslat(tester);
     await tester.tap(find.text('Bildirimler'));
     await tester.pump();
@@ -127,9 +127,9 @@ void main() {
     await tester.tap(find.text('✕'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Ağ'));
+    await tester.tap(find.text('Salon'));
     await tester.pump();
-    await tester.tap(find.text('Nova Robotik'));
+    await tester.tap(find.bySemanticsLabel(RegExp(r'^Cem Erdem · '))); // kümedeki figür
     await tester.pumpAndSettle();
     expect(find.text(_cem), findsOneWidget);
   });

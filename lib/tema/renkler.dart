@@ -1,11 +1,13 @@
 import 'package:flutter/painting.dart';
 
+import '../mantik/gruplar.dart';
 import '../veri/modeller.dart';
 
 /// Tüm renk token'ları (docs/tasarim/README.md, tema = web).
 /// Renk sabiti YALNIZ bu klasörde yazılır; ekranlar buradan okur.
 abstract final class Renkler {
   // --- Yüzeyler ---
+  static const seffaf = Color(0x00000000);
   static const zemin = Color(0xFFF7F2E9);
   static const yuzey = Color(0xFFFFFDF8);
   static const acikYuzey = Color(0xFFEFE7D8);
@@ -34,6 +36,12 @@ abstract final class Renkler {
   static const ciddi = Color(0xFFB02A25);
   static const ciddiZemin = Color(0xFFF9E2E0);
   static const ciddiKoyu = Color(0xFF8A1F1B);
+
+  // --- Görüşme süresi (salon figürleri): gri → sarı → turuncu → kırmızı; web --sure-1/5/10/20 ---
+  static const sure1 = Color(0xFF7A7369);
+  static const sure5 = Color(0xFFB38600);
+  static const sure10 = Color(0xFFD2621A);
+  static const sure20 = Color(0xFFC42D28);
 
   // --- Kaplamalar ve gölge ---
   /// Alt sayfanın arkasındaki perde: rgba(32,30,29,.35).
@@ -65,6 +73,14 @@ abstract final class Renkler {
     DurumTonu.uyari => uyari,
     DurumTonu.ikincil => metin2,
     DurumTonu.ciddi => ciddi,
+  };
+
+  /// Salon figürünün rengi (görüşme süresi).
+  static Color sure(SureRengi r) => switch (r) {
+    SureRengi.gri => sure1,
+    SureRengi.sari => sure5,
+    SureRengi.turuncu => sure10,
+    SureRengi.kirmizi => sure20,
   };
 
   /// Bildirim noktasının rengi.

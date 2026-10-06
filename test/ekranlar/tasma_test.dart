@@ -44,8 +44,8 @@ void main() {
         await denetle('Pano · Kişiler');
         await dokun(find.text('Tümü'));
         await denetle('Pano · Tümü filtresi');
-        await dokun(find.text('Ağ'));
-        await denetle('Pano · Ağ');
+        await dokun(find.text('Salon'));
+        await denetle('Pano · Salon');
         await dokun(find.text('Bildirimler'));
         await denetle('Pano · Bildirimler');
 

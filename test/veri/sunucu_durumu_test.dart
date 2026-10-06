@@ -38,6 +38,8 @@ void main() {
     expect(b.ile, a.id);
     final hamA = (ham['people'] as List).cast<Map<String, dynamic>>().firstWhere((k) => k['id'] == a.id);
     expect(a.sn, ((hamA['live'] as num) * 60).round());
+    expect(d.canliCiftler.first.a, canli['a']);
+    expect(d.canliCiftler.length, (ham['live'] as List).length);
   });
 
   test('boştaki kişi: eşi yok, süre bugünkü toplam; hiç görüşmemiş = toplam 0', () {
