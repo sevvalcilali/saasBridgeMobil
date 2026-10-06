@@ -1,93 +1,66 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 
 import '../mantik/bicim.dart';
-import '../mantik/kurulum.dart';
 import 'modeller.dart';
-import 'sahte_veri.dart';
+import 'sahte_depo.dart';
 
-/// Ekranların veriye TEK erişim noktası. Bugün gömülü sahte veriyi verir ve
-/// saati kendi yürütür; gerçek sunucuya geçiş ileride yalnız bu katmanı değiştirir.
-class EtkinlikDeposu extends ChangeNotifier {
-  /// `aliciBagli` verilmezse derleme değişkeni okunur:
-  /// `flutter run --dart-define=ALICI_BAGLI=false` kopuk durumu gösterir.
-  /// `bildirimler` yalnız testlerde (boş durum) verilir.
-  EtkinlikDeposu({bool? aliciBagli, List<Bildirim>? bildirimler})
-    : aliciBagli = aliciBagli ?? const bool.fromEnvironment('ALICI_BAGLI', defaultValue: true),
-      bildirimler = bildirimler ?? SahteVeri.bildirimler;
+/// Ekranların veriye TEK erişim noktası. İki gerçekleme: [SahteDepo] (gömülü sahte veri, saati
+/// kendi yürütür; testler ve sunucusuz deneme) ve [SunucuDeposu] (gerçek sunucu: `/state` + `/events`).
+/// Ekranlar hangisi olduğunu bilmez.
+abstract class EtkinlikDeposu extends ChangeNotifier {
+  EtkinlikDeposu.temel();
 
-  final bool aliciBagli;
-  final List<Bildirim> bildirimler;
+  /// Varsayılan: sahte veri. `aliciBagli` verilmezse derleme değişkeni okunur
+  /// (`--dart-define=ALICI_BAGLI=false` kopuk durumu gösterir); `bildirimler` yalnız testlerde.
+  factory EtkinlikDeposu({bool? aliciBagli, bool sunucuBagli, List<Bildirim>? bildirimler}) = SahteDepo;
 
-  String get etkinlikAdi => SahteVeri.etkinlikAdi;
-  String get tarihMekan => SahteVeri.tarihMekan;
-  String get raporTarihi => SahteVeri.raporTarihi;
-  String get cizelgeBaslangici => SahteVeri.cizelgeBaslangici;
-  int get duyulanKartSayisi => SahteVeri.duyulanKartSayisi;
-  int get kayitliKatilimci => SahteVeri.kayitliKatilimci;
-  List<Kisi> get kisiler => SahteVeri.kisiler;
-  List<Cift> get ciftler => SahteVeri.ciftler;
-  List<KisiRengi> get seriRenkleri => SahteVeri.seriRenkleri;
-  List<AcikKart> get acikKartlar => SahteVeri.acikKartlar;
+  /// Sunucuyla bağlantı var mı (sahte veride hep var). Yoksa üstte bant çıkar, son veri kalır.
+  bool get sunucuBagli;
 
-  int _tick = 0;
-  int _saatSn = SahteVeri.baslangicSaatSn;
-  int _esik = SahteVeri.baslangicEsik;
-  Timer? _zamanlayici;
+  /// Alıcı (USB) sunucuya bağlı ve duyuyor mu.
+  bool get aliciBagli;
+  List<Bildirim> get bildirimler;
+  String get etkinlikAdi;
+  String get tarihMekan;
+  String get raporTarihi;
 
-  /// Sıfırla'dan bu yana geçen saniye; "birlikte" süreleri bununla akar.
-  int get tick => _tick;
+  /// Görüşme zaman çizelgesinin başı (etkinliğin başladığı saat).
+  String get cizelgeBaslangici;
+  int get duyulanKartSayisi;
+  int get kayitliKatilimci;
+  List<Kisi> get kisiler;
+  List<Cift> get ciftler;
+  List<KisiRengi> get seriRenkleri;
+  List<AcikKart> get acikKartlar;
+
+  /// Sıfırla'dan bu yana geçen saniye; "birlikte" süreleri bununla akar (sunucuda hep 0: süre sunucudan gelir).
+  int get tick;
 
   /// Günün saniyesi.
-  int get saatSn => _saatSn;
-  String get saat => saatYazisi(_saatSn);
-  String get saatKisa => kisaSaatYazisi(_saatSn);
+  int get saatSn;
+  String get saat => saatYazisi(saatSn);
+  String get saatKisa => kisaSaatYazisi(saatSn);
 
   /// "Birlikte" sayılmak için gereken en düşük sinyal gücü (dBm).
-  int get esik => _esik;
+  int get esik;
 
-  Kisi bul(String id) => kisiler.firstWhere((k) => k.id == id);
+  Kisi bul(String id);
 
-  /// Saati başlatır (saniyede bir `ilerlet`). Yeniden çağırmak etkisizdir.
-  void baslat() {
-    _zamanlayici ??= Timer.periodic(const Duration(seconds: 1), (_) => ilerlet());
-  }
+  /// Veri akışını başlatır (saat ya da sunucu bağlantısı). Yeniden çağırmak etkisizdir.
+  void baslat();
 
-  /// Saati durdurur (uygulama arka plana geçince). `baslat` kaldığı yerden
-  /// sürdürür; aradaki süre telafi edilmez (şartname §10).
-  void durdur() {
-    _zamanlayici?.cancel();
-    _zamanlayici = null;
-  }
+  /// Akışı durdurur (uygulama arka plana geçince). `baslat` kaldığı yerden sürdürür.
+  void durdur();
 
-  /// Bir saniye ilerletir. Zamanlayıcı bunu çağırır; testler doğrudan çağırır.
-  void ilerlet() {
-    _tick++;
-    _saatSn++;
-    notifyListeners();
-  }
+  /// Bir saniye ilerletir; yalnız sahte veride anlamlı (testler doğrudan çağırır).
+  void ilerlet() {}
 
-  /// Süre sayacını sıfırlar. Saat akmaya devam eder.
-  void sifirla() {
-    _tick = 0;
-    notifyListeners();
-  }
+  /// Süreleri/geçmişi/bildirimleri sıfırlar — çağıran onay almış olmalı.
+  Future<void> sifirla();
 
-  void esikAyarla(int deger) {
-    final yeni = esikSinirla(deger);
-    if (yeni == _esik) return;
-    _esik = yeni;
-    notifyListeners();
-  }
+  void esikAyarla(int deger);
 
-  void esikArtir() => esikAyarla(_esik + 1);
+  void esikArtir() => esikAyarla(esik + 1);
 
-  void esikAzalt() => esikAyarla(_esik - 1);
-
-  @override
-  void dispose() {
-    _zamanlayici?.cancel();
-    super.dispose();
-  }
+  void esikAzalt() => esikAyarla(esik - 1);
 }

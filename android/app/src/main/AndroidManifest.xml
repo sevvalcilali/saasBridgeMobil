@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Pano sunucusu yerel ağda http:// ile çalışır (şifresiz); Android 9+ bunu açıkça ister. -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
+        android:usesCleartextTraffic="true"
         android:label="Yakınlık Panosu"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">

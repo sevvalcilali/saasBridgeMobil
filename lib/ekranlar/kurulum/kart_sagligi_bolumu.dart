@@ -82,7 +82,7 @@ class _SaglikSatiriGorunumu extends StatelessWidget {
             SizedBox(
               width: 48,
               child: Text(
-                '%${satir.pil}',
+                satir.pilYazisi,
                 textAlign: TextAlign.right,
                 style: Yazi.olcu(14, renk: durumRengi, rakam: true),
               ),

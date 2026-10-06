@@ -1,0 +1,58 @@
+[
+{
+"kart": "2",
+"rssiAlici": -71.0,
+"seenAgo": 0.0,
+"atanan": "k29",
+"pil": 64
+},
+{
+"kart": "3",
+"rssiAlici": -73.0,
+"seenAgo": 0.0,
+"atanan": null,
+"pil": 57
+},
+{
+"kart": "4",
+"rssiAlici": -75.0,
+"seenAgo": 0.0,
+"atanan": null,
+"pil": 50
+},
+{
+"kart": "5",
+"rssiAlici": -77.0,
+"seenAgo": 0.0,
+"atanan": "k3",
+"pil": 43
+},
+{
+"kart": "6",
+"rssiAlici": -79.0,
+"seenAgo": 0.0,
+"atanan": "k14",
+"pil": 76
+},
+{
+"kart": "7",
+"rssiAlici": -81.0,
+"seenAgo": 0.0,
+"atanan": null,
+"pil": 69
+},
+{
+"kart": "8",
+"rssiAlici": -83.0,
+"seenAgo": 0.0,
+"atanan": null,
+"pil": 62
+},
+{
+"kart": "9",
+"rssiAlici": -78.0,
+"seenAgo": 0.0,
+"atanan": null,
+"pil": 55
+}
+]

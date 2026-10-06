@@ -16,7 +16,7 @@ class Kisi {
     required this.id,
     required this.rol,
     required this.renk,
-    required this.pil,
+    this.pil,
     this.ad,
     this.kurum,
     this.ile,
@@ -24,6 +24,7 @@ class Kisi {
     this.yildiz = 0,
     this.gorunmuyor = false,
     this.hic = false,
+    this.bostaSn = 0,
   });
 
   final String id;
@@ -38,8 +39,8 @@ class Kisi {
   /// Başlangıçtaki süre (saniye).
   final int sn;
 
-  /// Pil yüzdesi.
-  final int pil;
+  /// Pil yüzdesi; sunucu kartı duymuyorsa ya da bilinmiyorsa null.
+  final int? pil;
 
   /// 0–5; yatırımcı değilse 0.
   final int yildiz;
@@ -47,6 +48,9 @@ class Kisi {
 
   /// Hiç görüşmemiş.
   final bool hic;
+
+  /// Kaç saniyedir boşta (sunucunun idleSinceS'i); görüşüyorsa 0.
+  final int bostaSn;
 }
 
 class Bildirim {

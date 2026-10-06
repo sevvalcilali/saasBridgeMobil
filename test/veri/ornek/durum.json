@@ -1,0 +1,992 @@
+{
+"people": [
+{
+"id": "84",
+"role": "investor",
+"name": "Ayşe Demir",
+"org": "Atlas Ventures",
+"color": "#3987e5",
+"stars": "★★★",
+"tier": 3,
+"status": "talking",
+"withName": "Gök Harita, Peak Enerji",
+"live": 4.65,
+"min": 96.95,
+"invMin": 66.21,
+"invPeers": 7,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "17",
+"role": "investor",
+"name": "Mehmet Kılıç",
+"org": "Boğaz Capital",
+"color": "#d95926",
+"stars": "★★★★",
+"tier": 4,
+"status": "talking",
+"withName": "Zeynep Tekin",
+"live": 2.425,
+"min": 69.18,
+"invMin": 66.76,
+"invPeers": 5,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "5",
+"role": "investor",
+"name": "Zeynep Tekin",
+"org": "Anadolu Fonu",
+"color": "#199e70",
+"stars": "★★★★",
+"tier": 4,
+"status": "talking",
+"withName": "Mehmet Kılıç, Temiz Deniz",
+"live": 2.425,
+"min": 71.88,
+"invMin": 55.66,
+"invPeers": 6,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "38",
+"role": "investor",
+"name": "Emre Kaya",
+"org": "Ege Girişim",
+"color": "#c98500",
+"stars": "★★★",
+"tier": 3,
+"status": "idle",
+"withName": "",
+"live": 0,
+"min": 82.25,
+"invMin": 55.72,
+"invPeers": 4,
+"seenAgo": 0.0,
+"idleSinceS": 65.0
+},
+{
+"id": "34",
+"role": "investor",
+"name": "Elif Aydın",
+"org": "Meridyen VC",
+"color": "#d55181",
+"stars": "★★★",
+"tier": 3,
+"status": "talking",
+"withName": "Merve Bulut",
+"live": 7.533333333333333,
+"min": 106.52,
+"invMin": 58.32,
+"invPeers": 4,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "31",
+"role": "investor",
+"name": "Burak Aksoy",
+"org": "Kule Yatırım",
+"color": "#9085e9",
+"stars": "★★★★",
+"tier": 4,
+"status": "talking",
+"withName": "Halil Şahin",
+"live": 15.758333333333333,
+"min": 65.62,
+"invMin": 27.9,
+"invPeers": 2,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "20",
+"role": "investor",
+"name": "Selin Şahin",
+"org": "Fener Partners",
+"color": "#e66767",
+"stars": "★★★",
+"tier": 3,
+"status": "talking",
+"withName": "Bitki Teknoloji",
+"live": 3.375,
+"min": 80.71,
+"invMin": 45.62,
+"invPeers": 5,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "16",
+"role": "investor",
+"name": "Kaan Öztürk",
+"org": "Doruk Capital",
+"color": "#3987e5",
+"stars": "★★★",
+"tier": 3,
+"status": "talking",
+"withName": "Fin Radar",
+"live": 7.7,
+"min": 118.34,
+"invMin": 88.79,
+"invPeers": 9,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "89",
+"role": "investor",
+"name": "Merve Bulut",
+"org": "Liman Ventures",
+"color": "#d95926",
+"stars": "★★★★",
+"tier": 4,
+"status": "talking",
+"withName": "Elif Aydın, Sağlık Cebi, Veri Köprüsü",
+"live": 7.533333333333333,
+"min": 102.19,
+"invMin": 72.68,
+"invPeers": 7,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "72",
+"role": "investor",
+"name": "Deniz Yılmaz",
+"org": "Kuzey Fonu",
+"color": "#199e70",
+"stars": "★★★",
+"tier": 3,
+"status": "talking",
+"withName": "Şehir Sensör",
+"live": 4.65,
+"min": 74.25,
+"invMin": 55.49,
+"invPeers": 5,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "13",
+"role": "investor",
+"name": "Cem Erdem",
+"org": "Safir Yatırım",
+"color": "#c98500",
+"stars": "★★★",
+"tier": 3,
+"status": "talking",
+"withName": "Hızlı Kargo, İrem Korkmaz",
+"live": 2.9166666666666665,
+"min": 86.63,
+"invMin": 56.03,
+"invPeers": 6,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "78",
+"role": "investor",
+"name": "İrem Korkmaz",
+"org": "Çınar Capital",
+"color": "#d55181",
+"stars": "★★★",
+"tier": 3,
+"status": "talking",
+"withName": "Hızlı Kargo, Cem Erdem",
+"live": 7.425,
+"min": 67.96,
+"invMin": 55.16,
+"invPeers": 6,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "57",
+"role": "founder",
+"name": "Onur Çelik",
+"org": "Nova Robotik",
+"color": "#9085e9",
+"stars": "",
+"tier": 0,
+"status": "idle",
+"withName": "",
+"live": 0,
+"min": 96.5,
+"invMin": 40.6,
+"invPeers": 3,
+"seenAgo": 0.0,
+"idleSinceS": 120.5
+},
+{
+"id": "6",
+"role": "founder",
+"name": "Gizem Polat",
+"org": "Peak Enerji",
+"color": "#e66767",
+"stars": "",
+"tier": 0,
+"status": "talking",
+"withName": "Ayşe Demir, Gök Harita",
+"live": 1.45,
+"min": 84.53,
+"invMin": 31.42,
+"invPeers": 3,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "97",
+"role": "founder",
+"name": "Barış Yavuz",
+"org": "Bitki Teknoloji",
+"color": "#3987e5",
+"stars": "",
+"tier": 0,
+"status": "talking",
+"withName": "Selin Şahin",
+"live": 3.375,
+"min": 82.3,
+"invMin": 41.82,
+"invPeers": 5,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "91",
+"role": "founder",
+"name": "Ece Arslan",
+"org": "Akıllı Tarım",
+"color": "#d95926",
+"stars": "",
+"tier": 0,
+"status": "talking",
+"withName": "Mutfak Robotu",
+"live": 13.466666666666667,
+"min": 63.01,
+"invMin": 12.77,
+"invPeers": 1,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "30",
+"role": "founder",
+"name": "Tolga Koç",
+"org": "Veri Köprüsü",
+"color": "#199e70",
+"stars": "",
+"tier": 0,
+"status": "talking",
+"withName": "Merve Bulut",
+"live": 7.45,
+"min": 96.95,
+"invMin": 68.08,
+"invPeers": 5,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "32",
+"role": "founder",
+"name": "Naz Özkan",
+"org": "Sağlık Cebi",
+"color": "#c98500",
+"stars": "",
+"tier": 0,
+"status": "talking",
+"withName": "Merve Bulut",
+"live": 7.45,
+"min": 95.09,
+"invMin": 82.24,
+"invPeers": 6,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "67",
+"role": "founder",
+"name": "Serkan Doğan",
+"org": "Hızlı Kargo",
+"color": "#d55181",
+"stars": "",
+"tier": 0,
+"status": "talking",
+"withName": "İrem Korkmaz, Cem Erdem",
+"live": 7.425,
+"min": 90.15,
+"invMin": 55.9,
+"invPeers": 7,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "80",
+"role": "founder",
+"name": "Pelin Güneş",
+"org": "Temiz Deniz",
+"color": "#9085e9",
+"stars": "",
+"tier": 0,
+"status": "talking",
+"withName": "Zeynep Tekin",
+"live": 2.425,
+"min": 81.63,
+"invMin": 63.07,
+"invPeers": 4,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "85",
+"role": "founder",
+"name": "Uğur Demir",
+"org": "Oyun Evreni",
+"color": "#e66767",
+"stars": "",
+"tier": 0,
+"status": "idle",
+"withName": "",
+"live": 0,
+"min": 77.68,
+"invMin": 17.61,
+"invPeers": 3,
+"seenAgo": 0.0,
+"idleSinceS": 91.0
+},
+{
+"id": "74",
+"role": "founder",
+"name": "Aslı Kılıç",
+"org": "Fin Radar",
+"color": "#3987e5",
+"stars": "",
+"tier": 0,
+"status": "talking",
+"withName": "Kaan Öztürk",
+"live": 7.7,
+"min": 80.63,
+"invMin": 66.65,
+"invPeers": 7,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "28",
+"role": "founder",
+"name": "Kerem Tekin",
+"org": "Eğitim Yıldızı",
+"color": "#d95926",
+"stars": "",
+"tier": 0,
+"status": "talking",
+"withName": "Kart 14",
+"live": 1.9416666666666667,
+"min": 76.28,
+"invMin": 65.76,
+"invPeers": 5,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "90",
+"role": "founder",
+"name": "Duygu Kaya",
+"org": "Şehir Sensör",
+"color": "#199e70",
+"stars": "",
+"tier": 0,
+"status": "talking",
+"withName": "Deniz Yılmaz",
+"live": 4.65,
+"min": 89.11,
+"invMin": 60.57,
+"invPeers": 8,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "56",
+"role": "founder",
+"name": "Volkan Aydın",
+"org": "Mutfak Robotu",
+"color": "#c98500",
+"stars": "",
+"tier": 0,
+"status": "talking",
+"withName": "Akıllı Tarım",
+"live": 13.466666666666667,
+"min": 97.18,
+"invMin": 55.56,
+"invPeers": 5,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "94",
+"role": "founder",
+"name": "Buse Aksoy",
+"org": "Gök Harita",
+"color": "#d55181",
+"stars": "",
+"tier": 0,
+"status": "talking",
+"withName": "Ayşe Demir, Peak Enerji",
+"live": 4.65,
+"min": 77.49,
+"invMin": 42.29,
+"invPeers": 4,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "60",
+"role": "guest",
+"name": "Halil Şahin",
+"org": "",
+"color": "#9085e9",
+"stars": "",
+"tier": 0,
+"status": "talking",
+"withName": "Burak Aksoy",
+"live": 15.758333333333333,
+"min": 77.94,
+"invMin": 0.0,
+"invPeers": 0,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "96",
+"role": "guest",
+"name": "Melis Öztürk",
+"org": "",
+"color": "#e66767",
+"stars": "",
+"tier": 0,
+"status": "talking",
+"withName": "Ozan Bulut",
+"live": 4.65,
+"min": 81.44,
+"invMin": 0.0,
+"invPeers": 0,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "2",
+"role": "guest",
+"name": "Ozan Bulut",
+"org": "",
+"color": "#3987e5",
+"stars": "",
+"tier": 0,
+"status": "talking",
+"withName": "Melis Öztürk",
+"live": 4.65,
+"min": 73.8,
+"invMin": 0.0,
+"invPeers": 0,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+},
+{
+"id": "23",
+"role": "guest",
+"name": "Ceren Yılmaz",
+"org": "",
+"color": "#d95926",
+"stars": "",
+"tier": 0,
+"status": "idle",
+"withName": "",
+"live": 0,
+"min": 90.67,
+"invMin": 0.0,
+"invPeers": 0,
+"seenAgo": 0.0,
+"idleSinceS": 65.0
+},
+{
+"id": "14",
+"role": "guest",
+"name": "Kart 14",
+"org": "",
+"color": "#3987e5",
+"stars": "",
+"tier": 0,
+"status": "talking",
+"withName": "Eğitim Yıldızı",
+"live": 1.9416666666666667,
+"min": 91.88,
+"invMin": 0.0,
+"invPeers": 0,
+"seenAgo": 0.0,
+"idleSinceS": 0.0
+}
+],
+"live": [
+{
+"a": "67",
+"b": "78",
+"real": true,
+"rssi": -48.5
+},
+{
+"a": "32",
+"b": "89",
+"real": true,
+"rssi": -51.7
+},
+{
+"a": "30",
+"b": "89",
+"real": true,
+"rssi": -52.6
+},
+{
+"a": "31",
+"b": "60",
+"real": true,
+"rssi": -50.4
+},
+{
+"a": "56",
+"b": "91",
+"real": true,
+"rssi": -52.3
+},
+{
+"a": "16",
+"b": "74",
+"real": true,
+"rssi": -49.6
+},
+{
+"a": "34",
+"b": "89",
+"real": true,
+"rssi": -51.8
+},
+{
+"a": "2",
+"b": "96",
+"real": true,
+"rssi": -51.5
+},
+{
+"a": "84",
+"b": "94",
+"real": true,
+"rssi": -51.1
+},
+{
+"a": "72",
+"b": "90",
+"real": true,
+"rssi": -52.1
+},
+{
+"a": "20",
+"b": "97",
+"real": true,
+"rssi": -48.9
+},
+{
+"a": "13",
+"b": "67",
+"real": true,
+"rssi": -49.0
+},
+{
+"a": "13",
+"b": "78",
+"real": true,
+"rssi": -51.3
+},
+{
+"a": "5",
+"b": "17",
+"real": true,
+"rssi": -54.4
+},
+{
+"a": "5",
+"b": "80",
+"real": true,
+"rssi": -50.4
+},
+{
+"a": "14",
+"b": "28",
+"real": true,
+"rssi": -49.8
+},
+{
+"a": "6",
+"b": "84",
+"real": true,
+"rssi": -49.7
+},
+{
+"a": "6",
+"b": "94",
+"real": true,
+"rssi": -48.6
+}
+],
+"edges": [
+{
+"a": "84",
+"b": "56",
+"min": 5.69
+},
+{
+"a": "84",
+"b": "57",
+"min": 18.67
+},
+{
+"a": "57",
+"b": "56",
+"min": 9.76
+},
+{
+"a": "32",
+"b": "38",
+"min": 12.09
+},
+{
+"a": "17",
+"b": "74",
+"min": 13.59
+},
+{
+"a": "30",
+"b": "85",
+"min": 10.35
+},
+{
+"a": "6",
+"b": "5",
+"min": 4.72
+},
+{
+"a": "30",
+"b": "60",
+"min": 6.38
+},
+{
+"a": "85",
+"b": "60",
+"min": 6.38
+},
+{
+"a": "91",
+"b": "2",
+"min": 9.3
+},
+{
+"a": "84",
+"b": "90",
+"min": 14.22
+},
+{
+"a": "57",
+"b": "90",
+"min": 6.56
+},
+{
+"a": "90",
+"b": "56",
+"min": 6.56
+},
+{
+"a": "56",
+"b": "16",
+"min": 6.67
+},
+{
+"a": "57",
+"b": "16",
+"min": 14.52
+},
+{
+"a": "84",
+"b": "16",
+"min": 6.67
+},
+{
+"a": "90",
+"b": "16",
+"min": 6.67
+},
+{
+"a": "97",
+"b": "2",
+"min": 3.52
+},
+{
+"a": "97",
+"b": "91",
+"min": 3.52
+},
+{
+"a": "78",
+"b": "67",
+"min": 12.91
+}
+],
+"alerts": [
+{
+"t": 1791282822.8202329,
+"clock": "13:33",
+"kind": "deal",
+"severity": "deal",
+"title": "Potansiyel anlaşma",
+"detail": "Deniz Yılmaz (★★★) ile Fin Radar 8 dakikadır birlikte.",
+"people": [
+"72",
+"74"
+],
+"kisiler": [
+"k10",
+"k22"
+],
+"kural": ""
+},
+{
+"t": 1791282998.797205,
+"clock": "13:36",
+"kind": "repeat",
+"severity": "deal",
+"title": "Yeniden bir arada",
+"detail": "Mehmet Kılıç ile Temiz Deniz anlaşma sonrası tekrar bir araya geldi.",
+"people": [
+"17",
+"80"
+],
+"kisiler": [
+"k2",
+"k20"
+],
+"kural": ""
+},
+{
+"t": 1791283258.07621,
+"clock": "13:40",
+"kind": "deal",
+"severity": "deal",
+"title": "Potansiyel anlaşma",
+"detail": "Ayşe Demir (★★★) ile Veri Köprüsü 8 dakikadır birlikte.",
+"people": [
+"30",
+"84"
+],
+"kisiler": [
+"k17",
+"k1"
+],
+"kural": ""
+},
+{
+"t": 1791283313.7097101,
+"clock": "13:41",
+"kind": "deal",
+"severity": "deal",
+"title": "Potansiyel anlaşma",
+"detail": "Elif Aydın (★★★) ile Sağlık Cebi 8 dakikadır birlikte.",
+"people": [
+"32",
+"34"
+],
+"kisiler": [
+"k18",
+"k5"
+],
+"kural": ""
+},
+{
+"t": 1791283351.457282,
+"clock": "13:42",
+"kind": "repeat",
+"severity": "deal",
+"title": "Yeniden bir arada",
+"detail": "Veri Köprüsü ile Elif Aydın anlaşma sonrası tekrar bir araya geldi.",
+"people": [
+"30",
+"34"
+],
+"kisiler": [
+"k17",
+"k5"
+],
+"kural": ""
+},
+{
+"t": 1791283575.190363,
+"clock": "13:46",
+"kind": "deal",
+"severity": "deal",
+"title": "Potansiyel anlaşma",
+"detail": "Zeynep Tekin (★★★★) ile Eğitim Yıldızı 11 dakikadır birlikte.",
+"people": [
+"5",
+"28"
+],
+"kisiler": [
+"k3",
+"k23"
+],
+"kural": ""
+}
+],
+"stats": {
+"done": 164,
+"livePairs": 18,
+"mixedMin": 704.3,
+"deals": 22,
+"reached": 14,
+"founders": 14
+},
+"receiverAge": 0.0,
+"elapsed": 4019.0,
+"event": {
+"name": "Yatırımcı Buluşması",
+"sub": "Yakınlık kartları · sahte veri",
+"date": "28.09.2026 · Demo Salonu",
+"progress": 0.37212962962962964
+},
+"clock": "13:49:37",
+"threshold": -72,
+"signals": [
+{
+"a": "56",
+"b": "84",
+"ab": -85.1,
+"ba": -81.4,
+"value": -84.1,
+"n": 21,
+"above": false,
+"together": false
+},
+{
+"a": "57",
+"b": "84",
+"ab": -88.5,
+"ba": -90.2,
+"value": -86.8,
+"n": 20,
+"above": false,
+"together": false
+},
+{
+"a": "56",
+"b": "57",
+"ab": -83.6,
+"ba": -78.9,
+"value": -82.0,
+"n": 21,
+"above": false,
+"together": false
+},
+{
+"a": "32",
+"b": "38",
+"ab": null,
+"ba": -83.6,
+"value": -82.8,
+"n": 21,
+"above": false,
+"together": false
+},
+{
+"a": "17",
+"b": "74",
+"ab": -79.8,
+"ba": -82.3,
+"value": -85.7,
+"n": 21,
+"above": false,
+"together": false
+},
+{
+"a": "30",
+"b": "85",
+"ab": -88.0,
+"ba": -80.1,
+"value": -84.0,
+"n": 21,
+"above": false,
+"together": false
+},
+{
+"a": "5",
+"b": "6",
+"ab": -86.6,
+"ba": -88.8,
+"value": -86.2,
+"n": 21,
+"above": false,
+"together": false
+},
+{
+"a": "30",
+"b": "60",
+"ab": -90.6,
+"ba": -90.2,
+"value": -86.3,
+"n": 21,
+"above": false,
+"together": false
+},
+{
+"a": "60",
+"b": "85",
+"ab": -84.2,
+"ba": -80.7,
+"value": -86.6,
+"n": 21,
+"above": false,
+"together": false
+},
+{
+"a": "2",
+"b": "91",
+"ab": -88.6,
+"ba": -87.2,
+"value": -84.7,
+"n": 21,
+"above": false,
+"together": false
+},
+{
+"a": "84",
+"b": "90",
+"ab": -81.2,
+"ba": -81.6,
+"value": -84.5,
+"n": 21,
+"above": false,
+"together": false
+},
+{
+"a": "57",
+"b": "90",
+"ab": -85.7,
+"ba": null,
+"value": -85.8,
+"n": 20,
+"above": false,
+"together": false
+}
+],
+"history": {},
+"chartSeconds": 90,
+"rules": {
+"dealAfterS": null
+}
+}
