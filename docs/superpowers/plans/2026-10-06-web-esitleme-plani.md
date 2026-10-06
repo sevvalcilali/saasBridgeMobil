@@ -27,10 +27,10 @@ Sözleşme: `SaasBridge/SUNUCUDAN_ISTENENLER.md` (sunucu uçları), `saasBridgeB
 - **Uyarılar** sekmesi: kural listesi, ekle / düzenle / aç-kapat / sil (`/api/rules`), önizleme cümlesi.
 - Kontrol adımından Pil kaldırılır; "Kart değiştir" akışı.
 
-## M4 — Kurulum ve Rapor
+## M4 — Kurulum ve Rapor — ✅ (PR #8)
 - Kalibrasyon sihirbazı (çift seçimi gerçek listeden).
 - Rapor: KPI'lar ve girişimci satırları sunucu verisinden; kişiye özel rapor sayfası (yalnız o kişinin görüşmeleri).
-- Dışa aktarma: telefonda "Paylaş" (CSV / PDF dosyası sistem paylaşım sayfasına).
+- Dışa aktarma: telefonda "Paylaş" (CSV sistem paylaşım sayfasına; PDF yok, kişiye özel rapor metin olarak).
 
 ## M5 — Cila ve dağıtım
 - Koyu tema (web token'larının koyu sürümü), uygulama ikonu, açılış ekranı.

@@ -4,6 +4,7 @@ import 'dart:convert';
 import '../mantik/bicim.dart';
 import '../mantik/gruplar.dart';
 import '../mantik/kural.dart';
+import '../mantik/rapor_hesap.dart';
 import '../mantik/kurulum.dart';
 import 'etkinlik_deposu.dart';
 import 'modeller.dart';
@@ -136,6 +137,9 @@ class SunucuDeposu extends EtkinlikDeposu {
   Map<String, List<(int, double)>> get gecmis => _gecmis;
   @override
   int get grafikSaniyesi => _grafikSaniyesi;
+
+  /// Testler için: grafik geçmişi isteniyor mu.
+  bool get grafikIsteniyor => _grafikIsteniyor;
 
   /// Kurulum açıkken: `/state?grafik=1` yoklanır (akış grafiksiz kalır; geçmiş durumun ~%60'ı).
   @override
@@ -297,6 +301,12 @@ class SunucuDeposu extends EtkinlikDeposu {
   @override
   Future<String?> kisiGuncelle(String kisiId, Map<String, Object?> govde) =>
       _yaz(() => _istemci.kisiGuncelle(kisiId, govde), 'Kişi güncellenemedi');
+
+  @override
+  double get gecenSn => ((_hamDurum?['elapsed'] as num?) ?? 0).toDouble();
+
+  @override
+  Future<List<Oturum>> oturumlar() async => [for (final o in await _istemci.oturumlar()) Oturum.ayristir(o)];
 
   @override
   Future<List<Kural>> kurallar() async => [for (final k in await _istemci.kurallar()) Kural.ayristir(k)];

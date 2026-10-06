@@ -132,4 +132,16 @@ void main() {
     expect((await d.kurallar()).single.kuralId, 'r2');
     expect(await d.kuralEkle({'kim': {'kisiler': <String>[]}, 'kiminle': {'rol': 'herkes'}}), 'kim: en az bir kişi seçin');
   });
+
+  test('sahte veride oturumlar: her birlikte çift için sürmekte olan bir görüşme; süre tick ile akar', () async {
+    final d = EtkinlikDeposu();
+    addTearDown(d.dispose);
+    final o = await d.oturumlar();
+    expect(o, hasLength(10));
+    final cem = o.firstWhere((x) => x.a == 'k24' || x.b == 'k24');
+    expect(cem.end, isNull);
+    expect(d.gecenSn - cem.start, 19);
+    d.ilerlet();
+    expect(d.gecenSn - cem.start, 20);
+  });
 }

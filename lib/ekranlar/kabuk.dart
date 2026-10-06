@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -41,6 +42,10 @@ class _KabukState extends State<Kabuk> with WidgetsBindingObserver {
   /// Kayıtlı sunucu adresi; boş = sahte veri.
   String _sunucuAdresi = '';
 
+  /// Testler için: şu anki depo.
+  @visibleForTesting
+  EtkinlikDeposu get depo => _depo;
+
   @override
   void initState() {
     super.initState();
@@ -60,6 +65,8 @@ class _KabukState extends State<Kabuk> with WidgetsBindingObserver {
     final eskiKartVer = _kartVerDurumu;
     final eskiUyari = _uyariDurumu;
     final yeni = depoKur(adres)..baslat();
+    // Kurulum açıkken bağlanıldıysa yeni depo da grafik geçmişini istesin.
+    yeni.grafikIste(_sekme == _sekmeKurulum);
     setState(() {
       _sunucuAdresi = adres;
       _depo = yeni;

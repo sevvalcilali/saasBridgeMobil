@@ -4,7 +4,9 @@ import 'package:yakinlik_mobil/ekranlar/kabuk.dart';
 import 'package:yakinlik_mobil/ekranlar/kurulum/kalibrasyon_bolumu.dart';
 import 'package:yakinlik_mobil/uygulama.dart';
 import 'package:yakinlik_mobil/veri/etkinlik_deposu.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yakinlik_mobil/veri/sahte_depo.dart';
+import 'package:yakinlik_mobil/veri/sunucu_deposu.dart';
 
 import '../yardimci.dart';
 
@@ -73,6 +75,24 @@ void main() {
     await tester.pump();
     expect(depo.istekler, [true, false]);
     expect(find.byType(Kabuk), findsOneWidget);
+  });
+
+  testWidgets('Kurulum açıkken sunucuya bağlanılırsa yeni depo da grafik geçmişini ister', (tester) async {
+    telefonBoyutu(tester);
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const YakinlikUygulamasi()); // depo yok: Kabuk kendi kurar (sahte)
+    await tester.pump();
+    await tester.tap(find.descendant(of: find.byType(BottomNavigationBar), matching: find.text('Kurulum')));
+    await tester.pump();
+    await tester.enterText(find.byType(TextField).first, '127.0.0.1:1');
+    await tester.tap(find.text('Bağlan'));
+    await tester.pump();
+    // Yeni depo (sunucu) grafik isteğini aldı: geçmiş yoklaması için zamanlayıcı kuruldu (sunucu yok, boş kalır).
+    // ignore: invalid_use_of_visible_for_testing_member
+    final yeniDepo = (tester.state(find.byType(Kabuk)) as dynamic).depo as SunucuDeposu;
+    expect(yeniDepo.grafikIsteniyor, isTrue);
+    await tester.pumpWidget(const SizedBox.shrink()); // depo kapanır
+    await tester.pump(const Duration(seconds: 12)); // istemcinin yeniden deneme bekleyişi dolsun (sunucu yok)
   });
 }
 

@@ -224,4 +224,14 @@ void main() {
     await Future<void>.delayed(const Duration(milliseconds: 200));
     expect(s.istekler.where((i) => i == 'GET /state?grafik=1').length, sayi);
   });
+
+  test('oturumlar: /api/sessions ayrıştırılır; gecenSn sunucunun elapsed\'ı', () async {
+    s.oturumlarYaniti = '[{"a":"k1","b":"k2","start":10.5,"end":70.0},{"a":"k1","b":"kart:14","start":80,"end":null}]';
+    final d = depo();
+    d.baslat();
+    await bekle(() => d.sunucuBagli);
+    final o = await d.oturumlar();
+    expect(o.map((x) => (x.a, x.b, x.start, x.end)).toList(), [('k1', 'k2', 10.5, 70.0), ('k1', 'kart:14', 80.0, null)]);
+    expect(d.gecenSn, 65);
+  });
 }

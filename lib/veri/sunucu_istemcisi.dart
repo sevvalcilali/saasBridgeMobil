@@ -95,6 +95,10 @@ class SunucuIstemcisi {
   Future<Map<String, dynamic>> kisiGuncelle(String kisiId, Map<String, Object?> govde) async =>
       (await _jsonYaz('PATCH', '/api/people/${Uri.encodeComponent(kisiId)}', govde)) as Map<String, dynamic>;
 
+  /// Görüşme kayıtları (sözleşme §6).
+  Future<List<Map<String, dynamic>>> oturumlar() async =>
+      ((await _json(await _istek('GET', '/api/sessions'))) as List).cast<Map<String, dynamic>>();
+
   /// Uyarı kuralları (sözleşme §10).
   Future<List<Map<String, dynamic>>> kurallar() async =>
       ((await _json(await _istek('GET', '/api/rules'))) as List).cast<Map<String, dynamic>>();
