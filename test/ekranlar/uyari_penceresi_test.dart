@@ -61,7 +61,11 @@ void main() {
   });
 
   testWidgets('bildirimlerde Kural süzgeci ve mavi nokta', (tester) async {
-    await _baslat(tester, [kural('Yan yana', t: simdi - 500)]);
+    // "Şimdi" en yeni bildirimin zamanı (sunucu saati): kural uyarısı ondan 500 sn eski → pencere açılmaz.
+    await _baslat(tester, [
+      Bildirim(baslik: 'Anlaşma', detay: 'd', saat: '15:09', onem: Onem.olumlu, kisiler: const ['24'], t: simdi),
+      kural('Yan yana', t: simdi - 500),
+    ]);
     await tester.tap(find.text('Bildirimler'));
     await tester.pump();
     expect(find.text('Kural 1'), findsOneWidget);

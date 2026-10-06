@@ -205,7 +205,8 @@ class _KartIzgarasi extends StatelessWidget {
                 if (i > bas) const SizedBox(width: 8),
                 Expanded(
                   child: i < kartlar.length
-                      ? _Hucre(kart: kartlar[i], onTap: () => onSec(kartlar[i].no))
+                      // Atanmış kart ızgaradan seçilemez (başkasının kartı yanlışlıkla alınmasın); numarayla yazılırsa 3. adım sorar.
+                      ? _Hucre(kart: kartlar[i], onTap: kartlar[i].atanmis ? null : () => onSec(kartlar[i].no))
                       : const SizedBox.shrink(),
                 ),
               ],
@@ -221,16 +222,21 @@ class _Hucre extends StatelessWidget {
   const _Hucre({required this.kart, required this.onTap});
 
   final AcikKart kart;
-  final VoidCallback onTap;
+
+  /// null: seçilemez (atanmış), soluk çizilir.
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      button: true,
+      button: onTap != null,
+      enabled: onTap != null,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
-        child: DecoratedBox(
+        child: Opacity(
+          opacity: onTap == null ? 0.55 : 1,
+          child: DecoratedBox(
           decoration: const BoxDecoration(color: Renkler.yuzey, borderRadius: Olculer.koseYaricap),
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 52),
@@ -247,6 +253,7 @@ class _Hucre extends StatelessWidget {
               ),
             ),
           ),
+        ),
         ),
       ),
     );

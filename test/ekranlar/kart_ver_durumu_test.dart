@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yakinlik_mobil/ekranlar/kart_ver/kart_ver_durumu.dart';
 import 'package:yakinlik_mobil/veri/etkinlik_deposu.dart';
@@ -273,10 +275,71 @@ void main() {
     d.modVer();
     expect(d.bulundu, isNull);
   });
+
+  test('başkasına atanmış kart: sahibi gösterilir, onay verilmeden Onayla etkisiz (sözleşme §2)', () async {
+    d.kisiSec('k24'); // Cem Erdem
+    d.acikKartSec('61'); // Ayşe Demir'in kartı
+    expect(d.kartinSahibi?.ad, 'Ayşe Demir');
+    await d.onayla();
+    expect(d.sonAtama, isNull);
+    expect(d.adim, 3);
+    d.sahipOnayla(true);
+    await d.onayla();
+    expect(d.sonAtama, (ad: 'Cem Erdem', kart: '61'));
+    d.kisiSec('k24');
+    d.acikKartSec('88'); // boş kart: sahip yok, onay gerekmez
+    expect(d.kartinSahibi, isNull);
+    d.acikKartSec('61');
+    expect(d.sahipOnayi, isFalse); // her yeni kart seçiminde onay sıfırlanır
+  });
+
+  test('gönderim sürerken seçim değişirse başarı sonrası yeni seçim silinmez', () async {
+    final yavas = _YavasDepo();
+    addTearDown(yavas.dispose);
+    final y = KartVerDurumu(yavas);
+    addTearDown(y.dispose);
+    y.kisiSec('k24');
+    y.acikKartSec('88');
+    final gonderim = y.onayla();
+    y.kisiAdiminaDon();
+    y.kisiSec('k31');
+    yavas.tamamla.complete();
+    await gonderim;
+    expect(y.sonAtama, (ad: 'Cem Erdem', kart: '88'));
+    expect(y.kisi!.kisiId, 'k31'); // yeni seçim korundu
+    expect(y.adim, 2);
+  });
+
+  test('geriAl: önceki hata temizlenir', () async {
+    final h = KartVerDurumu(_IadeHataliDepo());
+    addTearDown(h.dispose);
+    h.kisiSec('k24');
+    h.acikKartSec('88');
+    await h.onayla();
+    await h.geriAl();
+    expect(h.hata, contains('İade alınamadı'));
+    expect(h.sonAtama, isNotNull);
+  });
 }
 
 /// Sunucunun reddettiği durum.
 class _HataliDepo extends SahteDepo {
   @override
   Future<String?> kartAta(String kisiId, String kart) async => 'Kart verilemedi: sunucu kabul etmedi.';
+}
+
+/// `kartAta` dışarıdan tamamlanana dek bekler.
+class _YavasDepo extends SahteDepo {
+  final tamamla = Completer<void>();
+  @override
+  Future<String?> kartAta(String kisiId, String kart) async {
+    await tamamla.future;
+    return null;
+  }
+}
+
+/// İade reddedilir, atama kabul edilir.
+class _IadeHataliDepo extends SahteDepo {
+  @override
+  Future<String?> kartIadeAl(String kart, {bool ayrildi = true}) async => 'İade alınamadı: sunucu kabul etmedi.';
 }

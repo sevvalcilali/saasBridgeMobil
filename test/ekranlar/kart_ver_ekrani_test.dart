@@ -261,6 +261,37 @@ void main() {
     expect(find.text('Kart 61 iade alınsın mı?'), findsOneWidget);
   });
 
+  testWidgets('başkasının kartı: 3. adımda uyarı kutusu; onay işaretlenmeden Onayla etkisiz', (tester) async {
+    final k = _Kurulum(tester);
+    await tester.pumpWidget(k.widget);
+    k.durum.kisiSec('k24');
+    k.durum.acikKartSec('61'); // Ayşe Demir'in kartı
+    await tester.pump();
+    expect(find.text('Bu kart Ayşe Demir adına kayıtlı.'), findsOneWidget);
+    await tester.tap(find.text('Onayla'));
+    await tester.pump();
+    expect(find.textContaining('verildi.'), findsNothing);
+    await tester.tap(find.text('Kart Ayşe Demir tarafından geri verildi'));
+    await tester.pump();
+    await tester.tap(find.text('Onayla'));
+    await tester.pump();
+    expect(find.text('✓ Cem Erdem → Kart 61 verildi.'), findsOneWidget);
+  });
+
+  testWidgets('ızgarada atanmış karta dokunmak 3. adıma geçirmez', (tester) async {
+    final k = _Kurulum(tester);
+    await tester.pumpWidget(k.widget);
+    k.durum.kisiSec('k24');
+    k.durum.kartModuSec(KartSecimModu.numara);
+    await tester.pump();
+    await tester.tap(find.text('Kart 61')); // atanmış
+    await tester.pump();
+    expect(k.durum.adim, 2);
+    await tester.tap(find.text('Kart 88')); // boşta
+    await tester.pump();
+    expect(k.durum.adim, 3);
+  });
+
   testWidgets('"Kart bekliyor" süzgeci: sahte veride bekleyen yok, liste boşalır; Tümü geri getirir', (tester) async {
     final k = _Kurulum(tester);
     await tester.pumpWidget(k.widget);

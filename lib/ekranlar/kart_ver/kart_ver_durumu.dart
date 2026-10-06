@@ -53,6 +53,7 @@ class KartVerDurumu extends ChangeNotifier {
   String? _hata;
   bool _gonderiliyor = false;
   bool _yalnizBekleyen = false;
+  bool _sahipOnayi = false;
   String? _iadeSecili; // kisiId
   Timer? _demo;
 
@@ -64,6 +65,17 @@ class KartVerDurumu extends ChangeNotifier {
   /// Kart verilecek kişi.
   Katilimci? get kisi => _katilimciBul(_seciliKisi);
   String? get seciliKart => _seciliKart;
+
+  /// Seçili kart başka birindeyse o kişi (sözleşme §2: masa "Bu kart X'te. Geri alındı mı?" diye sorar).
+  Katilimci? get kartinSahibi {
+    final kart = _seciliKart;
+    if (kart == null) return null;
+    final sahip = _karttakiKisi(kart);
+    return sahip != null && sahip.kisiId != _seciliKisi ? sahip : null;
+  }
+
+  /// "Geri alındı" onayı verildi mi (yalnız başkasının kartı için gerekir).
+  bool get sahipOnayi => _sahipOnayi;
   KartSecimModu get kartModu => _kartModu;
 
   /// "Yaklaştır ve tanı" ile bulunan kart: gerçek sunucuda alıcının −55 dBm'den güçlü duyduğu tek boş
@@ -150,24 +162,29 @@ class KartVerDurumu extends ChangeNotifier {
     });
   }
 
+  void _kartSec(String kart) {
+    _seciliKart = kart;
+    _sahipOnayi = false; // her yeni kart için yeniden sorulur
+    _adim = 3;
+    notifyListeners();
+  }
+
   void bulunanSec() {
     final kart = bulundu;
     if (kart == null) return;
-    _seciliKart = kart;
-    _adim = 3;
-    notifyListeners();
+    _kartSec(kart);
   }
 
   void numaraSec() {
     if (!numaraSecilebilir) return;
-    _seciliKart = numaraTemizle(numara);
-    _adim = 3;
-    notifyListeners();
+    _kartSec(numaraTemizle(numara));
   }
 
-  void acikKartSec(String no) {
-    _seciliKart = no;
-    _adim = 3;
+  void acikKartSec(String no) => _kartSec(no);
+
+  void sahipOnayla(bool deger) {
+    if (_sahipOnayi == deger) return;
+    _sahipOnayi = deger;
     notifyListeners();
   }
 
@@ -190,6 +207,7 @@ class KartVerDurumu extends ChangeNotifier {
     final k = kisi;
     final kart = _seciliKart;
     if (k == null || kart == null || _gonderiliyor) return;
+    if (kartinSahibi != null && !_sahipOnayi) return; // başkasının kartı: önce "geri alındı" onayı
     _demoIptal();
     _gonderiliyor = true;
     _hata = null;
@@ -203,12 +221,16 @@ class KartVerDurumu extends ChangeNotifier {
     }
     _sonAtama = (ad: k.ad, kart: kart);
     _bilgi = null;
-    _adim = 1;
-    _seciliKisi = null;
-    _seciliKart = null;
-    _demoBulundu = null;
-    numaraDenetleyici.clear();
-    aramaDenetleyici.clear();
+    // Gönderim sürerken görevli başka seçim yaptıysa o seçim korunur; yalnız bu atama temizlenir.
+    if (_seciliKisi == k.kisiId && _seciliKart == kart) {
+      _adim = 1;
+      _seciliKisi = null;
+      _seciliKart = null;
+      _sahipOnayi = false;
+      _demoBulundu = null;
+      numaraDenetleyici.clear();
+      aramaDenetleyici.clear();
+    }
     notifyListeners();
   }
 
@@ -217,6 +239,7 @@ class KartVerDurumu extends ChangeNotifier {
     final atama = _sonAtama;
     if (atama == null || _gonderiliyor) return;
     _gonderiliyor = true;
+    _hata = null;
     notifyListeners();
     final hata = await _depo.kartIadeAl(atama.kart, ayrildi: false);
     _gonderiliyor = false;
@@ -269,7 +292,7 @@ class KartVerDurumu extends ChangeNotifier {
       notifyListeners();
       return;
     }
-    _iadeSecili = null;
+    if (_iadeSecili == k.kisiId) _iadeSecili = null; // bu arada başka kişi seçildiyse o kalır
     _bilgi = '✓ Kart $kart iade alındı. ${k.ad} panodan düştü; süreleri raporda kalır.';
     notifyListeners();
   }
