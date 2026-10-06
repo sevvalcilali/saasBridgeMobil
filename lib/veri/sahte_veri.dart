@@ -41,6 +41,13 @@ abstract final class SahteVeri {
     Kisi(id: '14', rol: Rol.misafir, renk: KisiRengi.pembe, pil: 66, hic: true),
   ];
 
+  /// Kayıtlı kişiler: adı olan her kart bir katılımcı (kisiId = "k" + kart no), kartı atanmış.
+  static List<Katilimci> get katilimcilar => [
+    for (final k in kisiler)
+      if (k.ad != null)
+        Katilimci(kisiId: 'k${k.id}', ad: k.ad!, kurum: k.kurum, rol: k.rol, renk: k.renk, yildiz: k.yildiz, atananKart: k.id),
+  ];
+
   static const bildirimler = <Bildirim>[
     Bildirim(
       baslik: 'Pil düşük',

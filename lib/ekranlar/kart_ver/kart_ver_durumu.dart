@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 
 import '../../mantik/kart_no.dart';
-import '../../mantik/kisi_gorunum.dart';
 import '../../veri/etkinlik_deposu.dart';
 import '../../veri/modeller.dart';
 
@@ -14,8 +13,10 @@ enum KartSecimModu { yaklastir, numara }
 /// Son yapılan atama (bantta gösterilir).
 typedef SonAtama = ({String ad, String kart});
 
-/// Kart Ver / Kart İadesi ekranının durumu. İşlemler sahte veriyi değiştirmez;
-/// yalnız bant ve bilgi metni üretir (şartname §2). Sekme değişse de korunur.
+/// Kart Ver / Kart İadesi ekranının durumu. Onayla, Geri al ve İade al depoya gider (gerçek sunucuda
+/// `/api/assign` ve `/api/unassign`; sahte veride yalnız bant). Kişiler kayıtlı kişilerdir (`Katilimci`,
+/// kartı olmayanlar dahil). "Yaklaştır ve tanı" gerçek sunucuda alıcının duyduğu kartlardan bulur;
+/// sahte veride demo düğmesiyle. Sekme değişse de korunur.
 class KartVerDurumu extends ChangeNotifier {
   KartVerDurumu(
     this._depo, {
@@ -24,11 +25,12 @@ class KartVerDurumu extends ChangeNotifier {
   }) {
     aramaDenetleyici.addListener(notifyListeners);
     numaraDenetleyici.addListener(notifyListeners);
+    _depo.addListener(_depoDegisti);
   }
 
   final EtkinlikDeposu _depo;
 
-  /// "Demo: kartı yaklaştır"dan sonra kartın bulunma süresi.
+  /// "Demo: kartı yaklaştır"dan sonra kartın bulunma süresi (yalnız sahte veri).
   final Duration demoGecikmesi;
 
   /// Demo yaklaştırmada bulunan kart.
@@ -42,13 +44,16 @@ class KartVerDurumu extends ChangeNotifier {
 
   KartVerModu _mod = KartVerModu.ver;
   int _adim = 1;
-  String? _seciliKisi;
+  String? _seciliKisi; // kisiId
   String? _seciliKart;
   KartSecimModu _kartModu = KartSecimModu.yaklastir;
-  String? _bulundu;
+  String? _demoBulundu;
   SonAtama? _sonAtama;
   String? _bilgi;
-  String? _iadeSecili;
+  String? _hata;
+  bool _gonderiliyor = false;
+  bool _yalnizBekleyen = false;
+  String? _iadeSecili; // kisiId
   Timer? _demo;
 
   KartVerModu get mod => _mod;
@@ -57,26 +62,53 @@ class KartVerDurumu extends ChangeNotifier {
   int get adim => _adim;
 
   /// Kart verilecek kişi.
-  Kisi? get kisi => _kisiBul(_seciliKisi);
+  Katilimci? get kisi => _katilimciBul(_seciliKisi);
   String? get seciliKart => _seciliKart;
   KartSecimModu get kartModu => _kartModu;
 
-  /// "Yaklaştır ve tanı" ile bulunan kart.
-  String? get bulundu => _bulundu;
+  /// "Yaklaştır ve tanı" ile bulunan kart: gerçek sunucuda alıcının −55 dBm'den güçlü duyduğu tek boş
+  /// kart; sahte veride demo.
+  String? get bulundu => _depo.demo ? _demoBulundu : yaklastirilanKart(_depo.acikKartlar).kart;
+
+  /// Birden çok kart yakınsa uyarı.
+  String? get yaklastirmaUyarisi => _depo.demo ? null : yaklastirilanKart(_depo.acikKartlar).uyari;
   SonAtama? get sonAtama => _sonAtama;
 
   /// Geri alma ya da iade sonrası gösterilen bilgi metni.
   String? get bilgi => _bilgi;
 
+  /// Sunucu kabul etmeyince gösterilen hata.
+  String? get hata => _hata;
+  bool get gonderiliyor => _gonderiliyor;
+
+  /// Adım 1: yalnız kart bekleyenler.
+  bool get yalnizBekleyen => _yalnizBekleyen;
+
   /// İadesi onaylanmayı bekleyen kişi.
-  Kisi? get iadeKisisi => _kisiBul(_iadeSecili);
+  Katilimci? get iadeKisisi => _katilimciBul(_iadeSecili);
   String get arama => aramaDenetleyici.text;
 
   /// Yazılan numara; rakam dışı her şey atılmıştır.
   String get numara => yalnizRakam(numaraDenetleyici.text);
   bool get numaraSecilebilir => numaraGecerli(numara);
 
-  Kisi? _kisiBul(String? id) => id == null ? null : _depo.bul(id);
+  Katilimci? _katilimciBul(String? kisiId) {
+    if (kisiId == null) return null;
+    for (final k in _depo.katilimcilar) {
+      if (k.kisiId == kisiId) return k;
+    }
+    return null;
+  }
+
+  Katilimci? _karttakiKisi(String kart) {
+    for (final k in _depo.katilimcilar) {
+      if (k.atananKart == kart) return k;
+    }
+    return null;
+  }
+
+  /// Depo değişince (kartlar, kişiler) ekran tazelenir: "yaklaştır" kartı bulsun.
+  void _depoDegisti() => notifyListeners();
 
   /// Bekleyen demo yaklaştırmayı iptal eder: adım ya da kişi değişince eski
   /// "Kart 88 bulundu" sonradan belirmesin.
@@ -85,12 +117,19 @@ class KartVerDurumu extends ChangeNotifier {
     _demo = null;
   }
 
-  void kisiSec(String id) {
+  void kisiSec(String kisiId) {
     _demoIptal();
-    _seciliKisi = id;
+    _seciliKisi = kisiId;
     _adim = 2;
-    _bulundu = null;
+    _demoBulundu = null;
+    _hata = null;
     numaraDenetleyici.clear();
+    notifyListeners();
+  }
+
+  void bekleyenSuzgeci(bool deger) {
+    if (_yalnizBekleyen == deger) return;
+    _yalnizBekleyen = deger;
     notifyListeners();
   }
 
@@ -101,18 +140,18 @@ class KartVerDurumu extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Donanım olmadan yaklaştırmayı taklit eder.
+  /// Donanım olmadan yaklaştırmayı taklit eder (yalnız sahte veri).
   void demoYaklastir() {
     _demoIptal();
     _demo = Timer(demoGecikmesi, () {
       _demo = null;
-      _bulundu = demoKarti;
+      _demoBulundu = demoKarti;
       notifyListeners();
     });
   }
 
   void bulunanSec() {
-    final kart = _bulundu;
+    final kart = bulundu;
     if (kart == null) return;
     _seciliKart = kart;
     _adim = 3;
@@ -135,36 +174,57 @@ class KartVerDurumu extends ChangeNotifier {
   void kisiAdiminaDon() {
     _demoIptal();
     _adim = 1;
-    _bulundu = null;
+    _demoBulundu = null;
     notifyListeners();
   }
 
   void kartAdiminaDon() {
     _demoIptal();
     _adim = 2;
-    _bulundu = null;
+    _demoBulundu = null;
     notifyListeners();
   }
 
-  void onayla() {
+  /// Onayla: kart kişiye verilir (sunucu). Başarılıysa bant + adım 1; değilse hata, sihirbaz kalır.
+  Future<void> onayla() async {
     final k = kisi;
     final kart = _seciliKart;
-    if (k == null || kart == null) return;
+    if (k == null || kart == null || _gonderiliyor) return;
     _demoIptal();
-    _sonAtama = (ad: gorunenAd(k), kart: kart);
+    _gonderiliyor = true;
+    _hata = null;
+    notifyListeners();
+    final hata = await _depo.kartAta(k.kisiId, kart);
+    _gonderiliyor = false;
+    if (hata != null) {
+      _hata = hata;
+      notifyListeners();
+      return;
+    }
+    _sonAtama = (ad: k.ad, kart: kart);
     _bilgi = null;
     _adim = 1;
     _seciliKisi = null;
     _seciliKart = null;
-    _bulundu = null;
+    _demoBulundu = null;
     numaraDenetleyici.clear();
     aramaDenetleyici.clear();
     notifyListeners();
   }
 
-  void geriAl() {
+  /// Geri al: son atama kaldırılır, kişi ayrılmış sayılmaz (`ayrildi: false`).
+  Future<void> geriAl() async {
     final atama = _sonAtama;
-    if (atama == null) return;
+    if (atama == null || _gonderiliyor) return;
+    _gonderiliyor = true;
+    notifyListeners();
+    final hata = await _depo.kartIadeAl(atama.kart, ayrildi: false);
+    _gonderiliyor = false;
+    if (hata != null) {
+      _hata = hata;
+      notifyListeners();
+      return;
+    }
     _bilgi = '↶ Geri alındı: ${atama.ad} → Kart ${atama.kart} ataması kaldırıldı, kart boşta.';
     _sonAtama = null;
     notifyListeners();
@@ -173,17 +233,19 @@ class KartVerDurumu extends ChangeNotifier {
   void modVer() {
     _mod = KartVerModu.ver;
     _iadeSecili = null;
+    _hata = null;
     notifyListeners();
   }
 
   void modIade() {
     _demoIptal();
     _mod = KartVerModu.iade;
+    _hata = null;
     notifyListeners();
   }
 
-  void iadeSec(String id) {
-    _iadeSecili = id;
+  void iadeSec(String kisiId) {
+    _iadeSecili = kisiId;
     notifyListeners();
   }
 
@@ -192,35 +254,54 @@ class KartVerDurumu extends ChangeNotifier {
     notifyListeners();
   }
 
-  void iadeOnayla() {
+  /// İade al: kart masaya döner, kişi "ayrıldı" olur; süreleri raporda kalır.
+  Future<void> iadeOnayla() async {
     final k = iadeKisisi;
-    if (k == null) return;
+    final kart = k?.atananKart;
+    if (k == null || kart == null || _gonderiliyor) return;
+    _gonderiliyor = true;
+    _hata = null;
+    notifyListeners();
+    final hata = await _depo.kartIadeAl(kart);
+    _gonderiliyor = false;
+    if (hata != null) {
+      _hata = hata;
+      notifyListeners();
+      return;
+    }
     _iadeSecili = null;
-    _bilgi = '✓ Kart ${k.id} iade alındı. ${gorunenAd(k)} panodan düştü; süreleri raporda kalır.';
+    _bilgi = '✓ Kart $kart iade alındı. ${k.ad} panodan düştü; süreleri raporda kalır.';
     notifyListeners();
   }
 
-  /// Kişi Detayı → "Kartı değiştir": Kart ver modu, adım 2, kişi seçili.
-  void kartDegistirBaslat(String id) {
+  /// Kişi Detayı → "Kartı değiştir": Kart ver modu, adım 2, o kartın kişisi seçili.
+  void kartDegistirBaslat(String kart) {
+    final k = _karttakiKisi(kart);
+    if (k == null) return;
     _demoIptal();
     _mod = KartVerModu.ver;
-    _seciliKisi = id;
+    _seciliKisi = k.kisiId;
     _adim = 2;
-    _bulundu = null;
+    _demoBulundu = null;
+    _hata = null;
     numaraDenetleyici.clear();
     notifyListeners();
   }
 
-  /// Kişi Detayı → "Kartı iade al": Kart iadesi modu, kişi seçili.
-  void iadeBaslat(String id) {
+  /// Kişi Detayı → "Kartı iade al": Kart iadesi modu, o kartın kişisi seçili.
+  void iadeBaslat(String kart) {
+    final k = _karttakiKisi(kart);
+    if (k == null) return;
     _mod = KartVerModu.iade;
-    _iadeSecili = id;
+    _iadeSecili = k.kisiId;
+    _hata = null;
     notifyListeners();
   }
 
   @override
   void dispose() {
     _demoIptal();
+    _depo.removeListener(_depoDegisti);
     aramaDenetleyici.dispose();
     numaraDenetleyici.dispose();
     super.dispose();

@@ -21,7 +21,9 @@ void main() {
     s = await SahteSunucu.ac(durum: _durum);
     s.akisMesajlari = null; // akış açık kalır; mesajlar yayinla ile gelir
     s.kartlarYaniti = '[{"kart":"2","rssiAlici":-60,"seenAgo":0.5,"atanan":"k1","pil":35},{"kart":"9","rssiAlici":-70,"seenAgo":1,"atanan":null,"pil":80}]';
-    s.kisilerYaniti = '[{"kisiId":"k1"},{"kisiId":"k2"},{"kisiId":"k3"}]';
+    s.kisilerYaniti = '[{"kisiId":"k1","ad":"Ayşe Demir","rol":"investor","kurum":"Atlas","yildiz":4,"renk":"#3987e5","atananKart":"2","ayrildi":false},'
+        '{"kisiId":"k2","ad":"Ali Kaya","rol":"founder","kurum":"","yildiz":0,"renk":"#d95926","atananKart":null,"ayrildi":false},'
+        '{"kisiId":"k3","ad":"Gitti","rol":"guest","kurum":"","yildiz":0,"renk":"#898781","atananKart":null,"ayrildi":true}]';
   });
   tearDown(() => s.kapat());
 
@@ -52,7 +54,12 @@ void main() {
     expect(d.bildirimler.single.onem, Onem.olumlu);
     expect(d.ciftler.single.rssi, -60);
     expect(d.duyulanKartSayisi, 2);
-    expect(d.kayitliKatilimci, 3);
+    expect(d.kayitliKatilimci, 2); // ayrılan sayılmaz
+    expect(d.katilimcilar.map((k) => k.kisiId).toList(), ['k1', 'k2', 'k3']);
+    expect(d.katilimcilar[0].kurum, 'Atlas');
+    expect(d.katilimcilar[1].kartBekliyor, isTrue);
+    expect(d.acikKartlar.first.rssi, -60);
+    expect(d.demo, isFalse);
     expect(d.acikKartlar.map((k) => (k.no, k.atanmis)).toList(), [('2', true), ('9', false)]);
     expect(d.seriRenkleri, hasLength(1));
   });
@@ -123,5 +130,20 @@ void main() {
     expect(liste.map((x) => (x.kisi.id, x.sn)).toList(), [('3', 540), ('7', 120)]);
     expect(liste.last.kisi.ad, isNull);
     expect(d.gunBoyu('9'), isEmpty);
+  });
+
+  test('kartAta / kartIadeAl: sunucuya gider, listeler tazelenir; sunucu yoksa hata metni', () async {
+    final d = depo();
+    d.baslat();
+    await bekle(() => d.sunucuBagli && d.katilimcilar.isNotEmpty);
+    final istekOnce = s.istekler.length;
+    expect(await d.kartAta('k2', '9'), isNull);
+    expect(await d.kartIadeAl('9', ayrildi: false), isNull);
+    expect(s.istekler.where((i) => i == 'POST /api/assign').length, 1);
+    expect(s.istekler.where((i) => i == 'POST /api/unassign').length, 1);
+    expect(s.istekler.length - istekOnce, greaterThanOrEqualTo(6)); // iki yazma + ikişer yoklama (cards, people)
+    final kopuk = SunucuDeposu(SunucuIstemcisi('http://127.0.0.1:1', bekleme: (_) => Duration.zero));
+    addTearDown(kopuk.dispose);
+    expect(await kopuk.kartAta('k2', '9'), contains('Kart verilemedi'));
   });
 }

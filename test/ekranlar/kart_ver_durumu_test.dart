@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yakinlik_mobil/ekranlar/kart_ver/kart_ver_durumu.dart';
 import 'package:yakinlik_mobil/veri/etkinlik_deposu.dart';
+import 'package:yakinlik_mobil/veri/sahte_depo.dart';
 
 void main() {
   late EtkinlikDeposu depo;
@@ -16,7 +17,7 @@ void main() {
     depo.dispose();
   });
 
-  test('başlangıç durumu', () {
+  test('başlangıç durumu', () async {
     expect(d.mod, KartVerModu.ver);
     expect(d.adim, 1);
     expect(d.kisi, isNull);
@@ -31,22 +32,22 @@ void main() {
     expect(d.numaraSecilebilir, isFalse);
   });
 
-  test('kisiSec: adım 2; numara temizlenir', () {
+  test('kisiSec: adım 2; numara temizlenir', () async {
     d.numaraDenetleyici.text = '14';
-    d.kisiSec('24');
+    d.kisiSec('k24');
     expect(d.adim, 2);
-    expect(d.kisi!.id, '24');
+    expect(d.kisi!.kisiId, 'k24');
     expect(d.numara, '');
     expect(d.bulundu, isNull);
   });
 
-  test('kartModuSec', () {
+  test('kartModuSec', () async {
     d.kartModuSec(KartSecimModu.numara);
     expect(d.kartModu, KartSecimModu.numara);
   });
 
   testWidgets('demoYaklastir: 1,4 sn sonra Kart 88 bulunur; seçince adım 3', (tester) async {
-    d.kisiSec('24');
+    d.kisiSec('k24');
     d.demoYaklastir();
     await tester.pump(const Duration(milliseconds: 1399));
     expect(d.bulundu, isNull);
@@ -58,7 +59,7 @@ void main() {
   });
 
   testWidgets('demo: art arda basılırsa son basıştan 1,4 sn sonra, tek kez bulunur', (tester) async {
-    d.kisiSec('24');
+    d.kisiSec('k24');
     var bildirim = 0;
     d.addListener(() => bildirim++);
     d.demoYaklastir();
@@ -72,37 +73,37 @@ void main() {
   });
 
   testWidgets('demo beklerken geri dönülürse eski kart sonradan belirmez (S16)', (tester) async {
-    d.kisiSec('24');
+    d.kisiSec('k24');
     d.demoYaklastir();
     await tester.pump(const Duration(milliseconds: 500));
     d.kisiAdiminaDon();
     await tester.pump(const Duration(seconds: 2));
     expect(d.bulundu, isNull);
-    d.kisiSec('31');
+    d.kisiSec('k31');
     await tester.pump(const Duration(seconds: 2));
     expect(d.bulundu, isNull);
     expect(d.adim, 2);
   });
 
   testWidgets('demo beklerken başka kişiye geçilirse iptal olur (S16)', (tester) async {
-    d.kisiSec('24');
+    d.kisiSec('k24');
     d.demoYaklastir();
     await tester.pump(const Duration(milliseconds: 500));
     d.kartDegistirBaslat('31');
     await tester.pump(const Duration(seconds: 2));
     expect(d.bulundu, isNull);
-    expect(d.kisi!.id, '31');
+    expect(d.kisi!.kisiId, 'k31');
   });
 
-  test('bulunanSec: kart bulunmadıysa etkisiz', () {
-    d.kisiSec('24');
+  test('bulunanSec: kart bulunmadıysa etkisiz', () async {
+    d.kisiSec('k24');
     d.bulunanSec();
     expect(d.adim, 2);
     expect(d.seciliKart, isNull);
   });
 
-  test('numara: yalnız rakam; 1–99 geçerli; baştaki sıfır atılır', () {
-    d.kisiSec('24');
+  test('numara: yalnız rakam; 1–99 geçerli; baştaki sıfır atılır', () async {
+    d.kisiSec('k24');
     d.numaraDenetleyici.text = '0';
     expect(d.numaraSecilebilir, isFalse);
     d.numaraSec(); // geçersizken etkisiz
@@ -121,29 +122,29 @@ void main() {
     expect(d.seciliKart, '7');
   });
 
-  test('acikKartSec: adım 3', () {
-    d.kisiSec('24');
+  test('acikKartSec: adım 3', () async {
+    d.kisiSec('k24');
     d.acikKartSec('89');
     expect(d.adim, 3);
     expect(d.seciliKart, '89');
   });
 
-  test('adımlar arası geri dönüş', () {
-    d.kisiSec('24');
+  test('adımlar arası geri dönüş', () async {
+    d.kisiSec('k24');
     d.acikKartSec('89');
     d.kartAdiminaDon();
     expect(d.adim, 2);
-    expect(d.kisi!.id, '24');
+    expect(d.kisi!.kisiId, 'k24');
     d.kisiAdiminaDon();
     expect(d.adim, 1);
   });
 
-  test('onayla: son atama bandı, adım 1, alanlar temiz', () {
+  test('onayla: son atama bandı, adım 1, alanlar temiz', () async {
     d.aramaDenetleyici.text = 'nova';
-    d.kisiSec('24');
+    d.kisiSec('k24');
     d.numaraDenetleyici.text = '88';
     d.numaraSec();
-    d.onayla();
+    await d.onayla();
     expect(d.sonAtama, (ad: 'Cem Erdem', kart: '88'));
     expect(d.adim, 1);
     expect(d.kisi, isNull);
@@ -154,93 +155,107 @@ void main() {
     expect(d.bilgi, isNull);
   });
 
-  test('onayla: kişi ya da kart seçili değilse etkisiz', () {
-    d.onayla();
+  test('onayla: kişi ya da kart seçili değilse etkisiz', () async {
+    await d.onayla();
     expect(d.sonAtama, isNull);
-    d.kisiSec('24');
-    d.onayla();
+    d.kisiSec('k24');
+    await d.onayla();
     expect(d.sonAtama, isNull);
     expect(d.adim, 2);
   });
 
-  test('geriAl: bilgi metni yazılır, bant kalkar; bant yokken etkisiz', () {
-    d.kisiSec('24');
+  test('geriAl: bilgi metni yazılır, bant kalkar; bant yokken etkisiz', () async {
+    d.kisiSec('k24');
     d.acikKartSec('88');
-    d.onayla();
-    d.geriAl();
+    await d.onayla();
+    await d.geriAl();
     expect(d.sonAtama, isNull);
     expect(d.bilgi, '↶ Geri alındı: Cem Erdem → Kart 88 ataması kaldırıldı, kart boşta.');
-    d.geriAl();
+    await d.geriAl();
     expect(d.bilgi, '↶ Geri alındı: Cem Erdem → Kart 88 ataması kaldırıldı, kart boşta.');
   });
 
-  test('yeni onay önceki bilgi metnini siler', () {
-    d.kisiSec('24');
+  test('yeni onay önceki bilgi metnini siler', () async {
+    d.kisiSec('k24');
     d.acikKartSec('88');
-    d.onayla();
-    d.geriAl();
-    d.kisiSec('31');
+    await d.onayla();
+    await d.geriAl();
+    d.kisiSec('k31');
     d.acikKartSec('89');
-    d.onayla();
+    await d.onayla();
     expect(d.bilgi, isNull);
     expect(d.sonAtama, (ad: 'İrem Korkmaz', kart: '89'));
   });
 
-  test('iade: seç, vazgeç, onayla', () {
+  test('iade: seç, vazgeç, onayla', () async {
     d.modIade();
     expect(d.mod, KartVerModu.iade);
-    d.iadeSec('24');
-    expect(d.iadeKisisi!.id, '24');
+    d.iadeSec('k24');
+    expect(d.iadeKisisi!.kisiId, 'k24');
     d.iadeVazgec();
     expect(d.iadeKisisi, isNull);
-    d.iadeOnayla(); // seçim yokken etkisiz
+    await d.iadeOnayla(); // seçim yokken etkisiz
     expect(d.bilgi, isNull);
-    d.iadeSec('24');
-    d.iadeOnayla();
+    d.iadeSec('k24');
+    await d.iadeOnayla();
     expect(d.iadeKisisi, isNull);
     expect(d.bilgi, '✓ Kart 24 iade alındı. Cem Erdem panodan düştü; süreleri raporda kalır.');
   });
 
-  test('modVer iade seçimini temizler; mod değişimi sihirbazı bozmaz', () {
-    d.kisiSec('24');
+  test('modVer iade seçimini temizler; mod değişimi sihirbazı bozmaz', () async {
+    d.kisiSec('k24');
     d.modIade();
-    d.iadeSec('31');
+    d.iadeSec('k31');
     d.modVer();
     expect(d.mod, KartVerModu.ver);
     expect(d.iadeKisisi, isNull);
     expect(d.adim, 2);
-    expect(d.kisi!.id, '24');
+    expect(d.kisi!.kisiId, 'k24');
   });
 
-  test('kartDegistirBaslat: Kart ver modu, adım 2, kişi seçili', () {
+  test('kartDegistirBaslat: Kart ver modu, adım 2, kişi seçili', () async {
     d.modIade();
     d.numaraDenetleyici.text = '5';
     d.kartDegistirBaslat('61');
     expect(d.mod, KartVerModu.ver);
     expect(d.adim, 2);
-    expect(d.kisi!.id, '61');
+    expect(d.kisi!.kisiId, 'k61');
     expect(d.numara, '');
     expect(d.bulundu, isNull);
   });
 
-  test('iadeBaslat: Kart iadesi modu, kişi seçili', () {
+  test('iadeBaslat: Kart iadesi modu, kişi seçili', () async {
     d.iadeBaslat('61');
     expect(d.mod, KartVerModu.iade);
-    expect(d.iadeKisisi!.id, '61');
+    expect(d.iadeKisisi!.kisiId, 'k61');
   });
 
-  test('adsız kart: ad yerine "Kart 14" yazılır (S14)', () {
+  test('kişisi olmayan kart (Kart 14): Kartı değiştir ve iade etkisiz (kayıtlı kişi yok)', () async {
     d.kartDegistirBaslat('14');
-    d.acikKartSec('88');
-    d.onayla();
-    expect(d.sonAtama!.ad, 'Kart 14');
+    expect(d.adim, 1);
+    expect(d.kisi, isNull);
     d.iadeBaslat('14');
-    d.iadeOnayla();
-    expect(d.bilgi, '✓ Kart 14 iade alındı. Kart 14 panodan düştü; süreleri raporda kalır.');
+    expect(d.iadeKisisi, isNull);
+  });
+
+  test('sunucu kabul etmezse: hata metni, sihirbaz 3. adımda kalır; sonraki kişi seçimi hatayı siler', () async {
+    final kotuDepo = _HataliDepo();
+    addTearDown(kotuDepo.dispose);
+    final h = KartVerDurumu(kotuDepo);
+    addTearDown(h.dispose);
+    h.kisiSec('k24');
+    h.acikKartSec('88');
+    await h.onayla();
+    expect(h.hata, contains('kabul etmedi'));
+    expect(h.adim, 3);
+    expect(h.sonAtama, isNull);
+    h.kisiAdiminaDon();
+    h.kisiSec('k31');
+    expect(h.hata, isNull);
   });
 
   testWidgets('demo beklerken kart seçim modu değişirse eski kart sonradan belirmez', (tester) async {
-    d.kisiSec('24');
+    d.kisiSec('k24');
     d.demoYaklastir();
     await tester.pump(const Duration(milliseconds: 500));
     d.kartModuSec(KartSecimModu.numara);
@@ -250,7 +265,7 @@ void main() {
   });
 
   testWidgets('demo beklerken Kart iadesi moduna geçilirse eski kart sonradan belirmez', (tester) async {
-    d.kisiSec('24');
+    d.kisiSec('k24');
     d.demoYaklastir();
     await tester.pump(const Duration(milliseconds: 500));
     d.modIade();
@@ -258,4 +273,10 @@ void main() {
     d.modVer();
     expect(d.bulundu, isNull);
   });
+}
+
+/// Sunucunun reddettiği durum.
+class _HataliDepo extends SahteDepo {
+  @override
+  Future<String?> kartAta(String kisiId, String kart) async => 'Kart verilemedi: sunucu kabul etmedi.';
 }

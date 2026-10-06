@@ -158,3 +158,15 @@ KisiRengi sunucuRengi(String? hex) => switch (hex?.toLowerCase()) {
   '#e66767' => KisiRengi.mercan,
   _ => KisiRengi.gri,
 };
+
+/// `/api/people` kaydı → kayıtlı kişi (sözleşme §1).
+Katilimci katilimciAyristir(Map<String, dynamic> k) => Katilimci(
+  kisiId: k['kisiId'] as String,
+  ad: k['ad'] as String? ?? '',
+  kurum: (k['kurum'] as String?)?.isEmpty ?? true ? null : k['kurum'] as String,
+  rol: switch (k['rol'] as String?) { 'investor' => Rol.yatirimci, 'founder' => Rol.girisimci, _ => Rol.misafir },
+  renk: sunucuRengi(k['renk'] as String?),
+  yildiz: (k['yildiz'] as num?)?.toInt() ?? 0,
+  atananKart: k['atananKart'] as String?,
+  ayrildi: k['ayrildi'] as bool? ?? false,
+);

@@ -94,7 +94,7 @@ void main() {
     expect(find.text('Açık'), findsOneWidget);
     expect(find.text('Son duyulma'), findsOneWidget);
     expect(find.text('az önce'), findsOneWidget);
-    expect(find.text('%94'), findsOneWidget);
+    expect(find.text('boşta'), findsOneWidget); // kart 88 açık kartlarda boşta
     expect(find.text('$_cem → Kart 88'), findsOneWidget);
     expect(find.text('← Kart'), findsOneWidget);
     expect(find.text('Onayla'), findsOneWidget);
@@ -261,16 +261,15 @@ void main() {
     expect(find.text('Kart 61 iade alınsın mı?'), findsOneWidget);
   });
 
-  testWidgets('adsız kart: kişi adı yerine "Kart 14" (S14)', (tester) async {
+  testWidgets('"Kart bekliyor" süzgeci: sahte veride bekleyen yok, liste boşalır; Tümü geri getirir', (tester) async {
     final k = _Kurulum(tester);
     await tester.pumpWidget(k.widget);
-    k.durum.kartDegistirBaslat('14');
+    await tester.tap(find.text('Kart bekliyor (0)'));
     await tester.pump();
-    expect(find.text('Kişi: Kart 14'), findsOneWidget);
-    k.durum.acikKartSec('88');
+    expect(find.text('Düzenle'), findsNothing);
+    await tester.tap(find.text('Tümü (25)'));
     await tester.pump();
-    expect(find.text('Kart 14 → Kart 88'), findsOneWidget);
-    expect(tester.takeException(), isNull);
+    expect(find.text('Düzenle'), findsNWidgets(25));
   });
 
   testWidgets('"hareketi azalt" açıkken nabız sabit durur', (tester) async {

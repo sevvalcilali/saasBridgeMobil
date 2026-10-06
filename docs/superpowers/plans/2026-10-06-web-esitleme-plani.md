@@ -6,7 +6,7 @@ web'deki yenilikleri taşır. Her aşama web'deki gibi: test → taslak ekran g�
 
 Sözleşme: `SaasBridge/SUNUCUDAN_ISTENENLER.md` (sunucu uçları), `saasBridgeBackend/docs/` (davranış).
 
-## M1 — Sunucu bağlantısı (sahte veri kalkar)
+## M1 — Sunucu bağlantısı (sahte veri kalkar) — ✅ M1a okuma (PR #2), M1b yazma (PR #5)
 - Sunucu adresi ayarı (ilk açılışta sorulur, Kurulum'da değiştirilir; `http://<ip>:8002`).
 - `/state?grafik=0` anlık durum + `/events` SSE canlı akış; kopunca sarı bant, son veri kalır, yeniden bağlanır.
 - Yazma uçları gerçek: `POST /api/assign`, `/api/unassign`, Geri al, Sıfırla (onaylı), eşik `PATCH`.
@@ -14,7 +14,7 @@ Sözleşme: `SaasBridge/SUNUCUDAN_ISTENENLER.md` (sunucu uçları), `saasBridgeB
 - Mock: web'deki `mock-server/mock.js` ile geliştirme; aynı sözleşme.
 - Çıkış ölçütü: gerçek sunucuya bağlı telefonda Pano canlı akar, kart verilir ve iade alınır.
 
-## M2 — Pano'yu web'e eşitleme
+## M2 — Pano'yu web'e eşitleme — ✅ (PR #3, #4)
 - "Ağ" bölümü → **salon görünümü**: küçük karikatür figürler, kümeler (arka + ön sıra), süre renkleri
   gri → sarı → turuncu → kırmızı, boştakiler kenarda soluk; telefona dikey sığacak biçimde (yatay kaydırma yok).
 - Kişi satırında "boşta · N dk'dır", 1 dk giriş / 15 sn çıkış kuralı sunucudan (arayüz bekletmez).

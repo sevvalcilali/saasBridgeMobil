@@ -49,6 +49,16 @@ class SahteDepo extends EtkinlikDeposu {
   List<KisiRengi> get seriRenkleri => SahteVeri.seriRenkleri;
   @override
   List<AcikKart> get acikKartlar => SahteVeri.acikKartlar;
+  @override
+  List<Katilimci> get katilimcilar => SahteVeri.katilimcilar;
+  @override
+  bool get demo => true;
+
+  /// Sahte veri değişmez; işlem başarılı sayılır (yalnız bant gösterilir).
+  @override
+  Future<String?> kartAta(String kisiId, String kart) async => null;
+  @override
+  Future<String?> kartIadeAl(String kart, {bool ayrildi = true}) async => null;
 
   int _tick = 0;
   int _saatSn = SahteVeri.baslangicSaatSn;

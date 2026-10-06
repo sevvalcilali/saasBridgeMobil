@@ -13,16 +13,18 @@ import 'sunucu_istemcisi.dart';
 /// kendiliğinden yeniden bağlanır. Kartlar (pil, boştakiler) ve kayıtlı kişi sayısı `/api/cards` ve
 /// `/api/people`'dan seyrek yoklanır.
 class SunucuDeposu extends EtkinlikDeposu {
-  SunucuDeposu(this._istemci, {this.yoklamaAraligi = const Duration(seconds: 10)}) : super.temel();
+  SunucuDeposu(this._istemci, {this.yoklamaAraligi = const Duration(seconds: 2)}) : super.temel();
 
   final SunucuIstemcisi _istemci;
+
+  /// Kartlar ve kayıtlı kişiler bu sıklıkla yoklanır (masa "yaklaştır"ı 1–3 sn'de bir ister).
   final Duration yoklamaAraligi;
 
   SunucuDurumu? _durum;
   bool _bagli = false;
   Map<String, dynamic>? _hamDurum;
   List<Map<String, dynamic>> _kartlar = const [];
-  int _kayitli = 0;
+  List<Katilimci> _katilimcilar = const [];
   int? _esikYerel; // kaydırıcı bırakılınca hemen görünsün; sunucu doğrulayınca kalkar
   StreamSubscription<SunucuOlayi>? _abonelik;
   Timer? _yoklama;
@@ -61,7 +63,11 @@ class SunucuDeposu extends EtkinlikDeposu {
   @override
   int get duyulanKartSayisi => _kartlar.length;
   @override
-  int get kayitliKatilimci => _kayitli;
+  int get kayitliKatilimci => _katilimcilar.where((k) => !k.ayrildi).length;
+  @override
+  List<Katilimci> get katilimcilar => _katilimcilar;
+  @override
+  bool get demo => false;
   @override
   List<Kisi> get kisiler => _durum?.kisiler ?? const [];
   @override
@@ -77,11 +83,18 @@ class SunucuDeposu extends EtkinlikDeposu {
     return [for (final c in sirali.take(6)) renk[c.a] ?? KisiRengi.gri];
   }
 
-  /// Alıcının şu an duyduğu kartlar (≤ 8 sn).
+  /// Alıcının şu an duyduğu kartlar (≤ 8 sn), sinyal gücüyle.
   @override
   List<AcikKart> get acikKartlar => [
     for (final k in _kartlar)
-      if (((k['seenAgo'] as num?) ?? 999) <= 8) AcikKart(k['kart'] as String, atanmis: k['atanan'] != null),
+      if (((k['seenAgo'] as num?) ?? 999) <= 8)
+        AcikKart(
+          k['kart'] as String,
+          atanmis: k['atanan'] != null,
+          rssi: (k['rssiAlici'] as num?)?.round(),
+          seenAgo: ((k['seenAgo'] as num?) ?? 0).toDouble(),
+          pil: (k['pil'] as num?)?.toInt(),
+        ),
   ];
 
   @override
@@ -153,13 +166,29 @@ class SunucuDeposu extends EtkinlikDeposu {
       final kartlar = await _istemci.kartlar();
       final kisiler = await _istemci.kisiler();
       _kartlar = kartlar;
-      _kayitli = kisiler.length;
+      _katilimcilar = [for (final k in kisiler) katilimciAyristir(k)];
       final ham = _hamDurum;
       if (ham != null) _durum = SunucuDurumu.ayristir(ham, piller: _piller);
       notifyListeners();
     } catch (_) {
       /* sonraki yoklamada yeniden denenir; bant akışa bağlıdır */
     }
+  }
+
+  @override
+  Future<String?> kartAta(String kisiId, String kart) async {
+    final oldu = await _istemci.kartAta(kisiId, kart);
+    if (!oldu) return 'Kart verilemedi: sunucu kabul etmedi ya da ulaşılamıyor.';
+    await _yokla(); // liste ve kartlar hemen tazelensin
+    return null;
+  }
+
+  @override
+  Future<String?> kartIadeAl(String kart, {bool ayrildi = true}) async {
+    final oldu = await _istemci.kartIadeAl(kart, ayrildi: ayrildi);
+    if (!oldu) return 'İade alınamadı: sunucu kabul etmedi ya da ulaşılamıyor.';
+    await _yokla();
+    return null;
   }
 
   @override

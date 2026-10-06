@@ -5,7 +5,6 @@ import '../../bilesenler/bolmeli_anahtar.dart';
 import '../../bilesenler/hap_dugme.dart';
 import '../../bilesenler/kicker.dart';
 import '../../mantik/kart_no.dart';
-import '../../mantik/kisi_gorunum.dart';
 import '../../tema/olculer.dart';
 import '../../tema/renkler.dart';
 import '../../tema/yazi.dart';
@@ -35,7 +34,7 @@ class KartAdimi extends StatelessWidget {
               text: 'Kişi: ',
               children: [
                 TextSpan(
-                  text: kisi == null ? '' : tamAd(kisi),
+                  text: kisi == null ? '' : katilimciAdi(kisi),
                   style: const TextStyle(fontWeight: FontWeight.w600, color: Renkler.metin),
                 ),
               ],
@@ -59,7 +58,7 @@ class KartAdimi extends StatelessWidget {
           else if (durum.bulundu case final kart?)
             _Bulundu(kart: kart, onSec: durum.bulunanSec)
           else
-            _Bekleme(onDemo: durum.demoYaklastir),
+            _Bekleme(onDemo: depo.demo ? durum.demoYaklastir : null, uyari: durum.yaklastirmaUyarisi),
           // 14 px bölüm aralığı + 6 px üst boşluk.
           const SizedBox(height: 20),
           Row(
@@ -77,11 +76,12 @@ class KartAdimi extends StatelessWidget {
   }
 }
 
-/// Kart bekleniyor: nabız + demo düğmesi.
+/// Kart bekleniyor: nabız; sahte veride demo düğmesi, gerçek sunucuda alıcı bekleniyor (uyarı: iki kart yakın).
 class _Bekleme extends StatelessWidget {
-  const _Bekleme({required this.onDemo});
+  const _Bekleme({required this.onDemo, this.uyari});
 
-  final VoidCallback onDemo;
+  final VoidCallback? onDemo;
+  final String? uyari;
 
   @override
   Widget build(BuildContext context) {
@@ -94,8 +94,12 @@ class _Bekleme extends StatelessWidget {
           const Nabiz(),
           const SizedBox(height: 18),
           Text('Kartı alıcıya yaklaştırın…', textAlign: TextAlign.center, style: Yazi.olcu(16)),
+          if (uyari case final u?) ...[
+            const SizedBox(height: 8),
+            Text(u, textAlign: TextAlign.center, style: Yazi.olcu(14, renk: Renkler.uyari)),
+          ],
           const SizedBox(height: 16),
-          HapDugme(etiket: 'Demo: boş bir kartı yaklaştır', yukseklik: 40, onTap: onDemo),
+          if (onDemo case final demo?) HapDugme(etiket: 'Demo: boş bir kartı yaklaştır', yukseklik: 40, onTap: demo),
         ],
       ),
     );

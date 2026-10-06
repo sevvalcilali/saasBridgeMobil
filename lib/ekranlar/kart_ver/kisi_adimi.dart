@@ -4,7 +4,6 @@ import '../../bilesenler/arama_alani.dart';
 import '../../bilesenler/hap_dugme.dart';
 import '../../bilesenler/rol_sekli.dart';
 import '../../mantik/kart_no.dart';
-import '../../mantik/kisi_gorunum.dart';
 import '../../tema/olculer.dart';
 import '../../tema/renkler.dart';
 import '../../tema/yazi.dart';
@@ -21,7 +20,8 @@ class KisiAdimi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final liste = masaAra(depo.kisiler, durum.arama);
+    final liste = masaAra(depo.katilimcilar, durum.arama, yalnizBekleyen: durum.yalnizBekleyen);
+    final bekleyen = masaAra(depo.katilimcilar, '', yalnizBekleyen: true).length;
     final ikincil = Yazi.olcu(14, renk: Renkler.metin2);
     return Padding(
       padding: const EdgeInsets.fromLTRB(Olculer.sayfaKenari, 16, Olculer.sayfaKenari, 0),
@@ -33,28 +33,40 @@ class KisiAdimi extends StatelessWidget {
             denetleyici: durum.aramaDenetleyici,
           ),
           const SizedBox(height: 12),
+          // Süzgeç: Tümü / Kart bekliyor (dokununca değişir).
           Wrap(
             spacing: 16,
             children: [
-              Text.rich(
-                TextSpan(
-                  children: [
-                    const TextSpan(
-                      text: 'Tümü',
-                      style: TextStyle(fontWeight: FontWeight.w600, color: Renkler.metin),
-                    ),
-                    TextSpan(text: ' (${depo.kayitliKatilimci})'),
-                  ],
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => durum.bekleyenSuzgeci(false),
+                child: Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Tümü',
+                        style: TextStyle(fontWeight: durum.yalnizBekleyen ? FontWeight.w400 : FontWeight.w600, color: Renkler.metin),
+                      ),
+                      TextSpan(text: ' (${depo.kayitliKatilimci})'),
+                    ],
+                  ),
+                  style: ikincil,
                 ),
-                style: ikincil,
               ),
-              Text('Kart bekliyor (0)', style: ikincil),
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => durum.bekleyenSuzgeci(true),
+                child: Text(
+                  'Kart bekliyor ($bekleyen)',
+                  style: durum.yalnizBekleyen ? Yazi.olcu(14, agirlik: FontWeight.w600) : ikincil,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 12),
           for (var i = 0; i < liste.length; i++) ...[
             if (i > 0) const SizedBox(height: 8),
-            _KisiKarti(kisi: liste[i], onTap: () => durum.kisiSec(liste[i].id)),
+            _KisiKarti(kisi: liste[i], onTap: () => durum.kisiSec(liste[i].kisiId)),
           ],
         ],
       ),
@@ -65,7 +77,7 @@ class KisiAdimi extends StatelessWidget {
 class _KisiKarti extends StatelessWidget {
   const _KisiKarti({required this.kisi, required this.onTap});
 
-  final Kisi kisi;
+  final Katilimci kisi;
   final VoidCallback onTap;
 
   @override
@@ -93,9 +105,9 @@ class _KisiKarti extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(tamAd(kisi), style: Yazi.olcu(16, agirlik: FontWeight.w600, satir: 1.2)),
+                              Text(katilimciAdi(kisi), style: Yazi.olcu(16, agirlik: FontWeight.w600, satir: 1.2)),
                               const SizedBox(height: 2),
-                              Text(kartMetni(kisi), style: Yazi.olcu(13, renk: Renkler.metin2)),
+                              Text(katilimciKartMetni(kisi), style: Yazi.olcu(13, renk: Renkler.metin2)),
                             ],
                           ),
                         ),

@@ -66,6 +66,10 @@ class KartVerEkrani extends StatelessWidget {
                       const SizedBox(height: 14),
                       _BilgiBandi(bilgi),
                     ],
+                    if (durum.hata case final hata?) ...[
+                      const SizedBox(height: 14),
+                      _BilgiBandi(hata, hata: true),
+                    ],
                   ],
                 ),
               ),
@@ -76,7 +80,7 @@ class KartVerEkrani extends StatelessWidget {
                 switch (durum.adim) {
                   1 => KisiAdimi(depo: depo, durum: durum),
                   2 => KartAdimi(depo: depo, durum: durum),
-                  _ => KontrolAdimi(durum: durum),
+                  _ => KontrolAdimi(depo: depo, durum: durum),
                 },
               ],
             ],
@@ -121,17 +125,20 @@ class _SonAtamaBandi extends StatelessWidget {
 
 /// Geri alma ya da iade sonrası bilgi metni.
 class _BilgiBandi extends StatelessWidget {
-  const _BilgiBandi(this.metin);
+  const _BilgiBandi(this.metin, {this.hata = false});
 
   final String metin;
+
+  /// Sunucu kabul etmedi: kırmızı zemin.
+  final bool hata;
 
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(color: Renkler.yuzey, borderRadius: Olculer.koseYaricap),
+      decoration: BoxDecoration(color: hata ? Renkler.ciddiZemin : Renkler.yuzey, borderRadius: Olculer.koseYaricap),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        child: Text(metin, style: Yazi.olcu(14)),
+        child: Text(metin, style: Yazi.olcu(14, renk: hata ? Renkler.ciddiKoyu : Renkler.metin)),
       ),
     );
   }

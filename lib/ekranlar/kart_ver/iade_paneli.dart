@@ -4,7 +4,6 @@ import '../../bilesenler/arama_alani.dart';
 import '../../bilesenler/hap_dugme.dart';
 import '../../bilesenler/rol_sekli.dart';
 import '../../mantik/kart_no.dart';
-import '../../mantik/kisi_gorunum.dart';
 import '../../tema/olculer.dart';
 import '../../tema/renkler.dart';
 import '../../tema/yazi.dart';
@@ -21,7 +20,7 @@ class IadePaneli extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final liste = masaAra(depo.kisiler, durum.arama);
+    final liste = masaAra(depo.katilimcilar, durum.arama, yalnizKartli: true);
     final secili = durum.iadeKisisi;
     return Padding(
       padding: const EdgeInsets.fromLTRB(Olculer.sayfaKenari, 16, Olculer.sayfaKenari, 0),
@@ -34,7 +33,7 @@ class IadePaneli extends StatelessWidget {
             _OnayKutusu(kisi: secili, onVazgec: durum.iadeVazgec, onOnay: durum.iadeOnayla),
           ],
           const SizedBox(height: 12),
-          for (final k in liste) _IadeSatiri(kisi: k, onTap: () => durum.iadeSec(k.id)),
+          for (final k in liste) _IadeSatiri(kisi: k, onTap: () => durum.iadeSec(k.kisiId)),
         ],
       ),
     );
@@ -44,7 +43,7 @@ class IadePaneli extends StatelessWidget {
 class _OnayKutusu extends StatelessWidget {
   const _OnayKutusu({required this.kisi, required this.onVazgec, required this.onOnay});
 
-  final Kisi kisi;
+  final Katilimci kisi;
   final VoidCallback onVazgec;
   final VoidCallback onOnay;
 
@@ -58,12 +57,12 @@ class _OnayKutusu extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Kart ${kisi.id} iade alınsın mı?',
+              'Kart ${kisi.atananKart} iade alınsın mı?',
               style: Yazi.olcu(18, agirlik: FontWeight.w600, satir: 1.2),
             ),
             const SizedBox(height: 12),
             Text(
-              '${tamAd(kisi)} panodan düşer; bugünkü süreleri raporda kalır.',
+              '${katilimciAdi(kisi)} panodan düşer; bugünkü süreleri raporda kalır.',
               style: Yazi.olcu(14, renk: Renkler.metin2),
             ),
             const SizedBox(height: 12),
@@ -86,7 +85,7 @@ class _OnayKutusu extends StatelessWidget {
 class _IadeSatiri extends StatelessWidget {
   const _IadeSatiri({required this.kisi, required this.onTap});
 
-  final Kisi kisi;
+  final Katilimci kisi;
   final VoidCallback onTap;
 
   @override
@@ -107,10 +106,10 @@ class _IadeSatiri extends StatelessWidget {
               RolSekli(rol: kisi.rol, renk: kisi.renk, boyut: 10),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(tamAd(kisi), style: Yazi.olcu(16, agirlik: FontWeight.w600, satir: 1.2)),
+                child: Text(katilimciAdi(kisi), style: Yazi.olcu(16, agirlik: FontWeight.w600, satir: 1.2)),
               ),
               const SizedBox(width: 12),
-              Text('Kart ${kisi.id}', style: Yazi.olcu(14, renk: Renkler.metin2, rakam: true)),
+              Text('Kart ${kisi.atananKart}', style: Yazi.olcu(14, renk: Renkler.metin2, rakam: true)),
             ],
           ),
         ),

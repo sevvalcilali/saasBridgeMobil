@@ -37,6 +37,12 @@ abstract class EtkinlikDeposu extends ChangeNotifier {
   List<KisiRengi> get seriRenkleri;
   List<AcikKart> get acikKartlar;
 
+  /// Kayıtlı kişiler (kartı olsun olmasın): Kart Ver ve İade.
+  List<Katilimci> get katilimcilar;
+
+  /// Sahte veriyle mi çalışıyor (Kart Ver'de "Demo: kartı yaklaştır" düğmesi yalnız o zaman).
+  bool get demo;
+
   /// Sıfırla'dan bu yana geçen saniye; "birlikte" süreleri bununla akar (sunucuda hep 0: süre sunucudan gelir).
   int get tick;
 
@@ -66,6 +72,12 @@ abstract class EtkinlikDeposu extends ChangeNotifier {
   Future<void> sifirla();
 
   void esikAyarla(int deger);
+
+  /// Kişiye kart verir (kart değişimi dahil). Başarısızsa kullanıcıya gösterilecek hata metni.
+  Future<String?> kartAta(String kisiId, String kart);
+
+  /// Kartı iade alır; `ayrildi: false` = "Geri al" (kişi ayrılmadı, hâlâ kart bekliyor).
+  Future<String?> kartIadeAl(String kart, {bool ayrildi = true});
 
   void esikArtir() => esikAyarla(esik + 1);
 
