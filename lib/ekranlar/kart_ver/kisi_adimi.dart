@@ -98,7 +98,7 @@ class _KisiKarti extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(color: Renkler.yuzey, borderRadius: Olculer.koseYaricap),
+      decoration: BoxDecoration(color: Renkler.yuzey, borderRadius: Olculer.koseYaricap),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         child: Row(

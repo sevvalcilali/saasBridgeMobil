@@ -54,7 +54,7 @@ class KisiDetaySayfasi extends StatelessWidget {
         final toplam = sureYazisi(gecenSn(k, depo.tick));
         return Container(
           constraints: BoxConstraints(maxHeight: enCok),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Renkler.zemin,
             borderRadius: BorderRadius.vertical(top: Radius.circular(Olculer.koseAltSayfa)),
             boxShadow: Olculer.altSayfaGolgesi,
@@ -212,7 +212,7 @@ class _Tutamac extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
+    return SizedBox(
       width: 36,
       height: 4,
       child: DecoratedBox(
@@ -232,7 +232,7 @@ class _EsSatiri extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: Renkler.ayrac)),
       ),
       child: Padding(
@@ -272,7 +272,7 @@ class _Cizelge extends StatelessWidget {
             child: FractionallySizedBox(
               widthFactor: oran,
               heightFactor: 1,
-              child: const ColoredBox(color: Renkler.birlikte),
+              child: ColoredBox(color: Renkler.birlikte),
             ),
           ),
         ),

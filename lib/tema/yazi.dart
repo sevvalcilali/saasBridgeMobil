@@ -12,7 +12,7 @@ abstract final class Yazi {
     double punto, {
     FontWeight agirlik = FontWeight.w400,
     double satir = 1.4,
-    Color renk = Renkler.metin,
+    Color? renk,
     bool rakam = false,
     FontStyle? stil,
     double harfAraligi = 0,
@@ -21,7 +21,7 @@ abstract final class Yazi {
       fontSize: punto,
       fontWeight: agirlik,
       height: satir,
-      color: renk,
+      color: renk ?? Renkler.metin,
       fontStyle: stil,
       letterSpacing: harfAraligi,
       fontFeatures: rakam ? _tabular : null,

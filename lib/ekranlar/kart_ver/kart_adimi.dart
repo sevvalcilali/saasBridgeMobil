@@ -35,7 +35,7 @@ class KartAdimi extends StatelessWidget {
               children: [
                 TextSpan(
                   text: kisi == null ? '' : katilimciAdi(kisi),
-                  style: const TextStyle(fontWeight: FontWeight.w600, color: Renkler.metin),
+                  style: TextStyle(fontWeight: FontWeight.w600, color: Renkler.metin),
                 ),
               ],
             ),
@@ -237,7 +237,7 @@ class _Hucre extends StatelessWidget {
         child: Opacity(
           opacity: onTap == null ? 0.55 : 1,
           child: DecoratedBox(
-          decoration: const BoxDecoration(color: Renkler.yuzey, borderRadius: Olculer.koseYaricap),
+          decoration: BoxDecoration(color: Renkler.yuzey, borderRadius: Olculer.koseYaricap),
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 52),
             child: Padding(

@@ -13,7 +13,7 @@ class Cip extends StatelessWidget {
     required this.secili,
     required this.onTap,
     this.sayi,
-    this.seciliRenk = Renkler.vurgu,
+    this.seciliRenk,
     this.yatayBosluk = 14,
   });
 
@@ -25,7 +25,8 @@ class Cip extends StatelessWidget {
   final String? sayi;
 
   /// Seçili dolgu: filtre çiplerinde vurgu, önem çiplerinde metin rengi.
-  final Color seciliRenk;
+  /// Seçili çipin zemini; verilmezse vurgu.
+  final Color? seciliRenk;
   final double yatayBosluk;
 
   @override
@@ -41,8 +42,8 @@ class Cip extends StatelessWidget {
           constraints: const BoxConstraints(minHeight: 36),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: secili ? seciliRenk : null,
-              border: Border.all(color: secili ? seciliRenk : Renkler.ayrac),
+              color: secili ? (seciliRenk ?? Renkler.vurgu) : null,
+              border: Border.all(color: secili ? (seciliRenk ?? Renkler.vurgu) : Renkler.ayrac),
               borderRadius: Olculer.hapYaricap,
             ),
             child: Padding(

@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'renkler.dart';
 import 'yazi.dart';
 
-/// Uygulamanın tek teması (README "Flutter eşlemesi").
-ThemeData yakinlikTemasi() {
+/// Uygulamanın teması (README "Flutter eşlemesi"); `Renkler.koyu` etkin paleti seçer.
+ThemeData yakinlikTemasi({bool? koyu}) {
+  final k = koyu ?? Renkler.koyu;
+  final semaTemel = k ? const ColorScheme.dark() : const ColorScheme.light();
   return ThemeData(
     useMaterial3: true,
-    brightness: Brightness.light,
+    brightness: k ? Brightness.dark : Brightness.light,
     scaffoldBackgroundColor: Renkler.zemin,
-    colorScheme: const ColorScheme.light(
+    colorScheme: semaTemel.copyWith(
       primary: Renkler.vurgu,
       onPrimary: Renkler.yuzey,
       surface: Renkler.yuzey,
@@ -23,19 +25,19 @@ ThemeData yakinlikTemasi() {
     highlightColor: Colors.transparent,
     hoverColor: Colors.transparent,
     textTheme: TextTheme(bodyLarge: Yazi.govde, bodyMedium: Yazi.govde),
-    textSelectionTheme: const TextSelectionThemeData(
+    textSelectionTheme: TextSelectionThemeData(
       cursorColor: Renkler.vurgu,
       selectionColor: Renkler.vurguZemin,
       selectionHandleColor: Renkler.vurgu,
     ),
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
       type: BottomNavigationBarType.fixed,
       backgroundColor: Renkler.yuzey,
       elevation: 0,
       selectedItemColor: Renkler.vurguBasili,
       unselectedItemColor: Renkler.metin2,
-      selectedLabelStyle: TextStyle(fontSize: 11, height: 1.4),
-      unselectedLabelStyle: TextStyle(fontSize: 11, height: 1.4),
+      selectedLabelStyle: const TextStyle(fontSize: 11, height: 1.4),
+      unselectedLabelStyle: const TextStyle(fontSize: 11, height: 1.4),
       showUnselectedLabels: true,
     ),
     sliderTheme: SliderThemeData(

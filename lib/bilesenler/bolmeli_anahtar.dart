@@ -69,7 +69,7 @@ class BolmeliAnahtar<T> extends StatelessWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: seciliMi ? Renkler.vurgu : null,
-            border: araCizgi && !ilk ? const Border(left: BorderSide(color: Renkler.ayrac)) : null,
+            border: araCizgi && !ilk ? Border(left: BorderSide(color: Renkler.ayrac)) : null,
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6),

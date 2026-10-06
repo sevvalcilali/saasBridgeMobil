@@ -150,7 +150,7 @@ class _EsSatiri extends StatelessWidget {
     final iletisim = k.paylasim ? [k.web, k.eposta].where((x) => x.isNotEmpty).join(' · ') : '';
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Renkler.ayrac))),
+      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Renkler.ayrac))),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

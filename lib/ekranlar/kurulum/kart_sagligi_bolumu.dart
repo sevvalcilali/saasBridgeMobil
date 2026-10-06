@@ -33,7 +33,7 @@ class KartSagligiBolumu extends StatelessWidget {
               ),
               const TextSpan(text: ' kart duyuluyor · '),
               TextSpan(
-                style: const TextStyle(color: Renkler.ciddi),
+                style: TextStyle(color: Renkler.ciddi),
                 children: uyariParcalari('⚠ $sorunlu sorunlu', boyut: 14, renk: Renkler.ciddi),
               ),
             ],
@@ -59,7 +59,7 @@ class _SaglikSatiriGorunumu extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: satir.sorunlu ? Renkler.ciddiZemin : null,
-        border: const Border(bottom: BorderSide(color: Renkler.ayrac)),
+        border: Border(bottom: BorderSide(color: Renkler.ayrac)),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 9),

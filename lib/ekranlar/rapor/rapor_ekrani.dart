@@ -165,7 +165,7 @@ class _KpiKarti extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(color: Renkler.yuzey, borderRadius: Olculer.koseYaricap),
+      decoration: BoxDecoration(color: Renkler.yuzey, borderRadius: Olculer.koseYaricap),
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
@@ -208,7 +208,7 @@ class _GirisimciSatiriGorunumu extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
         child: DecoratedBox(
-          decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Renkler.ayrac))),
+          decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Renkler.ayrac))),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Column(
@@ -225,7 +225,7 @@ class _GirisimciSatiriGorunumu extends StatelessWidget {
                       child: Text.rich(
                         TextSpan(
                           text: k.kurum ?? k.ad,
-                          children: [if (k.kurum != null) TextSpan(text: ' · ${k.ad}', style: const TextStyle(fontWeight: FontWeight.w400, color: Renkler.metin2))],
+                          children: [if (k.kurum != null) TextSpan(text: ' · ${k.ad}', style: TextStyle(fontWeight: FontWeight.w400, color: Renkler.metin2))],
                         ),
                         style: Yazi.olcu(15, agirlik: FontWeight.w600),
                       ),

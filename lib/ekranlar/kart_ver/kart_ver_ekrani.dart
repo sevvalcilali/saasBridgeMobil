@@ -114,7 +114,7 @@ class _SonAtamaBandi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(color: Renkler.vurguZemin, borderRadius: Olculer.koseYaricap),
+      decoration: BoxDecoration(color: Renkler.vurguZemin, borderRadius: Olculer.koseYaricap),
       child: Padding(
         // Geri al görseli 36 px, dokunma alanı 44 px: 10 px dikey boşluğun
         // 4 pikseli dokunma alanının içindedir.

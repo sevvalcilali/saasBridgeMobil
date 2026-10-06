@@ -51,7 +51,7 @@ class KontrolAdimi extends StatelessWidget {
             const SizedBox(height: 16),
             // Sözleşme §2: başkasının kartı verilmeden önce masa "geri alındı mı?" diye sorar; onaysız Onayla çalışmaz.
             DecoratedBox(
-              decoration: const BoxDecoration(color: Renkler.vurguZemin, borderRadius: Olculer.koseYaricap),
+              decoration: BoxDecoration(color: Renkler.vurguZemin, borderRadius: Olculer.koseYaricap),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
                 child: Column(
@@ -82,7 +82,7 @@ class KontrolAdimi extends StatelessWidget {
           ],
           const SizedBox(height: 16),
           DecoratedBox(
-            decoration: const BoxDecoration(color: Renkler.yuzey, borderRadius: Olculer.koseYaricap),
+            decoration: BoxDecoration(color: Renkler.yuzey, borderRadius: Olculer.koseYaricap),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
               child: Row(

@@ -180,7 +180,7 @@ class _KalibrasyonBolumuState extends State<KalibrasyonBolumu> {
           if (oneri != null) ...[
             const SizedBox(height: 8),
             DecoratedBox(
-              decoration: const BoxDecoration(color: Renkler.vurguZemin, borderRadius: Olculer.koseYaricap),
+              decoration: BoxDecoration(color: Renkler.vurguZemin, borderRadius: Olculer.koseYaricap),
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Column(

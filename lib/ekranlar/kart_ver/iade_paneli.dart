@@ -50,7 +50,7 @@ class _OnayKutusu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(color: Renkler.yuzey, borderRadius: Olculer.koseYaricap),
+      decoration: BoxDecoration(color: Renkler.yuzey, borderRadius: Olculer.koseYaricap),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -98,7 +98,7 @@ class _IadeSatiri extends StatelessWidget {
         child: Container(
           constraints: const BoxConstraints(minHeight: 52),
           padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: Renkler.ayrac)),
           ),
           child: Row(
