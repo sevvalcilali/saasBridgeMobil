@@ -4,8 +4,9 @@ SaasBridge "Yakınlık Panosu"nun saha görevlileri için telefon uygulaması (F
 Dört sekme: **Pano** (Kişiler · Ağ · Bildirimler), **Kart Ver / İade**, **Kurulum**, **Rapor**; artı **Kişi Detayı**.
 
 Uygulama gerçek sunucuya (saasBridgeBackend, `/state` + `/events`) bağlanır: adres Kurulum → Sunucu'dan
-girilir ve telefonda kalır; boş bırakılırsa gömülü sahte veriyle çalışır. Bu sürümde Onayla, Geri al ve
-İade al henüz sunucuya gitmez; yalnız bant gösterir (M1'in ikinci yarısı).
+girilir ve telefonda kalır. Kart Ver / İade / Geri al / Sıfırla / eşik sunucuya gider (`/api/assign`,
+`/api/unassign`, `/control`); "Yaklaştır ve tanı" alıcının duyduğu kartlardan bulur. Adres boş bırakılırsa
+gömülü sahte veriyle çalışır: işlemler yalnız bant gösterir, yaklaştırma demo düğmesiyle.
 
 ## Çalıştırma
 
@@ -56,8 +57,8 @@ Kurallar (`test/mimari_test.dart` denetler):
 
 ## Bu sürümde olmayanlar
 
-Web 3 Ekim'den sonra değişti; mobilde henüz yok: salon görünümü (figürler), uyarı kuralları ve açılır uyarı,
-kişi profili ve kişiye özel rapor, "boşta · N dk", Pil kaldırılması. Sırası ve kapsamı eşitleme planında.
+Web'den henüz taşınmayanlar (eşitleme planı M3–M5): kişi ekleme/düzenleme ve profil alanları, uyarı kuralı
+yönetimi (Kart Ver → Uyarılar), kalibrasyon sihirbazı, kişiye özel rapor ve paylaşım, Kurulum sinyal grafiğinin
+sunucu geçmişi (şimdilik yerel çizgi), koyu tema, uygulama ikonu.
 
-Sunucu bağlantısı · kişi düzenleme, kalibrasyon, PDF/CSV dışa aktarma (düğmeleri görünür ama işlevsiz) ·
-koyu tema · 1b (Sade) varyantı · uygulama ikonu.
+1b (Sade) varyantı.
