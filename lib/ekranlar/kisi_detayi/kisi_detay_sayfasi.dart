@@ -204,7 +204,7 @@ class KisiDetaySayfasi extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 14),
-        satir(EtiketliDeger(etiket: 'Pil', deger: '%${k.pil}'), const SizedBox.shrink()),
+        satir(EtiketliDeger(etiket: 'Pil', deger: k.pil == null ? '—' : '%${k.pil}'), const SizedBox.shrink()),
       ],
     );
   }

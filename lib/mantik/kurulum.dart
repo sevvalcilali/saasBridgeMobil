@@ -92,10 +92,13 @@ class SaglikSatiri {
 
   /// Kayıtsız kart: ikincil renkte yazılır.
   final bool adsiz;
-  final int pil;
+
+  /// Bilinmiyorsa null ("—" yazılır).
+  final int? pil;
   final bool sorunlu;
 
   String get durum => sorunlu ? '⚠ pil düşük' : '✓ iyi';
+  String get pilYazisi => pil == null ? '—' : '%$pil';
 }
 
 /// En düşük pilli 8 kart. Dart'ın sort'u kararlı olmadığı için özgün sıra
@@ -103,7 +106,7 @@ class SaglikSatiri {
 List<SaglikSatiri> kartSagligi(List<Kisi> kisiler) {
   final sirali = [for (var i = 0; i < kisiler.length; i++) (sira: i, kisi: kisiler[i])]
     ..sort((a, b) {
-      final fark = a.kisi.pil.compareTo(b.kisi.pil);
+      final fark = (a.kisi.pil ?? 101).compareTo(b.kisi.pil ?? 101); // bilinmeyen pil sona
       return fark != 0 ? fark : a.sira.compareTo(b.sira);
     });
   return [
@@ -113,9 +116,12 @@ List<SaglikSatiri> kartSagligi(List<Kisi> kisiler) {
         kisi: e.kisi.kurum ?? gorunenAd(e.kisi),
         adsiz: e.kisi.ad == null,
         pil: e.kisi.pil,
-        sorunlu: e.kisi.pil < _dusukPil,
+        sorunlu: pilDusuk(e.kisi),
       ),
   ];
 }
 
-int sorunluKartSayisi(List<Kisi> kisiler) => kisiler.where((k) => k.pil < _dusukPil).length;
+/// Pili bilinmeyen kart sorunlu sayılmaz.
+bool pilDusuk(Kisi k) => k.pil != null && k.pil! < _dusukPil;
+
+int sorunluKartSayisi(List<Kisi> kisiler) => kisiler.where(pilDusuk).length;
