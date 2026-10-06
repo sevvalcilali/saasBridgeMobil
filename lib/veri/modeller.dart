@@ -93,10 +93,43 @@ class Cift {
   final int rssi;
 }
 
-/// Alıcının şu an duyduğu kart.
+/// Alıcının şu an duyduğu kart (`/api/cards`).
 class AcikKart {
-  const AcikKart(this.no, {this.atanmis = false});
+  const AcikKart(this.no, {this.atanmis = false, this.rssi, this.seenAgo = 0, this.pil});
 
   final String no;
   final bool atanmis;
+
+  /// Alıcının kartı duyduğu güç (dBm); "Yaklaştır ve tanı" bununla bulur.
+  final int? rssi;
+
+  /// Kaç saniye önce duyuldu.
+  final double seenAgo;
+  final int? pil;
+}
+
+/// Kayıtlı kişi (`/api/people`): kartı olsun olmasın. Kart Ver 1. adımı ve İade bununla çalışır.
+/// `atananKart == null && !ayrildi` = kart bekliyor; `ayrildi` = kart iadesi yapıldı.
+class Katilimci {
+  const Katilimci({
+    required this.kisiId,
+    required this.ad,
+    required this.rol,
+    required this.renk,
+    this.kurum,
+    this.yildiz = 0,
+    this.atananKart,
+    this.ayrildi = false,
+  });
+
+  final String kisiId;
+  final String ad;
+  final String? kurum;
+  final Rol rol;
+  final KisiRengi renk;
+  final int yildiz;
+  final String? atananKart;
+  final bool ayrildi;
+
+  bool get kartBekliyor => atananKart == null && !ayrildi;
 }
