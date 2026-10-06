@@ -30,6 +30,10 @@ class SunucuDeposu extends EtkinlikDeposu {
   int? _esikYerel; // kaydırıcı bırakılınca hemen görünsün; sunucu doğrulayınca kalkar
   StreamSubscription<SunucuOlayi>? _abonelik;
   Timer? _yoklama;
+  Timer? _grafikYoklama;
+  bool _grafikIsteniyor = false;
+  Map<String, List<(int, double)>> _gecmis = const {};
+  int _grafikSaniyesi = 90;
   bool _yoklaniyor = false;
   int _yoklamaSayaci = 0;
   String _kartlarImzasi = '';
@@ -129,6 +133,40 @@ class SunucuDeposu extends EtkinlikDeposu {
   ];
 
   @override
+  Map<String, List<(int, double)>> get gecmis => _gecmis;
+  @override
+  int get grafikSaniyesi => _grafikSaniyesi;
+
+  /// Kurulum açıkken: `/state?grafik=1` yoklanır (akış grafiksiz kalır; geçmiş durumun ~%60'ı).
+  @override
+  void grafikIste(bool iste) {
+    if (_grafikIsteniyor == iste) return;
+    _grafikIsteniyor = iste;
+    _grafikYoklama?.cancel();
+    _grafikYoklama = null;
+    if (!iste) return;
+    _grafikYokla();
+    _grafikYoklama = Timer.periodic(yoklamaAraligi, (_) => _grafikYokla());
+  }
+
+  bool _grafikYoklaniyor = false;
+  Future<void> _grafikYokla() async {
+    if (_grafikYoklaniyor || _abonelik == null) return;
+    _grafikYoklaniyor = true;
+    try {
+      final ham = await _istemci.durumAl(grafik: true);
+      final d = SunucuDurumu.ayristir(ham);
+      _gecmis = d.gecmis;
+      _grafikSaniyesi = d.grafikSaniyesi;
+      _bildir();
+    } catch (_) {
+      /* sonraki yoklamada */
+    } finally {
+      _grafikYoklaniyor = false;
+    }
+  }
+
+  @override
   int get tick => 0;
   @override
   int get saatSn => _durum?.saatSn ?? 0;
@@ -177,6 +215,9 @@ class SunucuDeposu extends EtkinlikDeposu {
     _abonelik = null;
     _yoklama?.cancel();
     _yoklama = null;
+    _grafikYoklama?.cancel();
+    _grafikYoklama = null;
+    _grafikIsteniyor = false;
     _ertelenenBildirim?.cancel();
     _ertelenenBildirim = null;
     _istemci.akisiKes();

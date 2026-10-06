@@ -49,6 +49,10 @@ class SahteDepo extends EtkinlikDeposu {
   @override
   List<KisiRengi> get seriRenkleri => SahteVeri.seriRenkleri;
   @override
+  Map<String, List<(int, double)>> get gecmis => const {};
+  @override
+  int get grafikSaniyesi => 90;
+  @override
   List<AcikKart> get acikKartlar => SahteVeri.acikKartlar;
   @override
   List<Katilimci> get katilimcilar => SahteVeri.katilimcilar;

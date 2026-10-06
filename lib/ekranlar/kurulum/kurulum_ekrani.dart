@@ -1,13 +1,12 @@
 import 'package:flutter/widgets.dart';
 
 
-import '../../bilesenler/hap_dugme.dart';
-import '../../bilesenler/kicker.dart';
 import '../../tema/olculer.dart';
 import '../../tema/renkler.dart';
 import '../../tema/yazi.dart';
 import '../../veri/etkinlik_deposu.dart';
 import 'esik_bolumu.dart';
+import 'kalibrasyon_bolumu.dart';
 import 'kart_sagligi_bolumu.dart';
 import 'sinyal_grafigi.dart';
 import 'sunucu_bolumu.dart';
@@ -52,50 +51,13 @@ class KurulumEkrani extends StatelessWidget {
               const SizedBox(height: _bolumAraligi),
               SinyalBolumu(depo: depo),
               const SizedBox(height: _bolumAraligi),
-              const _Kalibrasyon(),
+              KalibrasyonBolumu(depo: depo),
               const SizedBox(height: _bolumAraligi),
               KartSagligiBolumu(depo: depo),
             ],
           ),
         );
       },
-    );
-  }
-}
-
-class _Kalibrasyon extends StatelessWidget {
-  const _Kalibrasyon();
-
-  @override
-  Widget build(BuildContext context) {
-    final dugmeYazisi = Yazi.olcu(14, agirlik: FontWeight.w600, satir: 1.2);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const Kicker('Kalibrasyon'),
-        const SizedBox(height: 8),
-        Text(
-          'Elinizdeki iki kartın çiftini seçin. Çift listede yoksa kartlar açık mı, alıcı duyuyor mu '
-          'kontrol edin.',
-          style: Yazi.olcu(14),
-        ),
-        const SizedBox(height: 10),
-        // Kalibrasyon sihirbazı tasarlanmadı (şartname §2).
-        HapDugme(
-          etiket: '— çift seçin —',
-          yukseklik: 48,
-          genis: true,
-          zemin: Renkler.yuzey,
-          onTap: islevsiz,
-          icerik: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('— çift seçin —', style: dugmeYazisi),
-              Text('⌄', style: dugmeYazisi),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

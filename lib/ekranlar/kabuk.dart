@@ -103,6 +103,8 @@ class _KabukState extends State<Kabuk> with WidgetsBindingObserver {
     // Gizlenen sekmedeki girdinin klavyesi açık kalmasın.
     FocusManager.instance.primaryFocus?.unfocus();
     setState(() => _sekme = sekme);
+    // Sinyal geçmişi büyük veri: yalnız Kurulum açıkken istenir.
+    _depo.grafikIste(sekme == _sekmeKurulum);
   }
 
   Future<void> _kisiDetayiAc(String kisiId) async {

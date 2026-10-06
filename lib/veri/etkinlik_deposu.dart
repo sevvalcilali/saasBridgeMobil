@@ -36,6 +36,13 @@ abstract class EtkinlikDeposu extends ChangeNotifier {
   List<CanliCift> get canliCiftler;
   List<Cift> get ciftler;
   List<KisiRengi> get seriRenkleri;
+
+  /// Sinyal geçmişi: "a-b" → [(saniye önce, dBm)]; sunucuda yalnız `grafikIste(true)` iken dolar.
+  Map<String, List<(int, double)>> get gecmis;
+  int get grafikSaniyesi;
+
+  /// Kurulum açıkken true: sunucudan grafik geçmişi istenir (büyük veri, yalnız gerekince).
+  void grafikIste(bool iste) {}
   List<AcikKart> get acikKartlar;
 
   /// Kayıtlı kişiler (kartı olsun olmasın): Kart Ver ve İade.

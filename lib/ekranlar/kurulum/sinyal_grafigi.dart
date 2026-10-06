@@ -35,13 +35,10 @@ class SinyalBolumu extends StatelessWidget {
         const SizedBox(height: 10),
         LayoutBuilder(
           builder: (context, kisit) {
-            final seriler = grafikSerileri(
-              depo.ciftler,
-              depo.seriRenkleri,
-              depo.tick,
-              kisit.maxWidth,
-              _grafikYuksekligi,
-            );
+            // Gerçek sunucuda geçmiş sunucudan (Kurulum açıkken yoklanır); sahte veride yerel çizgi.
+            final seriler = depo.demo
+                ? grafikSerileri(depo.ciftler, depo.seriRenkleri, depo.tick, kisit.maxWidth, _grafikYuksekligi)
+                : grafikSerileriGecmisten(depo.gecmis, depo.ciftler, depo.seriRenkleri, kisit.maxWidth, _grafikYuksekligi, depo.grafikSaniyesi);
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
