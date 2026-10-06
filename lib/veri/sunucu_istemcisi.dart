@@ -36,7 +36,7 @@ class SunucuIstemcisi {
     Duration Function(int deneme)? bekleme,
     this.sessizlik = const Duration(seconds: 6),
   }) : adres = adres.replaceAll(RegExp(r'/+$'), ''),
-       _istemci = istemci ?? HttpClient(),
+       _istemci = (istemci ?? HttpClient())..connectionTimeout = _baglantiSuresi,
        _bekleme = bekleme ?? _geriCekme;
 
   final String adres;
@@ -44,14 +44,21 @@ class SunucuIstemcisi {
   final HttpClient _istemci;
   final Duration Function(int deneme) _bekleme;
   bool _acik = true;
-  bool _akisAcik = false;
+
+  /// Her `olaylar()` çağrısı yeni bir nesil; `akisiKes` nesli ilerletir, eski döngü bekleme süresinden
+  /// uyanınca kendi neslinin geçtiğini görüp biter (ikinci akış açmaz, soket sızmaz).
+  int _nesil = 0;
   HttpClientRequest? _akisIstegi;
+  StreamIterator<String>? _akisOkuyucu;
 
   /// Sinyal grafiğinin verisi (history) telefona gelmez: Wi-Fi ve sunucu yükü düşer.
   static const String _sorgu = '?grafik=0';
   static const Duration _ilkBekleme = Duration(milliseconds: 500);
   static const Duration _enUzunBekleme = Duration(seconds: 10);
   static const Duration _istekSuresi = Duration(seconds: 8);
+
+  /// TCP bağlanma sınırı: paketler düşerse (uyuyan laptop, ağ değişti) işletim sisteminin ~75 sn'si beklenmez.
+  static const Duration _baglantiSuresi = Duration(seconds: 5);
 
   static Duration _geriCekme(int deneme) {
     final ms = _ilkBekleme.inMilliseconds * (1 << deneme.clamp(0, 10));
@@ -92,14 +99,17 @@ class SunucuIstemcisi {
     }
   }
 
-  /// Canlı akış: dinlendiği sürece bağlı kalmaya çalışır; `kapat` ile biter.
+  /// Canlı akış: dinlendiği sürece bağlı kalmaya çalışır; `akisiKes` / `kapat` ile biter.
   Stream<SunucuOlayi> olaylar() async* {
     var deneme = 0;
-    _akisAcik = true;
-    while (_acik && _akisAcik) {
+    final nesil = ++_nesil;
+    bool canli() => _acik && nesil == _nesil;
+    while (canli()) {
       var basarili = false;
+      HttpClientRequest? istek;
       try {
-        final istek = await _istemci.getUrl(Uri.parse('$adres/events$_sorgu'));
+        istek = await _istemci.getUrl(Uri.parse('$adres/events$_sorgu')).timeout(_istekSuresi);
+        if (!canli()) return;
         istek.headers.set(HttpHeaders.acceptHeader, 'text/event-stream');
         _akisIstegi = istek;
         final yanit = await istek.close().timeout(_istekSuresi);
@@ -107,23 +117,38 @@ class SunucuIstemcisi {
         basarili = true;
         yield const Baglandi();
         // Sessizlik gözcüsü: mesaj gelmeyen akış timeout ile düşer, dış döngü yeniden bağlanır.
-        await for (final veri in sseVerileri(yanit).timeout(sessizlik)) {
-          final cozulen = jsonDecode(veri);
+        // Okuyucu saklanır: `akisiKes` sokette bekleyen okumayı iptal eder (yoksa üretici asılı kalır).
+        final okuyucu = StreamIterator(sseVerileri(yanit).timeout(sessizlik));
+        _akisOkuyucu = okuyucu;
+        while (await okuyucu.moveNext()) {
+          if (!canli()) return;
+          final cozulen = jsonDecode(okuyucu.current);
           if (cozulen is Map<String, dynamic>) yield DurumGeldi(cozulen);
         }
         throw const HttpException('akış kapandı');
       } catch (_) {
-        if (!_acik || !_akisAcik) return;
+        if (!canli()) return;
         yield const Koptu();
         if (basarili) deneme = 0;
         await Future<void>.delayed(_bekleme(deneme++));
+      } finally {
+        istek?.abort();
+        if (identical(_akisIstegi, istek)) _akisIstegi = null;
       }
     }
   }
 
+  void _okuyucuyuKapat() {
+    final okuyucu = _akisOkuyucu;
+    _akisOkuyucu = null;
+    // Kesilen soketin hatası beklenen durumdur; sessizce yutulur.
+    if (okuyucu != null) unawaited(okuyucu.cancel().then((_) {}, onError: (_) {}));
+  }
+
   /// Yalnız canlı akışı keser (arka plana geçince); komutlar ve yeni `olaylar()` çalışmaya devam eder.
   void akisiKes() {
-    _akisAcik = false;
+    _nesil++;
+    _okuyucuyuKapat();
     _akisIstegi?.abort();
     _akisIstegi = null;
   }

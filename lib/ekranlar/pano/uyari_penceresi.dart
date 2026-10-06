@@ -13,13 +13,25 @@ import '../../veri/modeller.dart';
 /// gelince pencere çıkar. Görülenler uygulama açık kaldığı sürece hatırlanır; ilk veride 2 dakikadan eski
 /// uyarılar sessizce görülmüş sayılır (web ile aynı).
 class UyariDurumu extends ChangeNotifier {
-  UyariDurumu(this._depo, {double Function()? simdiT}) : _simdiT = simdiT ?? _telefonSaati {
+  UyariDurumu(this._depo, {double Function()? simdiT}) : _simdiTDis = simdiT {
     _depo.addListener(_guncelle);
     _guncelle();
   }
 
   final EtkinlikDeposu _depo;
-  final double Function() _simdiT;
+  final double Function()? _simdiTDis;
+
+  /// "Şimdi": sunucu zamanı — en yeni bildirimin `t`'si (telefon saati sunucuyla kaymış olabilir; çevrimdışı
+  /// salon). Bildirimlerde zaman yoksa (sahte veri) telefon saati.
+  double _simdiT() {
+    final dis = _simdiTDis;
+    if (dis != null) return dis();
+    var enYeni = 0.0;
+    for (final b in _depo.bildirimler) {
+      if (b.t > enYeni) enYeni = b.t;
+    }
+    return enYeni > 0 ? enYeni : _telefonSaati();
+  }
   final Set<String> _gorulen = {};
   bool _ilkVeriBekleniyor = true;
   List<Bildirim> _sira = const [];

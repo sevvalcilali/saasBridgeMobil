@@ -20,7 +20,8 @@ void main() {
   setUp(() async {
     s = await SahteSunucu.ac(durum: _durum);
     s.akisMesajlari = null; // akış açık kalır; mesajlar yayinla ile gelir
-    s.kartlarYaniti = '[{"kart":"2","rssiAlici":-60,"seenAgo":0.5,"atanan":"k1","pil":35},{"kart":"9","rssiAlici":-70,"seenAgo":1,"atanan":null,"pil":80}]';
+    s.kartlarYaniti = '[{"kart":"2","rssiAlici":-60,"seenAgo":0.5,"atanan":"k1","pil":35},{"kart":"9","rssiAlici":-70,"seenAgo":1,"atanan":null,"pil":80},'
+        '{"kart":"101","rssiAlici":-40,"seenAgo":0.2,"atanan":null,"pil":90}]';
     s.kisilerYaniti = '[{"kisiId":"k1","ad":"Ayşe Demir","rol":"investor","kurum":"Atlas","yildiz":4,"renk":"#3987e5","atananKart":"2","ayrildi":false},'
         '{"kisiId":"k2","ad":"Ali Kaya","rol":"founder","kurum":"","yildiz":0,"renk":"#d95926","atananKart":null,"ayrildi":false},'
         '{"kisiId":"k3","ad":"Gitti","rol":"guest","kurum":"","yildiz":0,"renk":"#898781","atananKart":null,"ayrildi":true}]';
@@ -38,7 +39,7 @@ void main() {
     expect(d.sunucuBagli, isFalse);
     expect(d.kisiler, isEmpty);
     d.baslat();
-    await bekle(() => d.sunucuBagli && d.kisiler.isNotEmpty && d.duyulanKartSayisi > 0);
+    await bekle(() => d.sunucuBagli && d.kisiler.isNotEmpty && d.duyulanKartSayisi > 0 && d.katilimcilar.isNotEmpty);
     expect(d.sunucuBagli, isTrue);
     expect(d.aliciBagli, isTrue);
     expect(d.etkinlikAdi, 'Buluşma');
@@ -53,7 +54,7 @@ void main() {
     expect(d.bul('2').pil, 35); // /api/cards'tan
     expect(d.bildirimler.single.onem, Onem.olumlu);
     expect(d.ciftler.single.rssi, -60);
-    expect(d.duyulanKartSayisi, 2);
+    expect(d.duyulanKartSayisi, 2); // 101 dinleyici cihaz, sayılmaz
     expect(d.kayitliKatilimci, 2); // ayrılan sayılmaz
     expect(d.katilimcilar.map((k) => k.kisiId).toList(), ['k1', 'k2', 'k3']);
     expect(d.katilimcilar[0].kurum, 'Atlas');
@@ -71,7 +72,7 @@ void main() {
     var bildirim = 0;
     d.addListener(() => bildirim++);
     await s.yayinla(_durum.replaceAll('"clock":"10:00:05"', '"clock":"10:00:06"').replaceAll('"threshold":-70', '"threshold":-66'));
-    await bekle(() => d.saat == '10:00:06');
+    await bekle(() => d.saat == '10:00:06' && bildirim > 0); // bildirim en çok 1 sn ertelenir
     expect(d.esik, -66);
     expect(bildirim, greaterThan(0));
   });
@@ -145,5 +146,36 @@ void main() {
     final kopuk = SunucuDeposu(SunucuIstemcisi('http://127.0.0.1:1', bekleme: (_) => Duration.zero));
     addTearDown(kopuk.dispose);
     expect(await kopuk.kartAta('k2', '9'), contains('Kart verilemedi'));
+  });
+
+  test('eşik isteği başarısız olursa ekran eski değere döner (sözleşme §5)', () async {
+    final d = depo();
+    d.baslat();
+    await bekle(() => d.sunucuBagli);
+    await s.kapat(); // sunucu gitti
+    d.esikAyarla(-65);
+    expect(d.esik, -65); // hemen görünür
+    await bekle(() => d.esik == -70);
+    expect(d.esik, -70);
+  });
+
+  test('yoklama veri değişmediyse dinleyicileri uyandırmaz; akış mesajları saniyede en çok bir kez bildirir', () async {
+    final d = SunucuDeposu(SunucuIstemcisi(s.adres, bekleme: (_) => const Duration(milliseconds: 10)),
+        yoklamaAraligi: const Duration(milliseconds: 50));
+    addTearDown(d.dispose);
+    d.baslat();
+    await bekle(() => d.sunucuBagli && d.duyulanKartSayisi > 0);
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    var bildirim = 0;
+    d.addListener(() => bildirim++);
+    await Future<void>.delayed(const Duration(milliseconds: 300)); // ~6 yoklama, veri aynı
+    expect(bildirim, 0);
+    for (var i = 0; i < 6; i++) {
+      await s.yayinla(_durum.replaceAll('"clock":"10:00:05"', '"clock":"10:00:0$i"'));
+      await Future<void>.delayed(const Duration(milliseconds: 30));
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 1100));
+    expect(bildirim, inInclusiveRange(1, 3)); // 6 mesaj ~200 ms'de: birleşir
+    expect(d.saat, '10:00:05'); // en son mesaj ekranda
   });
 }

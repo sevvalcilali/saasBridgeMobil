@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 import '../../bilesenler/etiketli_deger.dart';
 import '../../bilesenler/hap_dugme.dart';
@@ -47,6 +47,39 @@ class KontrolAdimi extends StatelessWidget {
               Expanded(child: EtiketliDeger(etiket: 'Kart', deger: acik == null ? '—' : (acik.atanmis ? 'atanmış' : 'boşta'))),
             ],
           ),
+          if (durum.kartinSahibi case final sahip?) ...[
+            const SizedBox(height: 16),
+            // Sözleşme §2: başkasının kartı verilmeden önce masa "geri alındı mı?" diye sorar; onaysız Onayla çalışmaz.
+            DecoratedBox(
+              decoration: const BoxDecoration(color: Renkler.vurguZemin, borderRadius: Olculer.koseYaricap),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Bu kart ${katilimciAdi(sahip)} adına kayıtlı.', style: Yazi.olcu(15, agirlik: FontWeight.w600)),
+                    const SizedBox(height: 4),
+                    Text('Onaylarsanız ${sahip.ad} panodan düşer, süreleri raporda kalır.', style: Yazi.olcu(13, renk: Renkler.metin2)),
+                    const SizedBox(height: 8),
+                    Semantics(
+                      checked: durum.sahipOnayi,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => durum.sahipOnayla(!durum.sahipOnayi),
+                        child: Row(
+                          children: [
+                            Icon(durum.sahipOnayi ? Icons.check_box : Icons.check_box_outline_blank, size: 22, color: Renkler.vurgu),
+                            const SizedBox(width: 8),
+                            Text('Kart ${sahip.ad} tarafından geri verildi', style: Yazi.olcu(14)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: 16),
           DecoratedBox(
             decoration: const BoxDecoration(color: Renkler.yuzey, borderRadius: Olculer.koseYaricap),
@@ -74,7 +107,7 @@ class KontrolAdimi extends StatelessWidget {
               Expanded(
                 child: HapDugme(
                   etiket: durum.gonderiliyor ? 'Gönderiliyor…' : 'Onayla',
-                  tur: HapTuru.birincil,
+                  tur: (durum.kartinSahibi != null && !durum.sahipOnayi) ? HapTuru.ikincil : HapTuru.birincil,
                   yukseklik: 48,
                   punto: 16,
                   genis: true,

@@ -88,4 +88,22 @@ void main() {
     expect(await i.esikGonder(-70), isFalse);
     expect(i.durumAl(), throwsA(anything));
   });
+
+  test('akisiKes sonrası hemen yeni olaylar(): eski döngü bekleme süresinden uyanıp ikinci akış açmaz', () async {
+    s.akisMesajlari = ['{"n":1}']; // akış hemen kapanır → eski döngü beklemeye girer
+    final i = SunucuIstemcisi(s.adres, bekleme: (_) => const Duration(milliseconds: 150));
+    addTearDown(i.kapat);
+    final eski = i.olaylar().listen((_) {});
+    await bekle(() => s.akisAcilis >= 1);
+    await Future<void>.delayed(const Duration(milliseconds: 40)); // sunucu akışı kapattı, eski döngü bekliyor
+    i.akisiKes();
+    await eski.cancel();
+    s.akisMesajlari = null; // yeni akış açık kalsın
+    final yeni = i.olaylar().listen((_) {});
+    await bekle(() => s.akisAcilis >= 2);
+    await Future<void>.delayed(const Duration(milliseconds: 400)); // eski döngünün beklemesi dolar
+    expect(s.akisAcilis, 2); // yalnız yeni döngünün açılışı
+    i.akisiKes(); // açık akışı kesmeden cancel beklenmez: üretici sokette bekler
+    await yeni.cancel();
+  });
 }
