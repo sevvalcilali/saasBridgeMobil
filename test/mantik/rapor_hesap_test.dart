@@ -24,6 +24,7 @@ const oturumlar = [
 const simdi = 1000.0;
 
 void main() {
+  organizatorTestleri();
   test('özet: görüşme sayısı, sürenler, karma süre (yalnız yatırımcı–girişimci), ulaşan, girişimci, kişi', () {
     final o = raporOzeti(kisiler, oturumlar, simdi);
     expect((o.gorusme, o.suren, o.karmaSn, o.ulasan, o.girisimci, o.kisi), (5, 1, 920, 2, 4, 7));
@@ -62,5 +63,56 @@ void main() {
   test('etkinlik saati: clock − elapsed + sn → HH:MM', () {
     expect(etkinlikSaati(0, '15:10:09', 609), '15:00');
     expect(etkinlikSaati(3600, '00:30:00', 7200), '23:30');
+  });
+}
+
+void organizatorTestleri() {
+  test('özet ekleri: yatırımcı, misafir, ayrılan sayısı ve ortalama görüşme süresi', () {
+    final o = raporOzeti(kisiler, oturumlar, simdi);
+    expect((o.yatirimci, o.misafir, o.ayrilan, o.ortalamaSn), (2, 1, 1, 202)); // (300+500+120+60+30)/5
+  });
+
+  test('yatırımcı satırları: görüştüğü girişimciler süreye göre; hiç görüşmeyen en altta', () {
+    final y = yatirimciSatirlari(kisiler, oturumlar, simdi);
+    expect(y.map((x) => x.kisi.kisiId).toList(), ['k1', 'k6']);
+    expect([for (final g in y.first.girisimciler) (g.kisi.kisiId, g.toplamSn)], [('k2', 800), ('k3', 120)]);
+    expect(y.first.girisimciSn, 920);
+    expect(y.last.girisimciler, isEmpty);
+  });
+
+  test('gün içi yoğunluk: dilim başına süren görüşme; en yoğun dilim; sıfır süreli de sayılır', () {
+    final y = gunIciYogunluk(oturumlar, simdi);
+    expect(y.dilimSn, 300);
+    expect([for (final d in y.dilimler) (d.bas, d.son, d.adet)], [(0, 300, 4), (300, 600, 2), (600, 900, 1), (900, 1200, 1)]);
+    expect((y.enYogun!.bas, y.enYogun!.adet), (0, 4));
+    expect(gunIciYogunluk(const [], 50).dilimler, isEmpty);
+    expect(gunIciYogunluk(const [Oturum('k1', 'k2', 500, null)], 500).enYogun!.adet, 1);
+  });
+
+  test('gün içi yoğunluk: saatin katlarına hizalanır; uzun etkinlikte dilim büyür', () {
+    // Etkinlik 0. sn = 09:43:30 (saat 10:00:10, geçen 1000 sn + 0) → 09:40 dilimi = −210. sn.
+    expect(gunIciYogunluk(oturumlar, simdi, saat: '10:00:10', elapsed: 1000).dilimler.first.bas, -210);
+    expect(gunIciYogunluk(const [Oturum('k1', 'k2', 0, 4 * 3600)], 4 * 3600).dilimSn, 900);
+    expect(gunIciYogunluk(const [Oturum('k1', 'k2', 0, 8 * 3600)], 8 * 3600).dilimSn, 1800);
+  });
+
+  test('güçlü eşleşmeler: yalnız yatırımcı–girişimci, toplam süreye göre; anlaşma işareti', () {
+    final e = gucluEslesmeler(kisiler, oturumlar, simdi, anlasanlar: {'k1|k2'});
+    expect([for (final x in e) (x.yatirimci.kisiId, x.girisimci.kisiId, x.toplamSn, x.adet, x.anlasma)],
+        [('k1', 'k2', 800, 2, true), ('k1', 'k3', 120, 1, false)]);
+    expect(gucluEslesmeler(kisiler, oturumlar, simdi, n: 1), hasLength(1));
+    expect(ciftAnahtari('k2', 'k1'), 'k1|k2');
+  });
+
+  test('önerilen tanıştırmalar: ilgi alanı tutan, ikisi de gelmiş, hiç görüşmemiş çiftler', () {
+    expect(onerilenTanistirmalar(kisiler, oturumlar), isEmpty); // Nova ve Peak zaten görüştü
+    final ek = [...kisiler, k('k8', 'Su Ak', Rol.girisimci, kurum: 'Zirve', kart: '9', sektor: 'Sağlık'), k('k9', 'Yok', Rol.girisimci, kurum: 'Bulut', sektor: 'Sağlık')];
+    expect([for (final o in onerilenTanistirmalar(ek, oturumlar)) (o.yatirimci.kisiId, o.girisimci.kisiId, o.sektor)], [('k1', 'k8', 'Sağlık')]);
+  });
+
+  test('takip listesi: gelmiş ama karşı rolle hiç görüşmemiş girişimci ve yatırımcılar', () {
+    final t = takipListesi(girisimciSatirlari(kisiler, oturumlar, simdi), yatirimciSatirlari(kisiler, oturumlar, simdi));
+    expect(t.girisimciler.map((x) => x.kisiId).toList(), ['k5']); // k7 kart almadı: gelmedi
+    expect(t.yatirimcilar.map((x) => x.kisiId).toList(), ['k6']); // ayrılan da gelmiş sayılır
   });
 }
