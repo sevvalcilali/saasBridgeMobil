@@ -1,10 +1,13 @@
 # Plan: Mobil uygulamayı sunucuya bağlama ve web ile eşitleme (06.10.2026)
 
+> **07.10.2026:** Web arayüzü `saasBridgeBackend` reposunun `arayuz/` klasörüne taşındı; `SaasBridge` reposu arşivlendi.
+> Aşağıdaki `SaasBridge/…` yolları artık `saasBridgeBackend/arayuz/…` demektir.
+
 Durum: 1a (Liste) varyantı sahte veriyle yazıldı (209 test). Web (SaasBridge `faz-0-altyapi`) ve sunucu
 (saasBridgeBackend `main`) 3 Ekim'den sonra çok değişti. Bu plan mobili önce gerçek sunucuya bağlar, sonra
 web'deki yenilikleri taşır. Her aşama web'deki gibi: test → taslak ekran görüntüsü → Şevval onayı → PR.
 
-Sözleşme: `SaasBridge/SUNUCUDAN_ISTENENLER.md` (sunucu uçları), `saasBridgeBackend/docs/` (davranış).
+Sözleşme: `saasBridgeBackend/arayuz/SUNUCUDAN_ISTENENLER.md` (sunucu uçları), `saasBridgeBackend/docs/` (davranış).
 
 ## M1 — Sunucu bağlantısı (sahte veri kalkar) — ✅ M1a okuma (PR #2), M1b yazma (PR #5)
 - Sunucu adresi ayarı (ilk açılışta sorulur, Kurulum'da değiştirilir; `http://<ip>:8002`).

@@ -3,6 +3,7 @@
 > Tarih: 03.10.2026 · Proje sahibi: Şevval · Durum: **onaylandı (03.10.2026)**
 > Tasarım kaynağı: `docs/tasarim/` (teslim paketi: `README.md`, `Yakinlik Mobil.dc.html`)
 > Web uygulaması: `sevvalcilali/SaasBridge`, dal `faz-0-altyapi` (yerelde `~/Desktop/Projects/saasBridge`)
+> — 07.10.2026'dan beri `sevvalcilali/saasBridgeBackend` reposunun `arayuz/` klasöründe; eski repo arşivlendi.
 
 ---
 
