@@ -2,7 +2,7 @@ import '../mantik/gruplar.dart';
 import 'modeller.dart';
 
 /// Sunucunun `/state` (ve `/events` mesajı) JSON'unu uygulama modellerine çevirir.
-/// Sözleşme: SaasBridge `SUNUCUDAN_ISTENENLER.md`, web `src/api/client.js durumIsle`.
+/// Sözleşme: saasBridgeBackend `arayuz/SUNUCUDAN_ISTENENLER.md`, web `arayuz/src/api/client.js durumIsle`.
 /// Saf Dart; ağ bilmez. Sunucu bir çifti ancak 1 dk yan yana kalınca "birlikte" sayar,
 /// süreler sunucuda akar: burada yerel sayaç yoktur (`tick` hep 0).
 class SunucuDurumu {

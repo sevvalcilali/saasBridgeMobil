@@ -1,7 +1,7 @@
 # Handoff: Yakınlık Panosu — Mobil Uygulama (Flutter)
 
 ## Genel bakış
-SaasBridge web uygulamasının (repo: `sevvalcilali/SaasBridge`, dal `faz-0-altyapi`) saha görevlileri için mobil sürümü. Dört ana ekran: **Pano** (Kişiler · Ağ · Bildirimler), **Kart Ver / İade**, **Kurulum**, **Rapor**; artı **Kişi Detayı**. Sunum modu ve CSV yükleme mobile alınmadı.
+SaasBridge web uygulamasının (repo: `sevvalcilali/SaasBridge`, dal `faz-0-altyapi`; 07.10.2026'dan beri `sevvalcilali/saasBridgeBackend` → `arayuz/`) saha görevlileri için mobil sürümü. Dört ana ekran: **Pano** (Kişiler · Ağ · Bildirimler), **Kart Ver / İade**, **Kurulum**, **Rapor**; artı **Kişi Detayı**. Sunum modu ve CSV yükleme mobile alınmadı.
 
 ## Tasarım dosyaları hakkında
 Bu paketteki `.dc.html` dosyaları **HTML ile yapılmış tasarım referanslarıdır** — görünüm ve davranışı gösteren prototiplerdir, doğrudan kopyalanacak üretim kodu değildir. Görev: bu tasarımları **Flutter** ile yeniden üretmek. Veri modeli ve iş kuralları web repodaki `src/` ile aynıdır; `src/api/*.js` içindeki sahte veri/ajan aynı sözleşmeyle Dart'a taşınabilir.

@@ -4,6 +4,9 @@ SaasBridge "Yakınlık Panosu"nun saha görevlileri için telefon uygulaması (F
 Dört sekme: **Pano** (Kişiler · Salon · Bildirimler), **Kart Ver / İade / Uyarılar**, **Kurulum**, **Rapor**; artı **Kişi Detayı**,
 kişi formu ve uyarı kuralı formu.
 
+Sunucu ve web arayüzü tek repoda: https://github.com/sevvalcilali/saasBridgeBackend (web `arayuz/` klasöründe; eski
+`SaasBridge` reposu 07.10.2026'da arşivlendi). Sunucu sözleşmesi: `arayuz/SUNUCUDAN_ISTENENLER.md`.
+
 Uygulama gerçek sunucuya (saasBridgeBackend, `/state` + `/events`) bağlanır: adres Kurulum → Sunucu'dan
 girilir ve telefonda kalır. Kart Ver / İade / Geri al / Sıfırla / eşik sunucuya gider (`/api/assign`,
 `/api/unassign`, `/control`); kart, üstündeki numara yazılarak verilir (şu an açık kartlar önerilir).
