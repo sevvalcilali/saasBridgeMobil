@@ -19,6 +19,9 @@ String sureYazisi(int saniye) {
   return sn == 0 ? '$dk dk' : '$dk dk $sn sn';
 }
 
+/// Özet yerleri için dakikaya yuvarlanmış süre: 0 → "—", 1 dk altı "<1 dk", "24 dk", "1 sa 13 dk" (web dkKisa).
+String dakikaYazisi(int saniye) => saniye <= 0 ? '—' : saniye < 60 ? '<1 dk' : sureYazisi((saniye / 60).round() * 60);
+
 String _iki(int n) => n.toString().padLeft(2, '0');
 
 /// Günün saniyesi → "15:10:09". Gün içinde döner.

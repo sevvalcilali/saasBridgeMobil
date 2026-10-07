@@ -56,7 +56,18 @@ String etkinlikSaati(num sn, String saat, num elapsed) {
 }
 
 class RaporOzeti {
-  const RaporOzeti({required this.gorusme, required this.suren, required this.karmaSn, required this.ulasan, required this.girisimci, required this.kisi});
+  const RaporOzeti({
+    required this.gorusme,
+    required this.suren,
+    required this.karmaSn,
+    required this.ulasan,
+    required this.girisimci,
+    required this.kisi,
+    this.yatirimci = 0,
+    this.misafir = 0,
+    this.ayrilan = 0,
+    this.ortalamaSn = 0,
+  });
 
   final int gorusme;
   final int suren;
@@ -68,6 +79,14 @@ class RaporOzeti {
   final int ulasan;
   final int girisimci;
   final int kisi;
+  final int yatirimci;
+  final int misafir;
+
+  /// Kartını iade edip ayrılanlar.
+  final int ayrilan;
+
+  /// Görüşme başına ortalama süre.
+  final int ortalamaSn;
 }
 
 class _KisiToplami {
@@ -108,6 +127,10 @@ RaporOzeti raporOzeti(List<Katilimci> kisiler, List<Oturum> oturumlar, double si
     ulasan: girisimciler.where((g) => (top[g.kisiId]?.karsiEsler.isNotEmpty) ?? false).length,
     girisimci: girisimciler.length,
     kisi: kisiler.length,
+    yatirimci: kisiler.where((k) => k.rol == Rol.yatirimci).length,
+    misafir: kisiler.where((k) => k.rol == Rol.misafir).length,
+    ayrilan: kisiler.where((k) => k.ayrildi && k.atananKart == null).length,
+    ortalamaSn: oturumlar.isEmpty ? 0 : (oturumlar.fold(0, (t, o) => t + o.sureSn(simdi)) / oturumlar.length).round(),
   );
 }
 
@@ -223,3 +246,152 @@ KisiRaporu kisiRaporu(String kisiId, List<Katilimci> kisiler, List<Oturum> oturu
     ozet: KisiRaporuOzeti(karsiSayisi: karsi.length, karsiSn: topla(karsi), toplamSn: topla(satirlar)),
   );
 }
+
+// --- Organizatör raporu (web ile aynı, 07.10.2026) ---
+
+class YatirimciSatiri {
+  const YatirimciSatiri({required this.kisi, required this.girisimciler});
+
+  final Katilimci kisi;
+
+  /// Süreye göre azalan.
+  final List<RaporEsi> girisimciler;
+
+  int get girisimciSn => girisimciler.fold(0, (t, g) => t + g.toplamSn);
+}
+
+/// Yatırımcılar (girişimcilerin aynası): görüştüğü girişimci sayısı, sonra süre, sonra ad.
+List<YatirimciSatiri> yatirimciSatirlari(List<Katilimci> kisiler, List<Oturum> oturumlar, double simdi) {
+  final harita = {for (final k in kisiler) k.kisiId: k};
+  final top = _topla(harita, oturumlar, simdi);
+  return [
+    for (final k in kisiler)
+      if (k.rol == Rol.yatirimci)
+        YatirimciSatiri(
+          kisi: k,
+          girisimciler: [
+            for (final e in (top[k.kisiId]?.karsiEsler ?? const <String, int>{}).entries)
+              if (harita[e.key] case final g?) RaporEsi(kisi: g, toplamSn: e.value),
+          ]..sort((p, q) => q.toplamSn.compareTo(p.toplamSn)),
+        ),
+  ]..sort((p, q) {
+      final sayi = q.girisimciler.length.compareTo(p.girisimciler.length);
+      if (sayi != 0) return sayi;
+      final sure = q.girisimciSn.compareTo(p.girisimciSn);
+      return sure != 0 ? sure : _adSirasi(p.kisi, q.kisi);
+    });
+}
+
+class Dilim {
+  const Dilim(this.bas, this.son, this.adet);
+
+  final int bas;
+  final int son;
+
+  /// Bu dilimde süren (dilimle örtüşen) görüşme sayısı.
+  final int adet;
+}
+
+class Yogunluk {
+  const Yogunluk({required this.dilimSn, required this.dilimler, required this.enYogun});
+
+  final int dilimSn;
+  final List<Dilim> dilimler;
+  final Dilim? enYogun;
+}
+
+/// Gün içi yoğunluk: etkinlik dilimlere bölünür (≤1 sa: 5 dk, ≤3 sa: 10 dk, ≤6 sa: 15 dk, üstü 30 dk); her dilimde
+/// süren görüşme sayılır. saat/elapsed verilirse dilim sınırları saatin katlarına hizalanır (14:10, 14:20 …).
+Yogunluk gunIciYogunluk(List<Oturum> oturumlar, double simdi, {String? saat, double elapsed = 0}) {
+  final bas = oturumlar.isEmpty ? 0.0 : oturumlar.map((o) => o.start).reduce((a, b) => a < b ? a : b);
+  final son = simdi > bas + 60 ? simdi : bas + 60;
+  final aralik = son - bas;
+  final dilimSn = aralik <= 3600 ? 300 : aralik <= 3 * 3600 ? 600 : aralik <= 6 * 3600 ? 900 : 1800;
+  if (oturumlar.isEmpty) return Yogunluk(dilimSn: dilimSn, dilimler: const [], enYogun: null);
+  var ilk = bas.floor();
+  if (saat != null) {
+    final p = saat.split(':').map(int.tryParse).toList();
+    final gunSn = (p[0] ?? 0) * 3600 + (p.length > 1 ? p[1] ?? 0 : 0) * 60 + (p.length > 2 ? p[2] ?? 0 : 0);
+    final fark = (gunSn - elapsed).round(); // etkinlik 0. saniyesinin gün içi saniyesi
+    ilk = ((bas + fark) / dilimSn).floor() * dilimSn - fark;
+  }
+  final dilimler = <Dilim>[];
+  for (var b = ilk; b < simdi || dilimler.isEmpty; b += dilimSn) {
+    var adet = 0;
+    for (final o in oturumlar) {
+      // Tam şimdi başlamış (sıfır süreli) görüşme de en az 1 sn yer kaplar.
+      final oSon = (o.end ?? simdi) > o.start + 1 ? (o.end ?? simdi) : o.start + 1;
+      if (o.start < b + dilimSn && oSon > b) adet++;
+    }
+    dilimler.add(Dilim(b, b + dilimSn, adet));
+  }
+  final enYogun = dilimler.reduce((en, d) => d.adet > en.adet ? d : en);
+  return Yogunluk(dilimSn: dilimSn, dilimler: dilimler, enYogun: enYogun.adet > 0 ? enYogun : null);
+}
+
+/// Yönden bağımsız çift anahtarı ("k2","k1" → "k1|k2").
+String ciftAnahtari(String a, String b) => a.compareTo(b) <= 0 ? '$a|$b' : '$b|$a';
+
+class Eslesme {
+  const Eslesme({required this.yatirimci, required this.girisimci, required this.toplamSn, required this.adet, required this.anlasma});
+
+  final Katilimci yatirimci;
+  final Katilimci girisimci;
+  final int toplamSn;
+  final int adet;
+  final bool anlasma;
+}
+
+/// En güçlü yatırımcı–girişimci eşleşmeleri (takip görüşmesi adayları): toplam süreye göre ilk n.
+/// anlasanlar: "Potansiyel anlaşma" bildirimlerinin çift anahtarları.
+List<Eslesme> gucluEslesmeler(List<Katilimci> kisiler, List<Oturum> oturumlar, double simdi,
+    {Set<String> anlasanlar = const {}, int n = 8}) {
+  final harita = {for (final k in kisiler) k.kisiId: k};
+  final top = <String, ({Katilimci y, Katilimci g, int sn, int adet})>{};
+  for (final o in oturumlar) {
+    final (a, b) = (harita[o.a], harita[o.b]);
+    if (!_karsiRolMu(a, b)) continue;
+    final (y, g) = a!.rol == Rol.yatirimci ? (a, b!) : (b!, a);
+    final anahtar = ciftAnahtari(o.a, o.b);
+    final e = top[anahtar];
+    top[anahtar] = (y: y, g: g, sn: (e?.sn ?? 0) + o.sureSn(simdi), adet: (e?.adet ?? 0) + 1);
+  }
+  final liste = top.entries.toList()..sort((p, q) => q.value.sn.compareTo(p.value.sn));
+  return [
+    for (final e in liste.take(n))
+      Eslesme(yatirimci: e.value.y, girisimci: e.value.g, toplamSn: e.value.sn, adet: e.value.adet, anlasma: anlasanlar.contains(e.key)),
+  ];
+}
+
+class Tanistirma {
+  const Tanistirma({required this.yatirimci, required this.girisimci, required this.sektor});
+
+  final Katilimci yatirimci;
+  final Katilimci girisimci;
+  final String sektor;
+}
+
+/// Önerilen tanıştırmalar: yatırımcının ilgi alanı girişimin sektörünü tutuyor, ikisi de gelmiş, ama gün boyu hiç
+/// yan yana gelmemişler. Önemli (yıldızlı) yatırımcı önde.
+List<Tanistirma> onerilenTanistirmalar(List<Katilimci> kisiler, List<Oturum> oturumlar) {
+  final gorustu = {for (final o in oturumlar) ciftAnahtari(o.a, o.b)};
+  final gelen = kisiler.where(geldi).toList();
+  return [
+    for (final y in gelen.where((k) => k.rol == Rol.yatirimci))
+      for (final g in gelen.where((k) => k.rol == Rol.girisimci))
+        if (ilgiEslesir(y.sektor, g.sektor) && !gorustu.contains(ciftAnahtari(y.kisiId, g.kisiId)))
+          Tanistirma(yatirimci: y, girisimci: g, sektor: g.sektor.trim()),
+  ]..sort((p, q) {
+      final yildiz = q.yatirimci.yildiz.compareTo(p.yatirimci.yildiz);
+      if (yildiz != 0) return yildiz;
+      final y = _adSirasi(p.yatirimci, q.yatirimci);
+      return y != 0 ? y : _adSirasi(p.girisimci, q.girisimci);
+    });
+}
+
+/// Takip listesi: etkinliğe gelmiş ama karşı rolle hiç görüşmemiş girişimciler ve yatırımcılar.
+({List<Katilimci> girisimciler, List<Katilimci> yatirimcilar}) takipListesi(
+    List<GirisimciSatiri> girisimciler, List<YatirimciSatiri> yatirimcilar) => (
+      girisimciler: [for (final g in girisimciler) if (g.yatirimcilar.isEmpty && geldi(g.kisi)) g.kisi],
+      yatirimcilar: [for (final y in yatirimcilar) if (y.girisimciler.isEmpty && geldi(y.kisi)) y.kisi],
+    );

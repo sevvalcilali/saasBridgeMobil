@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:yakinlik_mobil/mantik/bicim.dart';
 
 void main() {
+  dakikaTestleri();
   test('sureYazisi: saniye, dakika, saat', () {
     expect(sureYazisi(0), '0 sn');
     expect(sureYazisi(19), '19 sn');
@@ -40,5 +41,14 @@ void main() {
   test('yildizlar', () {
     expect(yildizlar(3), '★★★');
     expect(yildizlar(0), '');
+  });
+}
+
+void dakikaTestleri() {
+  test('dakikaYazisi: özet yerleri için dakikaya yuvarlar; 0 "—", 1 dk altı "<1 dk"', () {
+    expect(dakikaYazisi(0), '—');
+    expect(dakikaYazisi(30), '<1 dk');
+    expect(dakikaYazisi(90), '2 dk');
+    expect(dakikaYazisi(4380), '1 sa 13 dk');
   });
 }

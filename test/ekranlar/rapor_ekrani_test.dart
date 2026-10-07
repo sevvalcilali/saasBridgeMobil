@@ -31,28 +31,44 @@ void main() {
     expect(find.text('Yenile'), findsOneWidget);
   });
 
-  testWidgets('beş KPI görüşme kayıtlarından: yalnız yatırımcı–girişimci süresi "karma"', (tester) async {
+  testWidgets('altı özet kartı görüşme kayıtlarından; süreler dakikaya yuvarlı; ulaşan oranı', (tester) async {
     await _kur(tester);
-    expect(find.text('Görüşme'), findsOneWidget);
-    expect(find.text('10'), findsOneWidget);
-    expect(find.text('10 tanesi sürüyor'), findsOneWidget);
-    expect(find.text('Yatırımcı–girişimci toplam'), findsOneWidget);
-    expect(find.text('6 dk 20 sn'), findsOneWidget); // 522 − misafirle olan 142 sn
-    expect(find.text('Yatırımcıya ulaşan girişimci'), findsOneWidget);
-    expect(find.text('8/12'), findsOneWidget);
-    expect(find.text('Potansiyel anlaşma'), findsOneWidget);
     expect(find.text('Katılımcı'), findsOneWidget);
     expect(find.text('25'), findsOneWidget);
-    expect(find.text('kayıtlı'), findsOneWidget);
+    expect(find.textContaining('yatırımcı · '), findsWidgets);
+    expect(find.text('Görüşme'), findsOneWidget);
+    expect(find.textContaining('10 tanesi sürüyor'), findsOneWidget);
+    expect(find.text('Yatırımcı–girişimci süresi'), findsOneWidget);
+    expect(find.text('6 dk'), findsOneWidget); // 380 sn (misafirle olan 142 sn sayılmaz)
+    expect(find.text('Yatırımcıya ulaşan girişimci'), findsOneWidget);
+    expect(find.text('8/12'), findsOneWidget);
+    expect(find.text('%67'), findsOneWidget);
+    expect(find.text('Potansiyel anlaşma'), findsOneWidget);
+    expect(find.text('En yoğun zaman'), findsOneWidget);
   });
 
-  testWidgets('girişimci satırları: yatırımcılarla süre, görüşmeyenler ciddi renkte', (tester) async {
+  testWidgets('yapılacaklar, eşleşmeler, yoğunluk grafiği ve kişi bölümleri', (tester) async {
     await _kur(tester);
-    expect(find.text('Girişimciler ve ulaştıkları yatırımcılar'), findsOneWidget);
-    expect(find.text('Emre Kaya (1 dk 14 sn)'), findsOneWidget);
-    expect(find.textContaining('Hiç yatırımcıyla görüşmedi'), findsNWidgets(4)); // 2 görüşmemiş + 2 misafirle görüşen
-    final gorusmedi = tester.widget<Text>(find.textContaining('Hiç yatırımcıyla görüşmedi').first);
-    expect(gorusmedi.style!.color, Renkler.ciddi);
+    expect(find.text('Etkinlik sonrası yapılacaklar'), findsOneWidget);
+    expect(find.text('Yatırımcıyla görüşmeyen girişimciler'), findsOneWidget);
+    expect(find.text('Girişimciyle görüşmeyen yatırımcılar'), findsOneWidget);
+    expect(find.text('Önerilen tanıştırmalar'), findsOneWidget);
+    expect(find.textContaining('sektör ve ilgi alanı girilince'), findsOneWidget); // sahte veride sektör yok
+    expect(find.text('En güçlü yatırımcı–girişimci eşleşmeleri'), findsOneWidget);
+    expect(find.textContaining('Her çubuk 5 dakika'), findsOneWidget);
+    expect(find.byWidgetPredicate((w) => w is Semantics && w.properties.label == 'Gün içi görüşme yoğunluğu grafiği'), findsOneWidget);
+    expect(find.textContaining('Girişimciler ve ulaştıkları yatırımcılar'), findsOneWidget);
+    expect(find.textContaining('Yatırımcılar ve görüştükleri girişimciler'), findsOneWidget);
+  });
+
+  testWidgets('girişimci satırı: görüştüğü yatırımcılar çip çip; görüşmeyen ciddi renkte', (tester) async {
+    await _kur(tester);
+    final irem = find.byKey(const ValueKey('rapor-kisi-k31'));
+    expect(find.descendant(of: irem, matching: find.text('Emre Kaya')), findsOneWidget);
+    expect(find.descendant(of: irem, matching: find.text('1 dk')), findsWidgets);
+    final gorusmedi = find.textContaining('Hiç yatırımcıyla görüşmedi');
+    expect(gorusmedi, findsNWidgets(4)); // 2 görüşmemiş + 2 misafirle görüşen
+    expect(tester.widget<Text>(gorusmedi.first).style!.color, Renkler.ciddi);
   });
 
   testWidgets('rapor anlık görüntüdür: süreler kayıtların alındığı anda donar, Yenile ile güncellenir', (tester) async {
@@ -61,11 +77,12 @@ void main() {
       k.depo.ilerlet();
     }
     await tester.pump();
-    expect(find.text('6 dk 20 sn'), findsOneWidget); // değişmedi
+    expect(find.text('6 dk'), findsOneWidget); // değişmedi
     await tester.tap(find.text('Yenile'));
     await tester.pump();
-    expect(find.text('14 dk 20 sn'), findsOneWidget); // 380 + 8 × 60 sn
-    expect(find.text('Emre Kaya (2 dk 14 sn)'), findsOneWidget);
+    expect(find.text('14 dk'), findsWidgets); // 380 + 8 × 60 sn = 860 sn
+    final irem = find.byKey(const ValueKey('rapor-kisi-k31'));
+    expect(find.descendant(of: irem, matching: find.text('2 dk')), findsWidgets); // 134 sn
   });
 
   testWidgets('Rapor sekmesine her gelişte kayıtlar yeniden istenir', (tester) async {
@@ -98,7 +115,9 @@ void main() {
 
   testWidgets('satıra dokununca kişiye özel rapor: yatırımcılarla süre, kaçırılanlar, paylaş', (tester) async {
     await _kur(tester);
-    await tester.tap(find.text('Emre Kaya (1 dk 14 sn)'));
+    final irem = find.byKey(const ValueKey('rapor-kisi-k31'));
+    await tester.ensureVisible(irem);
+    await tester.tap(irem);
     await tester.pumpAndSettle();
     expect(find.byType(KisiRaporuSayfasi), findsOneWidget);
     expect(find.text('Peak Enerji · İrem Korkmaz'), findsOneWidget);

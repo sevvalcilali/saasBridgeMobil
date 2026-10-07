@@ -83,6 +83,15 @@ void main() {
     await cek('14_rapor_ust');
     await asagiKaydir();
     await cek('15_rapor_alt');
+    await asagiKaydir();
+    await asagiKaydir();
+    await cek('15b_rapor_eslesmeler');
+    await asagiKaydir();
+    await asagiKaydir();
+    await cek('15c_rapor_yogunluk');
+    await asagiKaydir();
+    await asagiKaydir();
+    await cek('15d_rapor_kisiler');
   });
 
   testWidgets('alıcı kopuk', (tester) async {
